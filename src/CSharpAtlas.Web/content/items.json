@@ -67,7 +67,7 @@
     "why": "File.ReadAllText で文字列として読み込み、JsonSerializer.Deserialize<T> で指定した型に変換します。",
     "tips": "JSON側の名前とプロパティ名が違う場合は JsonPropertyName 属性を使います。",
     "tags": ["JSON", "ファイル", "System.Text.Json"],
-    "related": ["nullref"]
+    "related": ["nullref", "json-exception", "file-not-found"]
   },
   {
     "id": "int-div",
@@ -81,7 +81,7 @@
     "why": "代入先が double でも、a / b の計算が先に int 同士で行われます。",
     "tips": "動くのに答えがおかしいため、例外より発見しにくい種類です。",
     "tags": ["int", "double", "除算"],
-    "related": []
+    "related": ["parse-number"]
   },
   {
     "id": "nullable",
@@ -95,7 +95,7 @@
     "why": "コンパイラが null の可能性を追跡し、危険な参照に警告を出しやすくなります。",
     "tips": "! はコンパイラへの宣言であって、実行時の安全性を上げるものではありません。",
     "tags": ["null", "nullable", "?"],
-    "related": ["nullref"]
+    "related": ["nullref", "cs8602"]
   },
   {
     "id": "scope",
@@ -110,5 +110,159 @@
     "tips": "CS0103 が出たときは、まずスコープを見ると原因が見つかることがあります。",
     "tags": ["変数", "スコープ", "基本"],
     "related": ["cs0103"]
+  },
+  {
+    "id": "index-out-of-range",
+    "type": "exception",
+    "title": "IndexOutOfRangeException",
+    "short": "配列の範囲外の要素にアクセスした。",
+    "summary": "配列の有効な添字は 0 から Length - 1 までです。",
+    "bad": "int[] a = { 10, 20, 30 };\nConsole.WriteLine(a[3]);",
+    "good": "int[] a = { 10, 20, 30 };\nConsole.WriteLine(a[a.Length - 1]);",
+    "code": null,
+    "why": "要素数が3なら使える添字は 0, 1, 2 です。3番目ではなく添字3を指定すると範囲外になります。",
+    "tips": "for ループの条件が i <= a.Length になっていないか確認します。",
+    "tags": ["配列", "index", "例外"],
+    "related": ["for-loop"]
+  },
+  {
+    "id": "format-exception",
+    "type": "exception",
+    "title": "FormatException",
+    "short": "文字列の形式が変換先として不正だった。",
+    "summary": "Parse などで、期待した形式ではない文字列を変換しようとすると発生します。",
+    "bad": "int n = int.Parse(\"abc\");",
+    "good": "if (int.TryParse(\"123\", out int n))\n{\n    Console.WriteLine(n);\n}",
+    "code": null,
+    "why": "abc は整数として解釈できないため int.Parse は失敗します。",
+    "tips": "ユーザー入力など失敗し得る値には TryParse が向いています。",
+    "tags": ["Parse", "変換", "例外"],
+    "related": ["parse-number"]
+  },
+  {
+    "id": "parse-number",
+    "type": "code",
+    "title": "文字列を安全に数値へ変換する",
+    "short": "TryParse で変換できるか確認する。",
+    "summary": "入力が必ず数値とは限らない場合は Parse より TryParse が扱いやすいです。",
+    "bad": null,
+    "good": null,
+    "code": "string text = \"42\";\n\nif (int.TryParse(text, out int value))\n{\n    Console.WriteLine(value);\n}",
+    "why": "TryParse は失敗時に例外を投げず false を返します。",
+    "tips": "double.TryParse や DateTime.TryParse など、他の型にも同様のメソッドがあります。",
+    "tags": ["TryParse", "int", "入力"],
+    "related": ["format-exception", "int-div"]
+  },
+  {
+    "id": "file-not-found",
+    "type": "exception",
+    "title": "FileNotFoundException",
+    "short": "開こうとしたファイルが見つからない。",
+    "summary": "指定したパスにファイルが存在しないときに発生します。",
+    "bad": "string text = File.ReadAllText(\"missing.txt\");",
+    "good": "string path = \"data.txt\";\nif (File.Exists(path))\n{\n    string text = File.ReadAllText(path);\n}",
+    "code": null,
+    "why": "相対パスは実行時のカレントディレクトリ基準なので、想定と違う場所を見ていることもあります。",
+    "tips": "Path.GetFullPath(path) を表示すると、実際にどこを探しているか確認できます。",
+    "tags": ["File", "ファイル", "パス"],
+    "related": ["file-read", "json-read"]
+  },
+  {
+    "id": "file-read",
+    "type": "code",
+    "title": "テキストファイルを読み込む",
+    "short": "File.ReadAllText でファイル全体を文字列として読む。",
+    "summary": "小さなテキストファイルを一度に読み込む最も簡単な形です。",
+    "bad": null,
+    "good": null,
+    "code": "string path = \"data.txt\";\nstring text = File.ReadAllText(path);\nConsole.WriteLine(text);",
+    "why": "File.ReadAllText はファイルを開き、すべての文字列を返して自動で閉じます。",
+    "tips": "巨大なファイルなら ReadLines や StreamReader で順番に読む方法もあります。",
+    "tags": ["File", "ファイル", "ReadAllText"],
+    "related": ["file-not-found"]
+  },
+  {
+    "id": "json-exception",
+    "type": "exception",
+    "title": "JsonException",
+    "short": "JSON の形式や型が期待と合わない。",
+    "summary": "System.Text.Json が入力JSONを正しく解析・変換できないときに発生します。",
+    "bad": "JsonSerializer.Deserialize<int>(\"{\\\"x\\\":1}\");",
+    "good": "JsonSerializer.Deserialize<int>(\"123\");",
+    "code": null,
+    "why": "JSON自体が壊れている場合だけでなく、JSONの値とC#側の型が合わない場合にも発生します。",
+    "tips": "例外メッセージの Path や BytePositionInLine を見ると問題箇所を絞れます。",
+    "tags": ["JSON", "System.Text.Json", "例外"],
+    "related": ["json-read"]
+  },
+  {
+    "id": "cs0029",
+    "type": "compiler",
+    "title": "CS0029",
+    "short": "ある型を別の型へ暗黙的に変換できない。",
+    "summary": "代入元と代入先の型が一致せず、自動変換もできないときに出ます。",
+    "bad": "int n = \"123\";",
+    "good": "int n = int.Parse(\"123\");",
+    "code": null,
+    "why": "string と int は別の型であり、C# は文字列の内容を勝手に数値へ解釈しません。",
+    "tips": "型名を確認し、Parse・キャスト・変換メソッドのどれが適切か判断します。",
+    "tags": ["CS0029", "型", "変換"],
+    "related": ["parse-number"]
+  },
+  {
+    "id": "cs0246",
+    "type": "compiler",
+    "title": "CS0246",
+    "short": "型または名前空間名が見つからない。",
+    "summary": "型名のスペル、using、参照しているアセンブリやNuGetパッケージなどを確認します。",
+    "bad": "JsonSerializer.Serialize(new { x = 1 });",
+    "good": "using System.Text.Json;\n\nJsonSerializer.Serialize(new { x = 1 });",
+    "code": null,
+    "why": "現在のコンパイル対象から、その型や名前空間を解決できません。",
+    "tips": "IDEの自動importで直る場合もありますが、必要なパッケージ自体が入っていないこともあります。",
+    "tags": ["CS0246", "using", "namespace"],
+    "related": ["using-directive"]
+  },
+  {
+    "id": "using-directive",
+    "type": "concept",
+    "title": "using ディレクティブ",
+    "short": "名前空間を省略して型名を書けるようにする。",
+    "summary": "using は型を読み込む処理ではなく、名前空間名を省略して書くための指定です。",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\n\nstring json = JsonSerializer.Serialize(new { Name = \"Alice\" });",
+    "why": "using System.Text.Json; があると System.Text.Json.JsonSerializer を JsonSerializer と書けます。",
+    "tips": "using を追加しても、参照アセンブリやNuGetパッケージが存在しなければ型は使えません。",
+    "tags": ["using", "namespace", "基本"],
+    "related": ["cs0246"]
+  },
+  {
+    "id": "cs8602",
+    "type": "compiler",
+    "title": "CS8602",
+    "short": "null の可能性がある参照を逆参照している。",
+    "summary": "nullable 解析が、この値は null かもしれないと判断しています。",
+    "bad": "string? name = GetName();\nConsole.WriteLine(name.Length);",
+    "good": "string? name = GetName();\nif (name is not null)\n{\n    Console.WriteLine(name.Length);\n}",
+    "code": null,
+    "why": "実行時に NullReferenceException になる可能性があるため、コンパイラが事前に警告します。",
+    "tips": "安易に ! で消すより、null チェックや設計の見直しを優先します。",
+    "tags": ["CS8602", "nullable", "null"],
+    "related": ["nullable", "nullref"]
+  },
+  {
+    "id": "for-loop",
+    "type": "concept",
+    "title": "for ループの境界",
+    "short": "< と <= の違いで範囲外アクセスが起きやすい。",
+    "summary": "配列を先頭から最後まで走査するなら、通常は i < array.Length を使います。",
+    "bad": "for (int i = 0; i <= a.Length; i++)\n{\n    Console.WriteLine(a[i]);\n}",
+    "good": "for (int i = 0; i < a.Length; i++)\n{\n    Console.WriteLine(a[i]);\n}",
+    "code": null,
+    "why": "最後の有効な添字は Length - 1 なので、i == Length まで進めると1つはみ出します。",
+    "tips": "単純な全要素走査なら foreach も候補です。",
+    "tags": ["for", "配列", "境界"],
+    "related": ["index-out-of-range"]
   }
 ]
