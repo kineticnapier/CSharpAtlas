@@ -88,6 +88,13 @@ async function openItem(id) {
     button.addEventListener('click', () => openItem(button.dataset.relatedId));
   });
 
+  detailContent.querySelectorAll('[data-playground-code]').forEach(button => {
+    button.addEventListener('click', () => {
+      const code = decodeURIComponent(button.dataset.playgroundCode);
+      window.openPlaygroundCode?.(code);
+    });
+  });
+
   homeView.classList.add('hidden');
   detailView.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -99,7 +106,15 @@ async function fetchItem(id) {
 }
 
 function codeSection(title, value, className) {
-  return `<div class="block"><h2>${title}</h2><div class="code ${className}">${escapeHtml(value)}</div></div>`;
+  const encoded = encodeURIComponent(value);
+  return `
+    <div class="block">
+      <div class="code-heading">
+        <h2>${title}</h2>
+        <button class="try-playground" type="button" data-playground-code="${encoded}">&lt;/&gt; プレイグラウンドで試す</button>
+      </div>
+      <div class="code ${className}">${escapeHtml(value)}</div>
+    </div>`;
 }
 
 function escapeHtml(value) {
