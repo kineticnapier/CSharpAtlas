@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>C# Playground — C# Atlas</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <div class="nav">
+    <a class="logo logo-link" href="/">C<span>#</span> Atlas</a>
+    <nav>
+      <a href="/">記事</a>
+      <a class="nav-current" href="/playground.html">プレイグラウンド</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="playground-page">
+    <div class="playground-head">
+      <div>
+        <div class="eyebrow">C# Playground</div>
+        <h1>コードを書いて、診断を見る。</h1>
+        <p>Roslyn で C# をコンパイルし、CSエラーと警告をその場で確認できます。</p>
+      </div>
+      <div class="playground-note">現在はコンパイル診断のみ。コード自体は実行しません。</div>
+    </div>
+
+    <div class="playground-shell">
+      <div class="editor-panel">
+        <div class="panel-bar">
+          <strong>Program.cs</strong>
+          <div class="panel-actions">
+            <button id="resetButton" class="secondary-button">初期化</button>
+            <button id="compileButton" class="primary-button">コンパイル</button>
+          </div>
+        </div>
+        <textarea id="codeInput" class="playground-editor" spellcheck="false" aria-label="C# code editor"></textarea>
+      </div>
+
+      <div class="diagnostics-panel">
+        <div class="panel-bar">
+          <strong>診断</strong>
+          <span id="compileStatus" class="compile-status">未実行</span>
+        </div>
+        <div id="diagnostics" class="diagnostics-empty">「コンパイル」を押すと結果が表示されます。</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/playground.js"></script>
+</body>
+</html>
