@@ -15,7 +15,7 @@
   },
   {
     "id": "cs0103",
-    "type": "compiler",
+    "type": "compiler-error",
     "title": "CS0103",
     "short": "その名前は現在の場所では存在しない。",
     "summary": "変数名やメソッド名などを、宣言されていない場所から参照しています。",
@@ -197,7 +197,7 @@
   },
   {
     "id": "cs0029",
-    "type": "compiler",
+    "type": "compiler-error",
     "title": "CS0029",
     "short": "ある型を別の型へ暗黙的に変換できない。",
     "summary": "代入元と代入先の型が一致せず、自動変換もできないときに出ます。",
@@ -211,7 +211,7 @@
   },
   {
     "id": "cs0246",
-    "type": "compiler",
+    "type": "compiler-error",
     "title": "CS0246",
     "short": "型または名前空間名が見つからない。",
     "summary": "型名のスペル、using、参照しているアセンブリやNuGetパッケージなどを確認します。",
@@ -239,7 +239,7 @@
   },
   {
     "id": "cs8602",
-    "type": "compiler",
+    "type": "compiler-warning",
     "title": "CS8602",
     "short": "null の可能性がある参照を逆参照している。",
     "summary": "nullable 解析が、この値は null かもしれないと判断しています。",
