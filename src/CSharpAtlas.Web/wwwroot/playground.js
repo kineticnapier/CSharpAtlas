@@ -1,42 +1,69 @@
-const defaultCode = `using System;
-
-Console.WriteLine("Hello, C# Atlas!");
-`;
+const defaultCode = `using System;\n\nConsole.WriteLine("Hello, C# Atlas!");\n`;
 
 const codeInput = document.getElementById('codeInput');
 const compileButton = document.getElementById('compileButton');
 const resetButton = document.getElementById('resetButton');
 const diagnostics = document.getElementById('diagnostics');
 const compileStatus = document.getElementById('compileStatus');
+const playgroundSection = document.getElementById('playgroundSection');
+const playgroundFab = document.getElementById('playgroundFab');
+const playgroundNavButton = document.getElementById('playgroundNavButton');
 
-codeInput.value = defaultCode;
+if (codeInput && compileButton && resetButton && diagnostics && compileStatus) {
+  if (!codeInput.value) codeInput.value = defaultCode;
 
-resetButton.addEventListener('click', () => {
-  codeInput.value = defaultCode;
+  resetButton.addEventListener('click', () => {
+    codeInput.value = defaultCode;
+    resetDiagnostics();
+    codeInput.focus();
+  });
+
+  compileButton.addEventListener('click', compileCode);
+
+  codeInput.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      event.preventDefault();
+      compileCode();
+    }
+
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      const start = codeInput.selectionStart;
+      const end = codeInput.selectionEnd;
+      codeInput.setRangeText('    ', start, end, 'end');
+    }
+  });
+}
+
+playgroundFab?.addEventListener('click', () => scrollToPlayground(true));
+playgroundNavButton?.addEventListener('click', () => scrollToPlayground(false));
+
+window.openPlaygroundCode = code => {
+  if (!codeInput) return;
+  codeInput.value = code;
+  resetDiagnostics();
+  scrollToPlayground(true);
+};
+
+function scrollToPlayground(focusEditor) {
+  const target = playgroundSection ?? codeInput;
+  target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (focusEditor && codeInput) {
+    setTimeout(() => codeInput.focus(), 350);
+  }
+}
+
+function resetDiagnostics() {
+  if (!diagnostics || !compileStatus) return;
   diagnostics.className = 'diagnostics-empty';
   diagnostics.textContent = '「コンパイル」を押すと結果が表示されます。';
   compileStatus.className = 'compile-status';
   compileStatus.textContent = '未実行';
-  codeInput.focus();
-});
-
-compileButton.addEventListener('click', compileCode);
-
-codeInput.addEventListener('keydown', event => {
-  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-    event.preventDefault();
-    compileCode();
-  }
-
-  if (event.key === 'Tab') {
-    event.preventDefault();
-    const start = codeInput.selectionStart;
-    const end = codeInput.selectionEnd;
-    codeInput.setRangeText('    ', start, end, 'end');
-  }
-});
+}
 
 async function compileCode() {
+  if (!codeInput || !compileButton || !diagnostics || !compileStatus) return;
+
   compileButton.disabled = true;
   compileButton.textContent = '確認中...';
   compileStatus.className = 'compile-status';
