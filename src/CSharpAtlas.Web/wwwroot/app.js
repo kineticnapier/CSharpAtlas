@@ -68,8 +68,17 @@ async function openItem(id) {
 
   const sections = [];
   sections.push(`<div class="block"><h2>一言でいうと</h2><div class="note">${linkify(item.summary, item.id)}</div></div>`);
-  if (item.bad) sections.push(codeSection('こうすると起きる', item.bad, 'bad'));
-  if (item.good) sections.push(codeSection('直し方の例', item.good, 'good'));
+
+  if (item.bad && item.good) {
+    sections.push(`<div class="code-compare">
+      ${codeSection('原因', item.bad, 'bad')}
+      ${codeSection('直し方', item.good, 'good')}
+    </div>`);
+  } else {
+    if (item.bad) sections.push(codeSection('原因', item.bad, 'bad'));
+    if (item.good) sections.push(codeSection('直し方', item.good, 'good'));
+  }
+
   if (item.code) sections.push(codeSection('コード', item.code, ''));
   if (item.why) sections.push(`<div class="block"><h2>なぜ？</h2><p>${linkify(item.why, item.id)}</p></div>`);
   if (item.tips) sections.push(`<div class="block"><h2>補足</h2><p>${linkify(item.tips, item.id)}</p></div>`);
@@ -186,7 +195,7 @@ function isCompilerType(type) {
 }
 
 function codeSection(title, value, className) {
-  return `<div class="block"><h2>${title}</h2><div class="code ${className}">${escapeHtml(value)}</div></div>`;
+  return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${escapeHtml(value)}</div></div>`;
 }
 
 function escapeHtml(value) {
