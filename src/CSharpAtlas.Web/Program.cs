@@ -6,12 +6,30 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-var contentPath = Path.Combine(app.Environment.ContentRootPath, "content", "items.json");
-var json = await File.ReadAllTextAsync(contentPath);
-var items = JsonSerializer.Deserialize<List<AtlasItem>>(json, new JsonSerializerOptions
+var contentDirectory = Path.Combine(app.Environment.ContentRootPath, "content");
+var jsonOptions = new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true
-}) ?? [];
+};
+
+var items = new List<AtlasItem>();
+foreach (var contentPath in Directory.EnumerateFiles(contentDirectory, "*.json").OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+{
+    var json = await File.ReadAllTextAsync(contentPath);
+    var fileItems = JsonSerializer.Deserialize<List<AtlasItem>>(json, jsonOptions) ?? [];
+    items.AddRange(fileItems);
+}
+
+var duplicateIds = items
+    .GroupBy(x => x.Id, StringComparer.OrdinalIgnoreCase)
+    .Where(group => group.Count() > 1)
+    .Select(group => group.Key)
+    .ToArray();
+
+if (duplicateIds.Length > 0)
+{
+    throw new InvalidOperationException($"Duplicate article ids: {string.Join(", ", duplicateIds)}");
+}
 
 app.MapGet("/api/items", (string? q, string? type) =>
 {
