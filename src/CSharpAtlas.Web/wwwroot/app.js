@@ -129,11 +129,15 @@ function buildWikiTerms(items) {
 
   const result = [];
   for (const [term, candidates] of byTerm) {
-    let target = candidates.length === 1 ? candidates[0] : null;
+    const exactTitle = candidates.find(item => item.title.toLowerCase() === term.toLowerCase());
+    let target = exactTitle ?? null;
+
+    if (!target && candidates.length === 1) target = candidates[0];
     if (!target) {
       const titleMatches = candidates.filter(item => item.title.toLowerCase().includes(term.toLowerCase()));
       if (titleMatches.length === 1) target = titleMatches[0];
     }
+
     if (target) result.push({ term, id: target.id });
   }
 
