@@ -15,7 +15,7 @@
       <button data-nav-type="code">コード集</button>
       <button data-nav-type="exception">例外</button>
       <button data-nav-type="compiler">CSエラー</button>
-      <a href="/playground.html">プレイグラウンド</a>
+      <button id="playgroundNavButton">プレイグラウンド</button>
     </nav>
   </div>
 </header>
@@ -64,8 +64,43 @@
     <button id="backButton" class="back">← 一覧に戻る</button>
     <div id="detailContent"></div>
   </section>
+
+  <section id="playgroundSection" class="playground-page playground-inline">
+    <div class="playground-head">
+      <div>
+        <div class="eyebrow">C# Playground</div>
+        <h1>コードを書いて、診断を見る。</h1>
+        <p>Roslyn で C# をコンパイルし、CSエラーと警告をその場で確認できます。</p>
+      </div>
+      <div class="playground-note">現在はコンパイル診断のみ。コード自体は実行しません。</div>
+    </div>
+
+    <div class="playground-shell">
+      <div class="editor-panel">
+        <div class="panel-bar">
+          <strong>Program.cs</strong>
+          <div class="panel-actions">
+            <button id="resetButton" class="secondary-button">初期化</button>
+            <button id="compileButton" class="primary-button">コンパイル</button>
+          </div>
+        </div>
+        <textarea id="codeInput" class="playground-editor" spellcheck="false" aria-label="C# code editor"></textarea>
+      </div>
+
+      <div class="diagnostics-panel">
+        <div class="panel-bar">
+          <strong>診断</strong>
+          <span id="compileStatus" class="compile-status">未実行</span>
+        </div>
+        <div id="diagnostics" class="diagnostics-empty">「コンパイル」を押すと結果が表示されます。</div>
+      </div>
+    </div>
+  </section>
 </main>
 
+<button id="playgroundFab" class="playground-fab" type="button" aria-label="プレイグラウンドへ移動">&lt;/&gt; Playground</button>
+
 <script src="/app.js"></script>
+<script src="/playground.js"></script>
 </body>
 </html>
