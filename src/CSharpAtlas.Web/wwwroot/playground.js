@@ -5,9 +5,11 @@ const compileButton = document.getElementById('compileButton');
 const resetButton = document.getElementById('resetButton');
 const diagnostics = document.getElementById('diagnostics');
 const compileStatus = document.getElementById('compileStatus');
-const playgroundSection = document.getElementById('playgroundSection');
+const playgroundPanel = document.getElementById('playgroundPanel');
 const playgroundFab = document.getElementById('playgroundFab');
 const playgroundNavButton = document.getElementById('playgroundNavButton');
+const playgroundToggle = document.getElementById('playgroundToggle');
+const terminalCollapseButton = document.getElementById('terminalCollapseButton');
 
 if (codeInput && compileButton && resetButton && diagnostics && compileStatus) {
   if (!codeInput.value) codeInput.value = defaultCode;
@@ -35,28 +37,44 @@ if (codeInput && compileButton && resetButton && diagnostics && compileStatus) {
   });
 }
 
-playgroundFab?.addEventListener('click', () => scrollToPlayground(true));
-playgroundNavButton?.addEventListener('click', () => scrollToPlayground(false));
+playgroundFab?.addEventListener('click', () => openPlayground(true));
+playgroundNavButton?.addEventListener('click', () => openPlayground(false));
+playgroundToggle?.addEventListener('click', togglePlayground);
+terminalCollapseButton?.addEventListener('click', closePlayground);
 
 window.openPlaygroundCode = code => {
   if (!codeInput) return;
   codeInput.value = code;
   resetDiagnostics();
-  scrollToPlayground(true);
+  openPlayground(true);
 };
 
-function scrollToPlayground(focusEditor) {
-  const target = playgroundSection ?? codeInput;
-  target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function openPlayground(focusEditor) {
+  playgroundPanel?.classList.add('open');
+  document.body.classList.add('playground-open');
+  terminalCollapseButton?.setAttribute('aria-label', 'パネルを閉じる');
   if (focusEditor && codeInput) {
-    setTimeout(() => codeInput.focus(), 350);
+    setTimeout(() => codeInput.focus(), 180);
+  }
+}
+
+function closePlayground() {
+  playgroundPanel?.classList.remove('open');
+  document.body.classList.remove('playground-open');
+}
+
+function togglePlayground() {
+  if (playgroundPanel?.classList.contains('open')) {
+    closePlayground();
+  } else {
+    openPlayground(false);
   }
 }
 
 function resetDiagnostics() {
   if (!diagnostics || !compileStatus) return;
   diagnostics.className = 'diagnostics-empty';
-  diagnostics.textContent = '「コンパイル」を押すと結果が表示されます。';
+  diagnostics.textContent = 'Ctrl+Enter または「コンパイル」で診断します。';
   compileStatus.className = 'compile-status';
   compileStatus.textContent = '未実行';
 }
