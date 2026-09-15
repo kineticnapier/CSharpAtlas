@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,11 @@ var items = JsonSerializer.Deserialize<List<AtlasItem>>(json, new JsonSerializer
 {
     PropertyNameCaseInsensitive = true
 }) ?? [];
+
+var trustedPlatformAssemblies = ((string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))?
+    .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
+    .Select(path => MetadataReference.CreateFromFile(path))
+    .ToArray() ?? [];
 
 app.MapGet("/api/items", (string? q, string? type) =>
 {
@@ -35,6 +42,55 @@ app.MapGet("/api/items/{id}", (string id) =>
 {
     var item = items.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
     return item is null ? Results.NotFound() : Results.Ok(item);
+});
+
+app.MapPost("/api/playground/compile", (CompileRequest request) =>
+{
+    const int maxCodeLength = 30_000;
+
+    if (string.IsNullOrWhiteSpace(request.Code))
+    {
+        return Results.BadRequest(new { error = "コードが空です。" });
+    }
+
+    if (request.Code.Length > maxCodeLength)
+    {
+        return Results.BadRequest(new { error = $"コードは {maxCodeLength:N0} 文字以内にしてください。" });
+    }
+
+    var syntaxTree = CSharpSyntaxTree.ParseText(
+        request.Code,
+        CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Preview));
+
+    var compilation = CSharpCompilation.Create(
+        assemblyName: "CSharpAtlas.Playground",
+        syntaxTrees: [syntaxTree],
+        references: trustedPlatformAssemblies,
+        options: new CSharpCompilationOptions(
+            OutputKind.ConsoleApplication,
+            allowUnsafe: false,
+            optimizationLevel: OptimizationLevel.Debug));
+
+    var diagnostics = compilation.GetDiagnostics()
+        .Where(d => d.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning)
+        .Select(d =>
+        {
+            var span = d.Location.IsInSource ? d.Location.GetLineSpan() : default;
+            return new CompileDiagnostic(
+                d.Id,
+                d.Severity.ToString().ToLowerInvariant(),
+                d.GetMessage(),
+                d.Location.IsInSource ? span.StartLinePosition.Line + 1 : null,
+                d.Location.IsInSource ? span.StartLinePosition.Character + 1 : null);
+        })
+        .OrderByDescending(d => d.Severity == "error")
+        .ThenBy(d => d.Line ?? int.MaxValue)
+        .ThenBy(d => d.Column ?? int.MaxValue)
+        .ToArray();
+
+    return Results.Ok(new CompileResponse(
+        Success: diagnostics.All(d => d.Severity != "error"),
+        Diagnostics: diagnostics));
 });
 
 app.MapFallbackToFile("index.html");
@@ -62,3 +118,14 @@ public sealed record AtlasItem(
     string? Tips,
     string[] Tags,
     string[] Related);
+
+public sealed record CompileRequest(string Code);
+
+public sealed record CompileResponse(bool Success, CompileDiagnostic[] Diagnostics);
+
+public sealed record CompileDiagnostic(
+    string Id,
+    string Severity,
+    string Message,
+    int? Line,
+    int? Column);
