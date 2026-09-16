@@ -5,10 +5,7 @@
     "bad": null,
     "good": null,
     "code": "int a = 10;\nint b = a;\nb = 20;\n// a は 10 のまま\n\nvar x = new List<int> { 1 };\nvar y = x;\ny.Add(2);\n// x からも 2 が見える",
-    "related": [
-      "boxing-unboxing",
-      "equality"
-    ]
+    "related": ["boxing-unboxing", "equality"]
   },
   {
     "id": "boxing-unboxing",
@@ -16,11 +13,7 @@
     "bad": null,
     "good": null,
     "code": "int n = 42;\nobject boxed = n;      // boxing\nint value = (int)boxed; // unboxing",
-    "related": [
-      "value-reference-types",
-      "invalid-cast",
-      "generics"
-    ]
+    "related": ["value-reference-types", "invalid-cast", "generics"]
   },
   {
     "id": "var-keyword",
@@ -28,10 +21,7 @@
     "bad": null,
     "good": null,
     "code": "var count = 10;        // int\nvar name = \"Alice\";   // string\nvar users = new List<string>();",
-    "related": [
-      "generics",
-      "cs0411"
-    ]
+    "related": ["generics", "cs0411"]
   },
   {
     "id": "const-readonly",
@@ -39,10 +29,7 @@
     "bad": null,
     "good": null,
     "code": "const int MaxCount = 100;\n\nclass App\n{\n    private readonly DateTime startedAt = DateTime.Now;\n}",
-    "related": [
-      "properties",
-      "cs0200"
-    ]
+    "related": ["properties", "cs0200"]
   },
   {
     "id": "properties",
@@ -50,11 +37,7 @@
     "bad": null,
     "good": null,
     "code": "class User\n{\n    public string Name { get; set; } = string.Empty;\n    public int NameLength => Name.Length;\n}",
-    "related": [
-      "cs0200",
-      "records",
-      "cs8618"
-    ]
+    "related": ["cs0200", "records", "cs8618"]
   },
   {
     "id": "records",
@@ -62,10 +45,7 @@
     "bad": null,
     "good": null,
     "code": "public record User(string Name, int Age);\n\nvar a = new User(\"Alice\", 15);\nvar b = new User(\"Alice\", 15);\nConsole.WriteLine(a == b); // True",
-    "related": [
-      "equality",
-      "properties"
-    ]
+    "related": ["equality", "properties"]
   },
   {
     "id": "interfaces",
@@ -73,11 +53,7 @@
     "bad": null,
     "good": null,
     "code": "interface IGreeter\n{\n    string Greet();\n}\n\nclass Greeter : IGreeter\n{\n    public string Greet() => \"Hello\";\n}",
-    "related": [
-      "ienumerable",
-      "idisposable",
-      "generics"
-    ]
+    "related": ["ienumerable", "idisposable", "generics"]
   },
   {
     "id": "generics",
@@ -85,11 +61,7 @@
     "bad": null,
     "good": null,
     "code": "static T First<T>(T[] values)\n{\n    return values[0];\n}\n\nint n = First(new[] { 10, 20 });",
-    "related": [
-      "cs0411",
-      "interfaces",
-      "boxing-unboxing"
-    ]
+    "related": ["cs0411", "interfaces", "boxing-unboxing"]
   },
   {
     "id": "delegates",
@@ -97,10 +69,7 @@
     "bad": null,
     "good": null,
     "code": "Func<int, int> twice = x => x * 2;\nConsole.WriteLine(twice(5)); // 10",
-    "related": [
-      "lambda",
-      "events"
-    ]
+    "related": ["lambda", "events"]
   },
   {
     "id": "events",
@@ -108,10 +77,7 @@
     "bad": null,
     "good": null,
     "code": "class Counter\n{\n    public event Action? Changed;\n    public void Increment() => Changed?.Invoke();\n}\n\nvar counter = new Counter();\ncounter.Changed += () => Console.WriteLine(\"changed\");",
-    "related": [
-      "delegates",
-      "lambda"
-    ]
+    "related": ["delegates", "lambda"]
   },
   {
     "id": "lambda",
@@ -119,11 +85,7 @@
     "bad": null,
     "good": null,
     "code": "var numbers = new[] { 1, 2, 3, 4 };\nvar even = numbers.Where(x => x % 2 == 0);",
-    "related": [
-      "delegates",
-      "linq-deferred",
-      "list-filter"
-    ]
+    "related": ["delegates", "linq-deferred", "list-filter"]
   },
   {
     "id": "linq-deferred",
@@ -131,11 +93,7 @@
     "bad": null,
     "good": null,
     "code": "var numbers = new List<int> { 1, 2, 3 };\nvar query = numbers.Where(x => x >= 2);\nnumbers.Add(4);\n\nConsole.WriteLine(string.Join(\", \", query)); // 2, 3, 4",
-    "related": [
-      "ienumerable",
-      "deferred-enumeration",
-      "list-filter"
-    ]
+    "related": ["ienumerable", "deferred-enumeration", "list-filter"]
   },
   {
     "id": "ienumerable",
@@ -143,10 +101,7 @@
     "bad": null,
     "good": null,
     "code": "IEnumerable<int> GetNumbers()\n{\n    yield return 1;\n    yield return 2;\n    yield return 3;\n}\n\nforeach (int n in GetNumbers())\n    Console.WriteLine(n);",
-    "related": [
-      "interfaces",
-      "linq-deferred"
-    ]
+    "related": ["interfaces", "linq-deferred"]
   },
   {
     "id": "async-await",
@@ -154,11 +109,7 @@
     "bad": null,
     "good": null,
     "code": "static async Task WorkAsync()\n{\n    await Task.Delay(1000);\n    Console.WriteLine(\"done\");\n}\n\nawait WorkAsync();",
-    "related": [
-      "task",
-      "cs1998",
-      "cs4014"
-    ]
+    "related": ["task", "cs1998", "cs4014"]
   },
   {
     "id": "task",
@@ -166,11 +117,7 @@
     "bad": null,
     "good": null,
     "code": "Task<int> task = Task.Run(() => 21 * 2);\nint answer = await task;\nConsole.WriteLine(answer);",
-    "related": [
-      "async-await",
-      "operation-canceled",
-      "task-delay"
-    ]
+    "related": ["async-await", "operation-canceled", "task-delay"]
   },
   {
     "id": "idisposable",
@@ -178,11 +125,7 @@
     "bad": "var stream = File.OpenRead(\"data.txt\");\n// Dispose を忘れる可能性がある",
     "good": "using var stream = File.OpenRead(\"data.txt\");\n// スコープを抜けると Dispose される",
     "code": null,
-    "related": [
-      "object-disposed",
-      "using-directive",
-      "io-exception"
-    ]
+    "related": ["object-disposed", "using-directive", "io-exception"]
   },
   {
     "id": "equality",
@@ -190,10 +133,14 @@
     "bad": null,
     "good": null,
     "code": "string a = new string(new[] { 'h', 'i' });\nstring b = \"hi\";\nConsole.WriteLine(a == b); // True\nConsole.WriteLine(a.Equals(b)); // True",
-    "related": [
-      "records",
-      "reference-equality",
-      "floating-equality"
-    ]
+    "related": ["records", "reference-equality", "floating-equality"]
+  },
+  {
+    "id": "pattern-matching",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "object value = \"hello\";\n\nif (value is string text && text.Length > 0)\n{\n    Console.WriteLine(text);\n}",
+    "related": ["invalid-cast", "boxing-unboxing", "value-reference-types"]
   }
 ]
