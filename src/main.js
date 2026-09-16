@@ -272,7 +272,10 @@ function codeSection(title, value, className, highlightLines = new Set(), notes 
     const isHighlighted = highlightLines.has(index) || Boolean(note);
     const fallback = className === 'bad' ? 'ここが原因' : className === 'good' ? 'ここを修正' : '';
     const callout = note || fallback;
-    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${escapeHtml(line) || ' '}</span>${isHighlighted && callout ? `<span class="code-callout" aria-hidden="true">// ← ${escapeHtml(callout)}</span>` : ''}</div>`;
+    const noteHtml = isHighlighted && callout
+      ? `<div class="code-note" aria-hidden="true"><span class="code-note-mark">// ↑</span> ${escapeHtml(callout)}</div>`
+      : '';
+    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${escapeHtml(line) || ' '}</span></div>${noteHtml}`;
   }).join('');
   return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${body}</div></div>`;
 }
