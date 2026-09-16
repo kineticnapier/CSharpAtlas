@@ -1,0 +1,71 @@
+[
+  {
+    "id": "floating-equality",
+    "type": "logic",
+    "bad": "double x = 0.1 + 0.2;\nConsole.WriteLine(x == 0.3);",
+    "good": "double x = 0.1 + 0.2;\ndouble tolerance = 1e-10;\nConsole.WriteLine(Math.Abs(x - 0.3) < tolerance);",
+    "code": null,
+    "related": [
+      "equality",
+      "divide-by-zero"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      3
+    ]
+  },
+  {
+    "id": "integer-overflow",
+    "type": "logic",
+    "bad": "int x = int.MaxValue;\nint y = x + 1;\nConsole.WriteLine(y);",
+    "good": "int x = int.MaxValue;\nint y = checked(x + 1);",
+    "code": null,
+    "related": [
+      "overflow-exception"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "reference-equality",
+    "type": "logic",
+    "bad": "class Point { public int X { get; init; } }\nvar a = new Point { X = 1 };\nvar b = new Point { X = 1 };\nConsole.WriteLine(a == b); // False",
+    "good": "record Point(int X);\nvar a = new Point(1);\nvar b = new Point(1);\nConsole.WriteLine(a == b); // True",
+    "code": null,
+    "related": [
+      "equality",
+      "records",
+      "value-reference-types"
+    ],
+    "badHighlight": [
+      4
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "deferred-enumeration",
+    "type": "logic",
+    "bad": "var query = GetItems().Where(IsValid);\nConsole.WriteLine(query.Count());\nforeach (var item in query)\n    Console.WriteLine(item);",
+    "good": "var items = GetItems().Where(IsValid).ToList();\nConsole.WriteLine(items.Count);\nforeach (var item in items)\n    Console.WriteLine(item);",
+    "code": null,
+    "related": [
+      "linq-deferred",
+      "ienumerable"
+    ],
+    "badHighlight": [
+      2,
+      3
+    ],
+    "goodHighlight": [
+      1
+    ]
+  }
+]

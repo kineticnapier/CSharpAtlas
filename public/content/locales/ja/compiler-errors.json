@@ -1,254 +1,326 @@
-[
-  {
-    "id": "cs0019",
-    "type": "compiler-error",
+{
+  "cs0019": {
     "title": "CS0019",
     "short": "演算子をその2つの型に適用できない。",
     "summary": "演算子の左右にある型の組み合わせが、その演算子で定義されていません。",
-    "bad": "int n = 10;\nstring text = \"20\";\nConsole.WriteLine(n + text == 30);",
-    "good": "int n = 10;\nint value = int.Parse(\"20\");\nConsole.WriteLine(n + value == 30);",
-    "code": null,
     "why": "比較や算術演算には、演算子ごとに利用できる型の組み合わせがあります。",
     "tips": "エラーに表示される左右の型を確認し、意図した型へ変換できているか見ます。",
-    "tags": ["CS0019", "演算子", "型"],
-    "related": ["cs0029", "parse-number"]
+    "tags": [
+      "CS0019",
+      "演算子",
+      "型"
+    ],
+    "badNotes": {
+      "3": "演算後の型と比較先の型が合っていない"
+    },
+    "goodNotes": {
+      "2": "文字列を int に変換して型をそろえる"
+    }
   },
-  {
-    "id": "cs0021",
-    "type": "compiler-error",
+  "cs0021": {
     "title": "CS0021",
     "short": "[] によるインデックス指定をその型に適用できない。",
     "summary": "配列やインデクサーを持つ型ではない値に [] を使ったときに出ます。",
-    "bad": "int number = 123;\nConsole.WriteLine(number[0]);",
-    "good": "string text = \"123\";\nConsole.WriteLine(text[0]);",
-    "code": null,
     "why": "int は要素の並びではなく、添字で要素を取得する機能を持ちません。",
     "tips": "対象が配列、List、Dictionary、string などのどれなのか型を確認します。",
-    "tags": ["CS0021", "index", "配列"],
-    "related": ["index-out-of-range", "list-basic"]
+    "tags": [
+      "CS0021",
+      "index",
+      "配列"
+    ],
+    "badNotes": {
+      "2": "int には [] による添字アクセスがない"
+    },
+    "goodNotes": {
+      "1": "添字を使える string として扱う"
+    }
   },
-  {
-    "id": "cs0117",
-    "type": "compiler-error",
+  "cs0117": {
     "title": "CS0117",
     "short": "型に指定したメンバーの定義がない。",
     "summary": "型名から存在しない static メンバーなどを参照したときに出ます。",
-    "bad": "Console.PrintLine(\"Hello\");",
-    "good": "Console.WriteLine(\"Hello\");",
-    "code": null,
     "why": "Console 型には PrintLine というメンバーが定義されていません。",
     "tips": "スペルと大文字小文字を確認し、候補一覧から実際のメンバー名を探します。",
-    "tags": ["CS0117", "メンバー", "static"],
-    "related": ["cs1061", "cs0103"]
+    "tags": [
+      "CS0117",
+      "メンバー",
+      "static"
+    ],
+    "badNotes": {
+      "1": "Console に PrintLine というメンバーはない"
+    },
+    "goodNotes": {
+      "1": "実際に存在する WriteLine を使う"
+    }
   },
-  {
-    "id": "cs0120",
-    "type": "compiler-error",
+  "cs0120": {
     "title": "CS0120",
     "short": "インスタンスが必要なメンバーを型名だけで呼び出している。",
     "summary": "static ではないフィールド、プロパティ、メソッドをオブジェクトなしで使ったときに出ます。",
-    "bad": "class Counter\n{\n    public int Value { get; set; }\n}\n\nConsole.WriteLine(Counter.Value);",
-    "good": "var counter = new Counter();\nConsole.WriteLine(counter.Value);",
-    "code": null,
     "why": "Value は Counter 型全体ではなく、各 Counter オブジェクトごとに存在する値だからです。",
     "tips": "本当に型全体で共有したい値なら static が適切か設計から確認します。",
-    "tags": ["CS0120", "static", "インスタンス"],
-    "related": ["properties", "value-reference-types"]
+    "tags": [
+      "CS0120",
+      "static",
+      "インスタンス"
+    ],
+    "badNotes": {
+      "6": "インスタンスプロパティを型名から参照している"
+    },
+    "goodNotes": {
+      "1": "まず Counter のインスタンスを作る"
+    }
   },
-  {
-    "id": "cs0136",
-    "type": "compiler-error",
+  "cs0136": {
     "title": "CS0136",
     "short": "外側と衝突する名前のローカル変数を宣言している。",
     "summary": "入れ子のスコープで、既に使われているローカル変数名を再宣言したときに出ます。",
-    "bad": "int x = 1;\nif (x > 0)\n{\n    int x = 2;\n}",
-    "good": "int x = 1;\nif (x > 0)\n{\n    int y = 2;\n}",
-    "code": null,
     "why": "同じ名前が近い範囲で別の変数を表すと、参照先が分かりにくくなるため禁止されています。",
     "tips": "変数名を変えるか、そもそも新しい変数が必要か確認します。",
-    "tags": ["CS0136", "スコープ", "変数"],
-    "related": ["scope", "cs0103"]
+    "tags": [
+      "CS0136",
+      "スコープ",
+      "変数"
+    ],
+    "badNotes": {
+      "4": "外側の x と同じ名前を再宣言している"
+    },
+    "goodNotes": {
+      "4": "別の名前にして衝突を避ける"
+    }
   },
-  {
-    "id": "cs0161",
-    "type": "compiler-error",
+  "cs0161": {
     "title": "CS0161",
     "short": "値を返すメソッドで、return されない経路がある。",
     "summary": "戻り値が void ではないのに、処理経路によって値を返さず終わる可能性があります。",
-    "bad": "static int Sign(int x)\n{\n    if (x > 0) return 1;\n}",
-    "good": "static int Sign(int x)\n{\n    if (x > 0) return 1;\n    return 0;\n}",
-    "code": null,
     "why": "x <= 0 の場合に返す int が決まっていません。",
     "tips": "if、switch、try などのすべての分岐をたどって return があるか確認します。",
-    "tags": ["CS0161", "return", "メソッド"],
-    "related": ["switch-expression"]
+    "tags": [
+      "CS0161",
+      "return",
+      "メソッド"
+    ],
+    "badNotes": {
+      "3": "この分岐でしか return していない"
+    },
+    "goodNotes": {
+      "4": "残りの経路にも戻り値を用意する"
+    }
   },
-  {
-    "id": "cs0165",
-    "type": "compiler-error",
+  "cs0165": {
     "title": "CS0165",
     "short": "代入されていない可能性があるローカル変数を使用している。",
     "summary": "ローカル変数は、読み取る前に必ず値が代入されている必要があります。",
-    "bad": "int x;\nif (DateTime.Now.Hour > 12)\n    x = 1;\nConsole.WriteLine(x);",
-    "good": "int x = 0;\nif (DateTime.Now.Hour > 12)\n    x = 1;\nConsole.WriteLine(x);",
-    "code": null,
     "why": "条件が false の場合、x に一度も値が入らないまま読み取られるためです。",
     "tips": "初期値を入れるか、すべての分岐で確実に代入します。",
-    "tags": ["CS0165", "初期化", "変数"],
-    "related": ["scope", "cs8618"]
+    "tags": [
+      "CS0165",
+      "初期化",
+      "変数"
+    ],
+    "badNotes": {
+      "4": "x が未代入のまま読み取られる可能性がある"
+    },
+    "goodNotes": {
+      "1": "宣言時に初期値を入れておく"
+    }
   },
-  {
-    "id": "cs0200",
-    "type": "compiler-error",
+  "cs0200": {
     "title": "CS0200",
     "short": "読み取り専用のプロパティやインデクサーへ代入している。",
     "summary": "setter がないプロパティなどへ値を書き込もうとしたときに出ます。",
-    "bad": "class User\n{\n    public string Name { get; } = \"Alice\";\n}\n\nvar user = new User();\nuser.Name = \"Bob\";",
-    "good": "class User\n{\n    public string Name { get; set; } = \"Alice\";\n}\n\nvar user = new User();\nuser.Name = \"Bob\";",
-    "code": null,
     "why": "get しかないプロパティは外部から変更できません。",
     "tips": "変更可能にすべきでない値なら、代入側を直す方が適切です。",
-    "tags": ["CS0200", "プロパティ", "readonly"],
-    "related": ["properties", "const-readonly"]
+    "tags": [
+      "CS0200",
+      "プロパティ",
+      "readonly"
+    ],
+    "badNotes": {
+      "7": "setter のない Name へ代入している"
+    },
+    "goodNotes": {
+      "3": "変更可能にするなら setter を追加する"
+    }
   },
-  {
-    "id": "cs0266",
-    "type": "compiler-error",
+  "cs0266": {
     "title": "CS0266",
     "short": "暗黙変換できない型へ代入している。明示的な変換が必要。",
     "summary": "情報が失われる可能性がある数値変換などは自動では行われません。",
-    "bad": "double x = 3.14;\nint n = x;",
-    "good": "double x = 3.14;\nint n = (int)x;",
-    "code": null,
     "why": "double から int への変換では小数部分が失われるため、意図を明示する必要があります。",
     "tips": "キャストでよいのか、Convert や丸め処理が必要なのかを先に決めます。",
-    "tags": ["CS0266", "キャスト", "数値"],
-    "related": ["cs0029", "invalid-cast"]
+    "tags": [
+      "CS0266",
+      "キャスト",
+      "数値"
+    ],
+    "badNotes": {
+      "2": "double を int へ暗黙変換できない"
+    },
+    "goodNotes": {
+      "2": "意図を明示してキャストする"
+    }
   },
-  {
-    "id": "cs0411",
-    "type": "compiler-error",
+  "cs0411": {
     "title": "CS0411",
     "short": "ジェネリックメソッドの型引数を推論できない。",
     "summary": "呼び出し側の情報だけでは T などの具体的な型を決められないときに出ます。",
-    "bad": "static T Create<T>() => Activator.CreateInstance<T>();\nvar value = Create();",
-    "good": "static T Create<T>() => Activator.CreateInstance<T>();\nvar value = Create<List<int>>();",
-    "code": null,
     "why": "引数がないため、コンパイラが T を推論する材料を持っていません。",
     "tips": "型引数を明示するか、推論できる形の引数を渡します。",
-    "tags": ["CS0411", "ジェネリック", "型推論"],
-    "related": ["generics", "var-keyword"]
+    "tags": [
+      "CS0411",
+      "ジェネリック",
+      "型推論"
+    ],
+    "badNotes": {
+      "2": "T を推論する材料がない"
+    },
+    "goodNotes": {
+      "2": "型引数を明示する"
+    }
   },
-  {
-    "id": "cs1002",
-    "type": "compiler-error",
+  "cs1002": {
     "title": "CS1002",
     "short": "; が必要な場所にない。",
     "summary": "文の終端など、セミコロンが必要な場所で不足しているときに出ます。",
-    "bad": "int x = 10\nConsole.WriteLine(x);",
-    "good": "int x = 10;\nConsole.WriteLine(x);",
-    "code": null,
     "why": "C#では多くの文をセミコロンで区切ります。",
     "tips": "エラー位置そのものではなく、その直前の行に不足していることもあります。",
-    "tags": ["CS1002", ";", "構文"],
-    "related": ["cs1513", "cs1026"]
+    "tags": [
+      "CS1002",
+      ";",
+      "構文"
+    ],
+    "badNotes": {
+      "1": "文末の ; が抜けている"
+    },
+    "goodNotes": {
+      "1": "; を付けて文を閉じる"
+    }
   },
-  {
-    "id": "cs1026",
-    "type": "compiler-error",
+  "cs1026": {
     "title": "CS1026",
     "short": ") が必要な場所にない。",
     "summary": "メソッド呼び出しや条件式などの丸括弧が閉じられていないときに出ます。",
-    "bad": "if (x > 0\n{\n    Console.WriteLine(x);\n}",
-    "good": "if (x > 0)\n{\n    Console.WriteLine(x);\n}",
-    "code": null,
     "why": "開始した ( に対応する ) がないため、その後の構文を正しく解析できません。",
     "tips": "括弧の対応を確認し、直前の式から読み直します。",
-    "tags": ["CS1026", "括弧", "構文"],
-    "related": ["cs1002", "cs1513"]
+    "tags": [
+      "CS1026",
+      "括弧",
+      "構文"
+    ],
+    "badNotes": {
+      "1": "開いた ( に対応する ) がない"
+    },
+    "goodNotes": {
+      "1": ") を追加して条件式を閉じる"
+    }
   },
-  {
-    "id": "cs1061",
-    "type": "compiler-error",
+  "cs1061": {
     "title": "CS1061",
     "short": "その型に指定したメンバーや拡張メソッドが見つからない。",
     "summary": "オブジェクトから存在しないプロパティやメソッドを呼んだときによく出ます。",
-    "bad": "string text = \"abc\";\nConsole.WriteLine(text.Count);",
-    "good": "string text = \"abc\";\nConsole.WriteLine(text.Length);",
-    "code": null,
     "why": "string に Count というインスタンスプロパティはありません。",
     "tips": "型、メンバー名、using、必要な拡張メソッドの名前空間を確認します。",
-    "tags": ["CS1061", "メソッド", "プロパティ"],
-    "related": ["cs0117", "extension-methods"]
+    "tags": [
+      "CS1061",
+      "メソッド",
+      "プロパティ"
+    ],
+    "badNotes": {
+      "2": "string に Count プロパティはない"
+    },
+    "goodNotes": {
+      "2": "string の要素数は Length で取得する"
+    }
   },
-  {
-    "id": "cs1501",
-    "type": "compiler-error",
+  "cs1501": {
     "title": "CS1501",
     "short": "指定した個数の引数を受け取るオーバーロードがない。",
     "summary": "メソッド名は存在しますが、渡した引数の個数に合う定義がありません。",
-    "bad": "Console.WriteLine(\"{0} {1}\", 10);",
-    "good": "Console.WriteLine(\"{0} {1}\", 10, 20);",
-    "code": null,
     "why": "呼び出しに一致する引数構成のメソッドをコンパイラが見つけられません。",
     "tips": "候補のメソッド定義を見て、引数の個数と型を両方確認します。",
-    "tags": ["CS1501", "メソッド", "引数"],
-    "related": ["cs1503", "cs7036"]
+    "tags": [
+      "CS1501",
+      "メソッド",
+      "引数"
+    ],
+    "badNotes": {
+      "1": "書式項目に対して引数が足りない"
+    },
+    "goodNotes": {
+      "1": "必要な数の引数を渡す"
+    }
   },
-  {
-    "id": "cs1503",
-    "type": "compiler-error",
+  "cs1503": {
     "title": "CS1503",
     "short": "引数を要求されている型へ変換できない。",
     "summary": "引数の個数は合っていても、渡した値の型がメソッドの定義と一致しません。",
-    "bad": "static void Print(int value) { }\nPrint(\"10\");",
-    "good": "static void Print(int value) { }\nPrint(10);",
-    "code": null,
     "why": "Print は int を要求していますが string が渡されています。",
     "tips": "エラーに表示される『引数 n』と変換元・変換先の型を確認します。",
-    "tags": ["CS1503", "引数", "型"],
-    "related": ["cs1501", "cs0029"]
+    "tags": [
+      "CS1503",
+      "引数",
+      "型"
+    ],
+    "badNotes": {
+      "2": "int を要求する引数へ string を渡している"
+    },
+    "goodNotes": {
+      "2": "要求される int を渡す"
+    }
   },
-  {
-    "id": "cs1513",
-    "type": "compiler-error",
+  "cs1513": {
     "title": "CS1513",
     "short": "} が必要な場所にない。",
     "summary": "クラス、メソッド、if などの波括弧が閉じられていないときに出ます。",
-    "bad": "if (x > 0)\n{\n    Console.WriteLine(x);",
-    "good": "if (x > 0)\n{\n    Console.WriteLine(x);\n}",
-    "code": null,
     "why": "開始したブロックの終端をコンパイラが見つけられません。",
     "tips": "大きなファイルでは自動整形すると、括弧の崩れた位置を見つけやすくなります。",
-    "tags": ["CS1513", "波括弧", "構文"],
-    "related": ["cs1026", "scope"]
+    "tags": [
+      "CS1513",
+      "波括弧",
+      "構文"
+    ],
+    "badNotes": {
+      "3": "このブロックを閉じる } がない"
+    },
+    "goodNotes": {
+      "4": "} を追加してブロックを閉じる"
+    }
   },
-  {
-    "id": "cs1525",
-    "type": "compiler-error",
+  "cs1525": {
     "title": "CS1525",
     "short": "式として不正なトークンが現れた。",
     "summary": "式の途中に、その位置では使えない記号やキーワードがあるときに出ます。",
-    "bad": "int x = 1 + * 2;",
-    "good": "int x = 1 + 2;",
-    "code": null,
     "why": "+ の右側には値や式が必要ですが、* が単独で現れています。",
     "tips": "このエラーは直前の構文ミスから連鎖することもあるため、最初のエラーから直します。",
-    "tags": ["CS1525", "式", "構文"],
-    "related": ["cs1002", "cs1026"]
+    "tags": [
+      "CS1525",
+      "式",
+      "構文"
+    ],
+    "badNotes": {
+      "1": "+ の直後に単独の * は置けない"
+    },
+    "goodNotes": {
+      "1": "有効な式に直す"
+    }
   },
-  {
-    "id": "cs7036",
-    "type": "compiler-error",
+  "cs7036": {
     "title": "CS7036",
     "short": "必須の引数が渡されていない。",
     "summary": "省略できないパラメーターに対応する引数が呼び出し側にありません。",
-    "bad": "static void Move(int x, int y) { }\nMove(10);",
-    "good": "static void Move(int x, int y) { }\nMove(10, 20);",
-    "code": null,
     "why": "y に渡す値がなく、既定値も定義されていません。",
     "tips": "引数を追加するか、設計上省略可能ならパラメーターに既定値を設定します。",
-    "tags": ["CS7036", "引数", "パラメーター"],
-    "related": ["cs1501", "cs1503"]
+    "tags": [
+      "CS7036",
+      "引数",
+      "パラメーター"
+    ],
+    "badNotes": {
+      "2": "必須の y に対応する引数がない"
+    },
+    "goodNotes": {
+      "2": "不足している引数を渡す"
+    }
   }
-]
+}

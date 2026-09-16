@@ -1,226 +1,290 @@
-[
-  {
-    "id": "argument-null",
-    "type": "exception",
+{
+  "argument-null": {
     "title": "ArgumentNullException",
     "short": "null を許可していない引数に null が渡された。",
     "summary": "メソッドが必要としている引数に null が渡されたときに使われる例外です。",
-    "bad": "static int LengthOf(string text)\n{\n    ArgumentNullException.ThrowIfNull(text);\n    return text.Length;\n}\n\nLengthOf(null!);",
-    "good": "string? text = GetText();\nif (text is not null)\n{\n    Console.WriteLine(LengthOf(text));\n}",
-    "code": null,
     "why": "引数が null のまま処理を続けると、その後の処理が成立しないため早い段階で失敗させます。",
     "tips": "自作メソッドでは ArgumentNullException.ThrowIfNull を使うと簡潔に検査できます。",
-    "tags": ["ArgumentNullException", "null", "引数"],
-    "related": ["nullref", "nullable"]
+    "tags": [
+      "ArgumentNullException",
+      "null",
+      "引数"
+    ],
+    "badNotes": {
+      "7": "null を許さない引数へ null を渡している"
+    },
+    "goodNotes": {
+      "2": "null でない場合だけ呼び出す"
+    }
   },
-  {
-    "id": "argument-exception",
-    "type": "exception",
+  "argument-exception": {
     "title": "ArgumentException",
     "short": "引数の値がメソッドの条件を満たしていない。",
     "summary": "型は正しくても、値そのものが受け付けられないときに使われる例外です。",
-    "bad": "static void SetName(string name)\n{\n    if (name.Length == 0)\n        throw new ArgumentException(\"名前は空にできません\", nameof(name));\n}\n\nSetName(\"\");",
-    "good": "string name = \"Alice\";\nSetName(name);",
-    "code": null,
     "why": "引数の型だけでは表せない制約をメソッド側で検査しているためです。",
     "tips": "範囲外なら ArgumentOutOfRangeException、null なら ArgumentNullException の方が原因を伝えやすいです。",
-    "tags": ["ArgumentException", "引数", "例外"],
-    "related": ["argument-null", "argument-out-of-range"]
+    "tags": [
+      "ArgumentException",
+      "引数",
+      "例外"
+    ],
+    "badNotes": {
+      "7": "空文字はこのメソッドの条件を満たさない"
+    },
+    "goodNotes": {
+      "1": "制約を満たす値を用意する"
+    }
   },
-  {
-    "id": "argument-out-of-range",
-    "type": "exception",
+  "argument-out-of-range": {
     "title": "ArgumentOutOfRangeException",
     "short": "引数が許可された範囲を外れている。",
     "summary": "添字、長さ、個数などの値が有効範囲外のときによく発生します。",
-    "bad": "var list = new List<int> { 10, 20 };\nlist.GetRange(0, 3);",
-    "good": "var list = new List<int> { 10, 20 };\nvar part = list.GetRange(0, 2);",
-    "code": null,
     "why": "要求した範囲がコレクションの実際の範囲を超えています。",
     "tips": "例外メッセージに出る引数名と実際の値を最初に確認します。",
-    "tags": ["ArgumentOutOfRangeException", "範囲", "引数"],
-    "related": ["index-out-of-range", "argument-exception"]
+    "tags": [
+      "ArgumentOutOfRangeException",
+      "範囲",
+      "引数"
+    ],
+    "badNotes": {
+      "2": "要素数 2 の List から 3 個取ろうとしている"
+    },
+    "goodNotes": {
+      "2": "実際の範囲内の個数を指定する"
+    }
   },
-  {
-    "id": "invalid-operation",
-    "type": "exception",
+  "invalid-operation": {
     "title": "InvalidOperationException",
     "short": "現在のオブジェクトの状態ではその操作を実行できない。",
     "summary": "操作自体は存在しますが、現在の状態では成立しないときに発生します。",
-    "bad": "var numbers = new List<int>();\nConsole.WriteLine(numbers.First());",
-    "good": "var numbers = new List<int>();\nint? first = numbers.Count > 0 ? numbers[0] : null;",
-    "code": null,
     "why": "空の列には First が返せる要素が存在しません。",
     "tips": "LINQ では FirstOrDefault、SingleOrDefault などが適切な場合もあります。",
-    "tags": ["InvalidOperationException", "LINQ", "状態"],
-    "related": ["linq-deferred", "list-basic"]
+    "tags": [
+      "InvalidOperationException",
+      "LINQ",
+      "状態"
+    ],
+    "badNotes": {
+      "2": "空の列に First() を使っている"
+    },
+    "goodNotes": {
+      "2": "空かどうかを考慮して取得する"
+    }
   },
-  {
-    "id": "invalid-cast",
-    "type": "exception",
+  "invalid-cast": {
     "title": "InvalidCastException",
     "short": "実際の型と互換性のない型へキャストした。",
     "summary": "明示的キャストはコンパイルできても、実行時の型が合わなければ失敗します。",
-    "bad": "object value = \"123\";\nint number = (int)value;",
-    "good": "object value = \"123\";\nif (value is string text && int.TryParse(text, out int number))\n{\n    Console.WriteLine(number);\n}",
-    "code": null,
     "why": "object の中身は string であり、string オブジェクトを int として扱うことはできません。",
     "tips": "is パターンで型を確認してから扱うと安全です。",
-    "tags": ["InvalidCastException", "キャスト", "型"],
-    "related": ["pattern-matching", "boxing-unboxing"]
+    "tags": [
+      "InvalidCastException",
+      "キャスト",
+      "型"
+    ],
+    "badNotes": {
+      "2": "中身は string なので int へ直接キャストできない"
+    },
+    "goodNotes": {
+      "2": "型を確認し、必要なら文字列から変換する"
+    }
   },
-  {
-    "id": "divide-by-zero",
-    "type": "exception",
+  "divide-by-zero": {
     "title": "DivideByZeroException",
     "short": "整数や decimal を 0 で割った。",
     "summary": "整数型や decimal の除算・剰余で除数が0になると発生します。",
-    "bad": "int x = 10;\nint y = 0;\nConsole.WriteLine(x / y);",
-    "good": "int x = 10;\nint y = 0;\nif (y != 0)\n{\n    Console.WriteLine(x / y);\n}",
-    "code": null,
     "why": "整数として0除算の結果を表せないためです。",
     "tips": "double の 0 除算は同じ例外にならず Infinity や NaN になる場合がある点に注意します。",
-    "tags": ["DivideByZeroException", "除算", "0"],
-    "related": ["int-div", "floating-equality"]
+    "tags": [
+      "DivideByZeroException",
+      "除算",
+      "0"
+    ],
+    "badNotes": {
+      "3": "除数 y が 0 のまま割っている"
+    },
+    "goodNotes": {
+      "3": "0 でないことを確認してから割る"
+    }
   },
-  {
-    "id": "overflow-exception",
-    "type": "exception",
+  "overflow-exception": {
     "title": "OverflowException",
     "short": "数値が変換先や checked 演算の範囲を超えた。",
     "summary": "数値変換や checked コンテキストで表現可能範囲を超えると発生します。",
-    "bad": "int x = int.MaxValue;\nint y = checked(x + 1);",
-    "good": "long x = int.MaxValue;\nlong y = x + 1;",
-    "code": null,
     "why": "int で表現できる最大値より大きな結果を int に保持しようとしています。",
     "tips": "unchecked の整数演算では例外にならず値が回り込むことがあるため、論理エラーにも注意します。",
-    "tags": ["OverflowException", "checked", "整数"],
-    "related": ["integer-overflow"]
+    "tags": [
+      "OverflowException",
+      "checked",
+      "整数"
+    ],
+    "badNotes": {
+      "2": "int の最大値を超える計算になる"
+    },
+    "goodNotes": {
+      "1": "必要な範囲を持てる long を使う"
+    }
   },
-  {
-    "id": "io-exception",
-    "type": "exception",
+  "io-exception": {
     "title": "IOException",
     "short": "ファイルやストリームの入出力処理に失敗した。",
     "summary": "ファイルが使用中、デバイスに問題があるなど、入出力に関する広い失敗を表します。",
-    "bad": "using var a = File.OpenWrite(\"data.txt\");\nusing var b = File.OpenWrite(\"data.txt\");",
-    "good": "using (var stream = File.OpenWrite(\"data.txt\"))\n{\n    // ここで書き込む\n}\n// stream はここで閉じられる",
-    "code": null,
     "why": "ファイル共有設定などによっては、同じファイルを同時に開けません。",
     "tips": "IOException は原因が広いので、例外メッセージと InnerException も確認します。",
-    "tags": ["IOException", "File", "ストリーム"],
-    "related": ["file-read", "file-write", "idisposable"]
+    "tags": [
+      "IOException",
+      "File",
+      "ストリーム"
+    ],
+    "badNotes": {
+      "2": "同じファイルを同時にもう一度開いている"
+    },
+    "goodNotes": {
+      "1": "using でファイルの寿命を明確にする"
+    }
   },
-  {
-    "id": "directory-not-found",
-    "type": "exception",
+  "directory-not-found": {
     "title": "DirectoryNotFoundException",
     "short": "指定したディレクトリが存在しない。",
     "summary": "ファイルパスの途中に存在しないディレクトリがある場合などに発生します。",
-    "bad": "File.WriteAllText(\"logs/today.txt\", \"hello\");",
-    "good": "Directory.CreateDirectory(\"logs\");\nFile.WriteAllText(\"logs/today.txt\", \"hello\");",
-    "code": null,
     "why": "WriteAllText は親ディレクトリまでは自動作成しません。",
     "tips": "Directory.CreateDirectory は既に存在していても利用できます。",
-    "tags": ["DirectoryNotFoundException", "Directory", "パス"],
-    "related": ["file-not-found", "directory-enumerate"]
+    "tags": [
+      "DirectoryNotFoundException",
+      "Directory",
+      "パス"
+    ],
+    "badNotes": {
+      "1": "存在しない親ディレクトリへ書き込んでいる"
+    },
+    "goodNotes": {
+      "1": "先に親ディレクトリを作成する"
+    }
   },
-  {
-    "id": "unauthorized-access",
-    "type": "exception",
+  "unauthorized-access": {
     "title": "UnauthorizedAccessException",
     "short": "ファイルやディレクトリへのアクセス権限がない。",
     "summary": "OSの権限や読み取り専用状態などにより操作できないときに発生します。",
-    "bad": "File.WriteAllText(protectedPath, \"data\");",
-    "good": "string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), \"MyApp\", \"data.txt\");\nDirectory.CreateDirectory(Path.GetDirectoryName(path)!);\nFile.WriteAllText(path, \"data\");",
-    "code": null,
     "why": "実行中のユーザーに対象への書き込み権限がない場合があります。",
     "tips": "管理者権限で無理に解決する前に、アプリが書き込む場所として適切か確認します。",
-    "tags": ["UnauthorizedAccessException", "権限", "ファイル"],
-    "related": ["io-exception", "file-write"]
+    "tags": [
+      "UnauthorizedAccessException",
+      "権限",
+      "ファイル"
+    ],
+    "badNotes": {
+      "1": "書き込み権限のない場所かもしれない"
+    },
+    "goodNotes": {
+      "1": "アプリ用の書き込み可能な場所を選ぶ"
+    }
   },
-  {
-    "id": "object-disposed",
-    "type": "exception",
+  "object-disposed": {
     "title": "ObjectDisposedException",
     "short": "Dispose 済みのオブジェクトを使用した。",
     "summary": "ストリームなど、破棄後に利用できないオブジェクトへ操作すると発生します。",
-    "bad": "var stream = new MemoryStream();\nstream.Dispose();\nstream.WriteByte(1);",
-    "good": "using var stream = new MemoryStream();\nstream.WriteByte(1);",
-    "code": null,
     "why": "Dispose によってオブジェクトが保持していた資源を解放した後だからです。",
     "tips": "using の範囲外へ IDisposable オブジェクトを持ち出していないか確認します。",
-    "tags": ["ObjectDisposedException", "Dispose", "using"],
-    "related": ["idisposable"]
+    "tags": [
+      "ObjectDisposedException",
+      "Dispose",
+      "using"
+    ],
+    "badNotes": {
+      "3": "Dispose 後の stream を使っている"
+    },
+    "goodNotes": {
+      "1": "using で有効な範囲を管理する"
+    }
   },
-  {
-    "id": "not-supported",
-    "type": "exception",
+  "not-supported": {
     "title": "NotSupportedException",
     "short": "そのオブジェクトでは要求した操作が対応していない。",
     "summary": "型として操作は定義されていても、具体的な実装がその操作を対応していない場合に発生します。",
-    "bad": "ICollection<int> values = Array.AsReadOnly(new[] { 1, 2, 3 });\nvalues.Add(4);",
-    "good": "var values = new List<int> { 1, 2, 3 };\nvalues.Add(4);",
-    "code": null,
     "why": "読み取り専用コレクションは ICollection<T> を実装していても追加操作を許可しません。",
     "tips": "CanRead、CanWrite、IsReadOnly など、能力を示すプロパティがある型では先に確認します。",
-    "tags": ["NotSupportedException", "コレクション", "読み取り専用"],
-    "related": ["interfaces", "list-basic"]
+    "tags": [
+      "NotSupportedException",
+      "コレクション",
+      "読み取り専用"
+    ],
+    "badNotes": {
+      "2": "読み取り専用コレクションへ Add している"
+    },
+    "goodNotes": {
+      "1": "変更可能な List を使う"
+    }
   },
-  {
-    "id": "operation-canceled",
-    "type": "exception",
+  "operation-canceled": {
     "title": "OperationCanceledException",
     "short": "CancellationToken により処理がキャンセルされた。",
     "summary": "キャンセル可能な処理が中止要求を受けたことを表す例外です。",
-    "bad": "using var cts = new CancellationTokenSource();\ncts.Cancel();\nawait Task.Delay(1000, cts.Token);",
-    "good": "try\n{\n    await Task.Delay(1000, token);\n}\ncatch (OperationCanceledException) when (token.IsCancellationRequested)\n{\n    Console.WriteLine(\"キャンセルされました\");\n}",
-    "code": null,
     "why": "CancellationToken を受け取る処理は、キャンセル要求を例外として通知することがあります。",
     "tips": "キャンセルは異常終了とは限らないため、通常の失敗と分けて扱います。",
-    "tags": ["OperationCanceledException", "CancellationToken", "async"],
-    "related": ["cancellation-token", "async-await"]
+    "tags": [
+      "OperationCanceledException",
+      "CancellationToken",
+      "async"
+    ],
+    "badNotes": {
+      "3": "キャンセル済み token を渡すと中止が通知される"
+    },
+    "goodNotes": {
+      "5": "キャンセルを通常の失敗と分けて扱う"
+    }
   },
-  {
-    "id": "task-canceled",
-    "type": "exception",
+  "task-canceled": {
     "title": "TaskCanceledException",
     "short": "Task が完了前にキャンセルされた。",
     "summary": "キャンセルされた Task を await したときなどに現れる OperationCanceledException の派生例外です。",
-    "bad": "using var cts = new CancellationTokenSource(10);\nawait Task.Delay(1000, cts.Token);",
-    "good": "try\n{\n    await Task.Delay(1000, token);\n}\ncatch (OperationCanceledException)\n{\n    // キャンセルとして処理する\n}",
-    "code": null,
     "why": "Task が正常完了ではなく Canceled 状態になったためです。",
     "tips": "多くの場合は TaskCanceledException だけでなく OperationCanceledException を捕まえる方が扱いやすいです。",
-    "tags": ["TaskCanceledException", "Task", "キャンセル"],
-    "related": ["operation-canceled", "task"]
+    "tags": [
+      "TaskCanceledException",
+      "Task",
+      "キャンセル"
+    ],
+    "badNotes": {
+      "2": "完了前に Task がキャンセルされる"
+    },
+    "goodNotes": {
+      "5": "キャンセル例外を処理する"
+    }
   },
-  {
-    "id": "timeout-exception",
-    "type": "exception",
+  "timeout-exception": {
     "title": "TimeoutException",
     "short": "決められた待ち時間内に処理が完了しなかった。",
     "summary": "通信や待機処理などで設定された時間を超えたことを表します。",
-    "bad": "await operation.WaitAsync(TimeSpan.FromMilliseconds(1));",
-    "good": "try\n{\n    await operation.WaitAsync(TimeSpan.FromSeconds(5));\n}\ncatch (TimeoutException)\n{\n    Console.WriteLine(\"時間切れです\");\n}",
-    "code": null,
     "why": "WaitAsync に指定した時間より処理の完了が遅かったためです。",
     "tips": "単に待ち時間を長くするだけでなく、処理が遅い原因や再試行方針も確認します。",
-    "tags": ["TimeoutException", "Task", "タイムアウト"],
-    "related": ["task", "async-await"]
+    "tags": [
+      "TimeoutException",
+      "Task",
+      "タイムアウト"
+    ],
+    "badNotes": {
+      "1": "待ち時間が短すぎると TimeoutException になる"
+    },
+    "goodNotes": {
+      "5": "タイムアウト時の処理を用意する"
+    }
   },
-  {
-    "id": "uri-format",
-    "type": "exception",
+  "uri-format": {
     "title": "UriFormatException",
     "short": "文字列を有効な URI として解釈できない。",
     "summary": "不正な形式の文字列から Uri を作成しようとしたときに発生します。",
-    "bad": "var uri = new Uri(\"http://[invalid\");",
-    "good": "if (Uri.TryCreate(\"https://example.com/\", UriKind.Absolute, out var uri))\n{\n    Console.WriteLine(uri.Host);\n}",
-    "code": null,
     "why": "URIとして必要な構造を文字列が満たしていません。",
     "tips": "外部入力なら Uri.TryCreate を使うと例外を使わず検証できます。",
-    "tags": ["UriFormatException", "Uri", "URL"],
-    "related": ["http-get", "format-exception"]
+    "tags": [
+      "UriFormatException",
+      "Uri",
+      "URL"
+    ],
+    "badNotes": {
+      "1": "不正な URI 文字列を直接 new Uri している"
+    },
+    "goodNotes": {
+      "1": "TryCreate で有効な URI か確認する"
+    }
   }
-]
+}

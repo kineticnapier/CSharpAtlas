@@ -1,0 +1,59 @@
+{
+  "floating-equality": {
+    "title": "Comparing floating-point values with ==",
+    "short": "Two double values that should be equal can compare as false.",
+    "summary": "Because many decimal fractions cannot be represented exactly in binary floating point, tiny rounding errors can remain after calculations.",
+    "why": "Values such as 0.1 and 0.2 do not have finite exact representations in double, so their stored values include rounding error.",
+    "tips": "Choose a tolerance based on the scale and precision your application actually needs. See [[equality]] for general equality behavior. For money, decimal may be a better fit.",
+    "tags": ["double", "floating point", "comparison"],
+    "badNotes": {
+      "2": "This compares double values directly with =="
+    },
+    "goodNotes": {
+      "3": "Compare whether the difference is within an acceptable tolerance"
+    }
+  },
+  "integer-overflow": {
+    "title": "Integer overflow",
+    "short": "A large integer calculation can wrap to a different value without throwing.",
+    "summary": "In ordinary unchecked integer arithmetic, a result outside the type's range can wrap around. Use [[overflow-exception|checked]] when you want overflow to be detected as an exception.",
+    "why": "int has a fixed number of bits, so values beyond its representable range can leave only the low-order bits of the result.",
+    "tips": "For calculations that can grow large, decide whether using long is sufficient or whether checked should raise an [[overflow-exception|OverflowException]].",
+    "tags": ["int", "overflow", "checked"],
+    "badNotes": {
+      "2": "The value wraps when it exceeds the int range"
+    },
+    "goodNotes": {
+      "2": "checked detects the overflow"
+    }
+  },
+  "reference-equality": {
+    "title": "Confusing reference identity with value equality",
+    "short": "Two objects with the same contents may still compare as different objects.",
+    "summary": "For a class, which is a [[value-reference-types|reference type]], the default equality behavior may compare whether two references point to the same instance rather than whether their contents match.",
+    "why": "A normal class does not treat separately created instances as equal values unless equality is defined appropriately.",
+    "tips": "For types that should compare by value, consider [[records|record]] or implementing [[equality|Equals / GetHashCode]].",
+    "tags": ["class", "reference", "=="],
+    "badNotes": {
+      "4": "A normal class compares these as separate instances"
+    },
+    "goodNotes": {
+      "1": "Use record when value-based equality matches the type's meaning"
+    }
+  },
+  "deferred-enumeration": {
+    "title": "Enumerating a LINQ query repeatedly",
+    "short": "A costly operation runs multiple times even though the same IEnumerable is reused.",
+    "summary": "A LINQ sequence with [[linq-deferred|deferred execution]] can run its source pipeline again every time it is enumerated.",
+    "why": "Count() and foreach each enumerate query from the beginning, so GetItems or IsValid can run repeatedly.",
+    "tips": "Materialize with ToList when repeated enumeration is actually a problem. That does not mean every [[ienumerable|IEnumerable]] should always be materialized.",
+    "tags": ["LINQ", "IEnumerable", "deferred execution"],
+    "badNotes": {
+      "2": "Count() enumerates query once",
+      "3": "foreach enumerates the same query again"
+    },
+    "goodNotes": {
+      "1": "ToList materializes the result once"
+    }
+  }
+}

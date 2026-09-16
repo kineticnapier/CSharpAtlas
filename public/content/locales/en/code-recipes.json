@@ -1,0 +1,146 @@
+{
+  "list-basic": {
+    "title": "Basic List<T> operations",
+    "short": "Add, remove, and count elements.",
+    "summary": "List<T> is commonly used for array-like data whose number of elements can change.",
+    "why": "List<T> manages its internal capacity and lets Add and Remove change the element count.",
+    "tips": "Index access is fast, but still make sure the index is within range.",
+    "tags": ["List", "collection", "Add"]
+  },
+  "list-filter": {
+    "title": "Filter a List by condition",
+    "short": "Use Where to keep only elements that match a condition.",
+    "summary": "LINQ Where creates a sequence of matching elements without modifying the original collection.",
+    "why": "Where applies the predicate to each element and enumerates only the elements for which it returns true.",
+    "tips": "Without ToList, remember that the result usually uses deferred execution.",
+    "tags": ["List", "Where", "LINQ"]
+  },
+  "list-sort": {
+    "title": "Sort a List",
+    "short": "Use Sort or OrderBy to change or produce an ordering.",
+    "summary": "List.Sort modifies the original List, while OrderBy returns a newly ordered sequence.",
+    "why": "Choose based on whether you want to mutate the original data or obtain a separate ordered view.",
+    "tips": "For multiple sort keys, chain OrderBy(...).ThenBy(...).",
+    "tags": ["List", "Sort", "OrderBy"]
+  },
+  "hashset-basic": {
+    "title": "Remove duplicates with HashSet<T>",
+    "short": "Keep at most one copy of each equal value.",
+    "summary": "HashSet<T> is useful when duplicates are not allowed and fast membership tests are important.",
+    "why": "HashSet<T> does not store multiple elements that are equal according to its comparer.",
+    "tips": "If you need stable ordering or index access, another structure such as List<T> may be more appropriate.",
+    "tags": ["HashSet", "set", "duplicates"]
+  },
+  "string-split-join": {
+    "title": "Split and join strings",
+    "short": "Split text by a delimiter and join values again.",
+    "summary": "These operations are common for simple delimited text and competitive-programming input processing.",
+    "why": "Split turns a string into pieces, while Join combines multiple values with a separator.",
+    "tips": "Real CSV with quoted fields cannot be parsed correctly with a simple Split alone.",
+    "tags": ["string", "Split", "Join"]
+  },
+  "string-interpolation": {
+    "title": "String interpolation",
+    "short": "Embed values in text with $\"...{value}...\".",
+    "summary": "String interpolation inserts values and expressions without long chains of string concatenation.",
+    "why": "Expressions inside braces are evaluated and their results are formatted into the string.",
+    "tips": "Format specifiers are supported too, for example {value:N2}.",
+    "tags": ["string", "interpolation", "$"]
+  },
+  "date-format": {
+    "title": "Format a DateTime for display",
+    "short": "Use a ToString format string to control date and time output.",
+    "summary": "You can convert year, month, day, time, and other components into the exact display format you need.",
+    "why": "Format tokens such as yyyy, MM, and dd are replaced with the corresponding DateTime components.",
+    "tips": "MM means month while mm means minutes, so letter case matters.",
+    "tags": ["DateTime", "ToString", "format"]
+  },
+  "file-write": {
+    "title": "Write a text file",
+    "short": "Save a string with File.WriteAllText.",
+    "summary": "This is the simplest way to save a small amount of text to a file in one operation.",
+    "why": "File.WriteAllText handles opening, writing, and closing the file for you.",
+    "tips": "Use File.AppendAllText when you want to add to existing content instead of replacing it.",
+    "tags": ["File", "WriteAllText", "file"]
+  },
+  "directory-enumerate": {
+    "title": "Enumerate files in a directory",
+    "short": "Use Directory.EnumerateFiles to receive file paths one by one.",
+    "summary": "This is useful when processing many files from a folder.",
+    "why": "EnumerateFiles yields paths as they are enumerated, which is convenient for directories containing many files.",
+    "tips": "Pass a SearchOption when subdirectories should be included.",
+    "tags": ["Directory", "EnumerateFiles", "file"]
+  },
+  "json-write": {
+    "title": "Convert an object to JSON",
+    "short": "Use JsonSerializer.Serialize to turn a C# value into JSON text.",
+    "summary": "System.Text.Json can serialize objects into JSON.",
+    "why": "The serializer inspects public properties and other configured members and converts them to JSON values and objects.",
+    "tips": "Combine this with File.WriteAllText when the JSON should be saved to disk.",
+    "tags": ["JSON", "JsonSerializer", "Serialize"]
+  },
+  "http-get": {
+    "title": "Send a GET request with HttpClient",
+    "short": "Retrieve data from the web with HTTP GET.",
+    "summary": "HttpClient methods such as GetStringAsync can retrieve HTTP resources asynchronously.",
+    "why": "Network operations involve waiting, so these APIs are exposed asynchronously.",
+    "tips": "Real applications should also consider HttpClient lifetime, unsuccessful status codes, and cancellation.",
+    "tags": ["HttpClient", "HTTP", "GET"]
+  },
+  "regex-basic": {
+    "title": "Search text with a regular expression",
+    "short": "Use Regex.IsMatch or Match to test a pattern.",
+    "summary": "Regular expressions describe patterns for validating string formats or finding substrings.",
+    "why": "The pattern \\d+ matches a sequence of one or more digits.",
+    "tips": "Very complicated regular expressions can become difficult to maintain; ordinary string operations may be clearer for simple cases.",
+    "tags": ["Regex", "regular expression", "string"]
+  },
+  "task-delay": {
+    "title": "Wait asynchronously for a duration",
+    "short": "Await Task.Delay instead of blocking the thread.",
+    "summary": "Task.Delay waits asynchronously without occupying a thread with Thread.Sleep for the entire delay.",
+    "why": "Task.Delay returns a Task that completes after the requested duration.",
+    "tips": "Pass a CancellationToken when the delay should be cancellable.",
+    "tags": ["Task.Delay", "async", "delay"]
+  },
+  "cancellation-token": {
+    "title": "Cancel work with CancellationToken",
+    "short": "Pass a cancellation request into asynchronous or long-running work.",
+    "summary": "CancellationToken is the standard mechanism for telling an operation that its result is no longer needed.",
+    "why": "Cancellation is cooperative rather than forced: the operation checks the token at safe points and stops cleanly.",
+    "tips": "When a library method accepts a token, usually pass along the token you received instead of creating an unrelated one.",
+    "tags": ["CancellationToken", "cancellation", "Task"]
+  },
+  "linq-select": {
+    "title": "Transform values with LINQ Select",
+    "short": "Map each element to another value and produce a new sequence.",
+    "summary": "Select applies the same transformation to every element of a sequence.",
+    "why": "For each x, the selector evaluates x * x and enumerates the resulting values in order.",
+    "tips": "Where filters elements; Select transforms them. They can be chained together.",
+    "tags": ["LINQ", "Select", "transformation"]
+  },
+  "linq-groupby": {
+    "title": "Group values with LINQ GroupBy",
+    "short": "Collect elements that share the same key.",
+    "summary": "GroupBy is useful for organizing data by values such as category, grade, or another key.",
+    "why": "Elements are grouped by the value returned from the key selector and exposed through IGrouping sequences.",
+    "tips": "For aggregation, combine GroupBy with Count, Sum, Select, and similar operators.",
+    "tags": ["LINQ", "GroupBy", "aggregation"]
+  },
+  "linq-distinct": {
+    "title": "Remove duplicates with Distinct",
+    "short": "Produce a sequence containing one copy of each equal value.",
+    "summary": "LINQ Distinct removes duplicate elements according to equality rules.",
+    "why": "Elements equal to values already seen are omitted from the result.",
+    "tips": "If you need to maintain a duplicate-free set over time, HashSet<T> may express the intent more directly.",
+    "tags": ["LINQ", "Distinct", "duplicates"]
+  },
+  "try-catch": {
+    "title": "Handle exceptions with try / catch",
+    "short": "Catch expected failures and decide what to do when they occur.",
+    "summary": "Put code that may throw in try and handle specific recoverable exception types in catch.",
+    "why": "When an exception is thrown, normal control flow stops and execution transfers to a matching catch block.",
+    "tips": "Avoid swallowing every failure with catch (Exception); handle concrete exceptions only when you can respond meaningfully.",
+    "tags": ["try", "catch", "exception"]
+  }
+}

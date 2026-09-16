@@ -1,0 +1,254 @@
+{
+  "cs0019": {
+    "title": "CS0019",
+    "short": "The operator cannot be applied to those two operand types.",
+    "summary": "The combination of types on the left and right sides is not defined for that operator.",
+    "why": "Comparison and arithmetic operators are only available for supported combinations of operand types.",
+    "tips": "Check the two types shown in the error and confirm that both operands were converted to the types you intended.",
+    "tags": ["CS0019", "operator", "type"],
+    "badNotes": {
+      "3": "The result type and the comparison target type do not match"
+    },
+    "goodNotes": {
+      "2": "Convert the string to int so the types match"
+    }
+  },
+  "cs0021": {
+    "title": "CS0021",
+    "short": "Indexing with [] cannot be applied to this type.",
+    "summary": "This appears when [] is used on a value that is not an array and does not provide an indexer.",
+    "why": "int represents a single numeric value and does not provide elements that can be accessed by index.",
+    "tips": "Check whether the value is actually an array, List, Dictionary, string, or another indexable type.",
+    "tags": ["CS0021", "index", "array"],
+    "badNotes": {
+      "2": "int does not support [] indexing"
+    },
+    "goodNotes": {
+      "1": "Use an indexable string value"
+    }
+  },
+  "cs0117": {
+    "title": "CS0117",
+    "short": "The type does not contain the specified member.",
+    "summary": "This often appears when code references a static member that does not exist on the named type.",
+    "why": "Console does not define a member named PrintLine.",
+    "tips": "Check spelling and capitalization, then inspect the actual member names offered for the type.",
+    "tags": ["CS0117", "member", "static"],
+    "badNotes": {
+      "1": "Console has no member named PrintLine"
+    },
+    "goodNotes": {
+      "1": "Use the existing WriteLine member"
+    }
+  },
+  "cs0120": {
+    "title": "CS0120",
+    "short": "An instance member is being used through the type name without an object.",
+    "summary": "This appears when a non-static field, property, or method is accessed without an instance.",
+    "why": "Value belongs to each Counter object, not to the Counter type as a whole.",
+    "tips": "If the value truly should be shared by all instances, reconsider the design and whether static is appropriate.",
+    "tags": ["CS0120", "static", "instance"],
+    "badNotes": {
+      "6": "An instance property is accessed through the type name"
+    },
+    "goodNotes": {
+      "1": "Create a Counter instance first"
+    }
+  },
+  "cs0136": {
+    "title": "CS0136",
+    "short": "A local variable name conflicts with a name in an enclosing scope.",
+    "summary": "This appears when a nested scope tries to redeclare a local variable name that is already in use in an enclosing scope.",
+    "why": "C# prevents nearby scopes from using the same local name for different variables because it would make references ambiguous and confusing.",
+    "tips": "Rename the variable or check whether a second variable is necessary at all.",
+    "tags": ["CS0136", "scope", "variable"],
+    "badNotes": {
+      "4": "This redeclares the same name x used by the outer scope"
+    },
+    "goodNotes": {
+      "4": "Use a different name to avoid the conflict"
+    }
+  },
+  "cs0161": {
+    "title": "CS0161",
+    "short": "A value-returning method has a path that does not return a value.",
+    "summary": "A method whose return type is not void may reach the end without returning a value on every possible control-flow path.",
+    "why": "When x <= 0, no int return value has been defined.",
+    "tips": "Trace every branch through if, switch, try, and similar constructs and confirm each path returns a value.",
+    "tags": ["CS0161", "return", "method"],
+    "badNotes": {
+      "3": "Only this branch returns a value"
+    },
+    "goodNotes": {
+      "4": "Provide a return value for the remaining path"
+    }
+  },
+  "cs0165": {
+    "title": "CS0165",
+    "short": "A local variable may be used before it has been assigned.",
+    "summary": "Local variables must definitely receive a value before code reads them.",
+    "why": "If the condition is false, x is read without ever being assigned.",
+    "tips": "Give the variable an initial value or assign it on every possible branch before use.",
+    "tags": ["CS0165", "initialization", "variable"],
+    "badNotes": {
+      "4": "x may be read while still unassigned"
+    },
+    "goodNotes": {
+      "1": "Initialize x when it is declared"
+    }
+  },
+  "cs0200": {
+    "title": "CS0200",
+    "short": "Code is assigning to a read-only property or indexer.",
+    "summary": "This appears when code tries to write to a property that has no accessible setter.",
+    "why": "A property with only get cannot be modified from outside the type.",
+    "tips": "If the value is intentionally read-only, changing the assignment code is usually better than adding a setter.",
+    "tags": ["CS0200", "property", "readonly"],
+    "badNotes": {
+      "7": "Name has no setter but is being assigned"
+    },
+    "goodNotes": {
+      "3": "Add a setter only if the property is meant to be mutable"
+    }
+  },
+  "cs0266": {
+    "title": "CS0266",
+    "short": "An implicit conversion is not available; an explicit conversion is required.",
+    "summary": "Conversions that may lose information, such as some numeric conversions, are not performed automatically.",
+    "why": "Converting double to int can discard the fractional part, so the code must make that intent explicit.",
+    "tips": "Decide whether a cast is really correct or whether Convert or an explicit rounding operation better expresses the intended behavior.",
+    "tags": ["CS0266", "cast", "numeric"],
+    "badNotes": {
+      "2": "double cannot be implicitly converted to int"
+    },
+    "goodNotes": {
+      "2": "Use an explicit cast to state the intent"
+    }
+  },
+  "cs0411": {
+    "title": "CS0411",
+    "short": "The type arguments for a generic method cannot be inferred.",
+    "summary": "The compiler does not have enough information at the call site to determine concrete types such as T.",
+    "why": "With no argument providing type information, the compiler has nothing from which to infer T.",
+    "tips": "Specify the type argument explicitly or provide an argument whose type allows inference.",
+    "tags": ["CS0411", "generic", "type inference"],
+    "badNotes": {
+      "2": "There is no information from which to infer T"
+    },
+    "goodNotes": {
+      "2": "Specify the type argument explicitly"
+    }
+  },
+  "cs1002": {
+    "title": "CS1002",
+    "short": "A required semicolon is missing.",
+    "summary": "This appears when a semicolon is missing where C# expects one, commonly at the end of a statement.",
+    "why": "Many C# statements are terminated with a semicolon.",
+    "tips": "The missing character may be on the line immediately before the location reported by the compiler.",
+    "tags": ["CS1002", ";", "syntax"],
+    "badNotes": {
+      "1": "The statement is missing its trailing semicolon"
+    },
+    "goodNotes": {
+      "1": "Add ; to terminate the statement"
+    }
+  },
+  "cs1026": {
+    "title": "CS1026",
+    "short": "A closing ) is missing.",
+    "summary": "This appears when parentheses in a method call, condition, or expression are not properly closed.",
+    "why": "There is no ) matching an earlier (, so the compiler cannot parse the following syntax correctly.",
+    "tips": "Check matching parentheses and reread the expression starting from the nearest opening parenthesis.",
+    "tags": ["CS1026", "parenthesis", "syntax"],
+    "badNotes": {
+      "1": "The opening ( has no matching )"
+    },
+    "goodNotes": {
+      "1": "Add ) to close the condition"
+    }
+  },
+  "cs1061": {
+    "title": "CS1061",
+    "short": "The type has no matching member or extension method.",
+    "summary": "This commonly appears when code calls a property or method that does not exist on the object's type.",
+    "why": "string does not have an instance property named Count.",
+    "tips": "Check the type, member name, using directives, and the namespace required by any extension method you expect to use.",
+    "tags": ["CS1061", "method", "property"],
+    "badNotes": {
+      "2": "string has no Count property"
+    },
+    "goodNotes": {
+      "2": "Use Length to get the number of characters in a string"
+    }
+  },
+  "cs1501": {
+    "title": "CS1501",
+    "short": "No overload accepts the supplied number of arguments.",
+    "summary": "The method name exists, but none of its overloads match the number of arguments in this call.",
+    "why": "The compiler cannot find a method signature that matches the argument list.",
+    "tips": "Inspect the available overloads and check both argument count and argument types.",
+    "tags": ["CS1501", "method", "argument"],
+    "badNotes": {
+      "1": "There are not enough arguments for the format items"
+    },
+    "goodNotes": {
+      "1": "Pass the required number of arguments"
+    }
+  },
+  "cs1503": {
+    "title": "CS1503",
+    "short": "An argument cannot be converted to the parameter type.",
+    "summary": "The number of arguments may be correct, but one of their types does not match the method definition.",
+    "why": "Print requires an int, but a string is being supplied.",
+    "tips": "Read the reported argument number and compare the source and destination types shown in the error.",
+    "tags": ["CS1503", "argument", "type"],
+    "badNotes": {
+      "2": "A string is passed where int is required"
+    },
+    "goodNotes": {
+      "2": "Pass the required int value"
+    }
+  },
+  "cs1513": {
+    "title": "CS1513",
+    "short": "A closing } is missing.",
+    "summary": "This appears when a class, method, if block, or other brace-delimited block is not closed.",
+    "why": "The compiler cannot find the end of a block that was opened earlier.",
+    "tips": "In a large file, automatic formatting can make the unmatched brace easier to locate.",
+    "tags": ["CS1513", "brace", "syntax"],
+    "badNotes": {
+      "3": "This block has no closing }"
+    },
+    "goodNotes": {
+      "4": "Add } to close the block"
+    }
+  },
+  "cs1525": {
+    "title": "CS1525",
+    "short": "An invalid token appears where an expression is expected.",
+    "summary": "This appears when a symbol or keyword is used in a position where it cannot form a valid expression.",
+    "why": "The + operator requires a value or expression on its right side, but * appears there by itself.",
+    "tips": "This error can cascade from an earlier syntax mistake, so fix the first compiler error before chasing later ones.",
+    "tags": ["CS1525", "expression", "syntax"],
+    "badNotes": {
+      "1": "A standalone * cannot appear immediately after +"
+    },
+    "goodNotes": {
+      "1": "Replace it with a valid expression"
+    }
+  },
+  "cs7036": {
+    "title": "CS7036",
+    "short": "A required argument was not supplied.",
+    "summary": "The call is missing an argument for a parameter that has no default value and therefore cannot be omitted.",
+    "why": "No value is supplied for y, and y has no default value.",
+    "tips": "Add the missing argument, or define a default value only if omitting that parameter is valid by design.",
+    "tags": ["CS7036", "argument", "parameter"],
+    "badNotes": {
+      "2": "There is no argument for the required y parameter"
+    },
+    "goodNotes": {
+      "2": "Pass the missing argument"
+    }
+  }
+}

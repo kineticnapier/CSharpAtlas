@@ -1,0 +1,82 @@
+{
+  "cs0168": {
+    "title": "CS0168",
+    "short": "A declared variable is never used.",
+    "summary": "This warning appears when a local variable is declared but its value is never read. If a value is assigned but still never used, see [[cs0219|CS0219]].",
+    "why": "An unused variable may indicate leftover code or an implementation step that was forgotten.",
+    "tips": "Remove it if it is not needed; keeping variables only because they might be useful later usually makes code harder to read.",
+    "tags": ["CS0168", "warning", "variable"],
+    "badNotes": {"1": "unused is declared but never used"},
+    "goodNotes": {"2": "Use the declared value"}
+  },
+  "cs0219": {
+    "title": "CS0219",
+    "short": "A variable receives a value but is never used.",
+    "summary": "This appears when a value is assigned to a variable but that value is never read afterward. If the variable is only declared and never used, see [[cs0168|CS0168]].",
+    "why": "Because the computed value has no effect on the result, the assignment may be leftover or indicate missing logic.",
+    "tips": "This warning often remains after temporary debugging code has been removed.",
+    "tags": ["CS0219", "warning", "unused"],
+    "badNotes": {"1": "answer is assigned but never used"},
+    "goodNotes": {"2": "Use the value that was computed"}
+  },
+  "cs0618": {
+    "title": "CS0618",
+    "short": "Code is using an API marked Obsolete.",
+    "summary": "The referenced type or member is still available, but its provider has marked it as obsolete or deprecated.",
+    "why": "The API author wants callers to migrate to a newer replacement or pattern.",
+    "tips": "If the warning message names a replacement API, follow that guidance. If a member cannot be found after migration, also check [[cs1061|CS1061]].",
+    "tags": ["CS0618", "Obsolete", "deprecated"],
+    "badNotes": {"4": "This calls the obsolete OldMethod"},
+    "goodNotes": {"3": "Use the replacement NewMethod"}
+  },
+  "cs1998": {
+    "title": "CS1998",
+    "short": "An async method contains no await.",
+    "summary": "This warning appears when a method using [[async-await|async / await]] does not actually await asynchronous work and therefore runs synchronously.",
+    "why": "Without await, there is usually little reason to build the async state machine.",
+    "tips": "If no asynchronous work is needed, remove async and consider returning [[task|Task]].FromResult instead.",
+    "tags": ["CS1998", "async", "await"],
+    "badNotes": {"1": "The method is async but contains no await"},
+    "goodNotes": {"3": "Await the asynchronous operation"}
+  },
+  "cs4014": {
+    "title": "CS4014",
+    "short": "A Task is started without being awaited.",
+    "summary": "The returned [[task|Task]] from an asynchronous method is not [[async-await|awaited]], so completion and exceptions may be missed.",
+    "why": "Without await, execution can continue to the next line before SaveAsync has completed.",
+    "tips": "Even when intentionally not waiting, decide how failures will be observed. Changing code to async void just to avoid awaiting creates a different problem.",
+    "tags": ["CS4014", "Task", "await"],
+    "badNotes": {"1": "Execution continues without waiting for this Task"},
+    "goodNotes": {"1": "Await the Task so completion is observed"}
+  },
+  "cs8600": {
+    "title": "CS8600",
+    "short": "A possibly null value is assigned to a non-nullable reference type.",
+    "summary": "[[nullable|Nullable reference type]] analysis has determined that the assigned value may be null.",
+    "why": "string declares a non-null value, while maybeName has type string?.",
+    "tips": "Instead of silencing the warning with !, decide what should happen when the value is null, for example with the ?? operator.",
+    "tags": ["CS8600", "null", "nullable"],
+    "badNotes": {"2": "A value that may be null is assigned to string"},
+    "goodNotes": {"2": "Provide a value for the null case"}
+  },
+  "cs8618": {
+    "title": "CS8618",
+    "short": "A non-nullable field or property is not initialized.",
+    "summary": "With [[nullable|nullable reference types]] enabled, this appears when a member that should not be null may still be null when construction finishes.",
+    "why": "Immediately after constructing User, Name could still be null.",
+    "tips": "Consider requiring the value in the constructor or using a required [[properties|property]].",
+    "tags": ["CS8618", "nullable", "property"],
+    "badNotes": {"3": "Non-nullable Name has not been initialized"},
+    "goodNotes": {"3": "Give Name a non-null value at construction time"}
+  },
+  "cs8625": {
+    "title": "CS8625",
+    "short": "null is assigned to a non-nullable reference type.",
+    "summary": "With [[nullable|nullable reference types]] enabled, this appears when null is passed or assigned where null is not allowed.",
+    "why": "The declaration says string cannot be null, but the assignment supplies null.",
+    "tips": "If null is a valid state, use ?. When a possibly null value is assigned to a non-nullable reference, also check [[cs8600|CS8600]].",
+    "tags": ["CS8625", "null", "nullable"],
+    "badNotes": {"1": "null is assigned to a non-nullable string"},
+    "goodNotes": {"1": "Use string? when null is allowed"}
+  }
+}
