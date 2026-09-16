@@ -134,5 +134,13 @@
     "why": "string defines == as content comparison. For user-defined types, equality behavior depends on the implementation.",
     "tips": "Use ReferenceEquals when you specifically need to know whether two references point to the same object.",
     "tags": ["Equals", "==", "comparison"]
+  },
+  "pattern-matching": {
+    "title": "Pattern matching",
+    "short": "Use patterns such as is to test a value's type or shape and capture values safely.",
+    "summary": "Pattern matching lets you combine a type test with extracting a strongly typed variable in one expression.",
+    "why": "After value is string text succeeds, the compiler knows that text is a string inside that branch.",
+    "tips": "This is safer than directly casting an uncertain object. See [[invalid-cast|InvalidCastException]] for casts that fail at runtime.",
+    "tags": ["pattern matching", "is", "type test"]
   }
 }
