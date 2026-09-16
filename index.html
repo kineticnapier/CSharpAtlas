@@ -15,21 +15,28 @@
       <button data-nav-type="all">すべて</button>
       <button data-nav-type="code">コード集</button>
       <button data-nav-type="exception">例外</button>
-      <button data-nav-type="compiler-error">CSエラー</button>
-      <button data-nav-type="compiler-warning">CS警告</button>
+      <button data-nav-type="compiler-error">コンパイルエラー</button>
+      <button data-nav-type="compiler-warning">コンパイル警告</button>
     </nav>
+    <label class="language-picker" for="languageSelect">
+      <span id="languageLabel" class="sr-only">言語</span>
+      <select id="languageSelect" aria-labelledby="languageLabel">
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+      </select>
+    </label>
   </div>
 </header>
 
 <main>
   <section id="homeView">
     <div class="hero">
-      <div class="eyebrow">逆引き C# リファレンス</div>
-      <h1>やりたいことも、<br>壊れた理由も。</h1>
-      <p>C# のコード例、例外、コンパイルエラー・警告、仕組みをひとつの検索で。</p>
+      <div id="heroEyebrow" class="eyebrow">逆引き C# リファレンス</div>
+      <h1><span id="heroTitle1">やりたいことも、</span><br><span id="heroTitle2">壊れた理由も。</span></h1>
+      <p id="heroDescription">C# のコード例、例外、コンパイルエラー・警告、仕組みをひとつの検索で。</p>
       <form id="searchForm" class="search">
         <input id="searchInput" placeholder="例: JSON 読み込み / NullReferenceException / CS0103" autocomplete="off">
-        <button type="submit">検索</button>
+        <button id="searchButton" type="submit">検索</button>
       </form>
       <div class="quick">
         <button data-query="JSON">JSON</button>
@@ -41,7 +48,7 @@
 
     <div class="layout">
       <aside>
-        <div class="aside-title">種類</div>
+        <div id="asideTitle" class="aside-title">種類</div>
         <button class="type active" data-type="all">すべて</button>
         <button class="type" data-type="code">コード集</button>
         <button class="type" data-type="exception">例外</button>
