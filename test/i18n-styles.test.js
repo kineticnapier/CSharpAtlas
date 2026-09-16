@@ -15,6 +15,9 @@ test('language selector and translation status have explicit styles', async () =
 });
 
 test('card metadata badges keep the compact badge override', async () => {
-  const css = await readFile(path.join(root, 'src/styles.css'), 'utf8');
-  assert.match(css, /\.card-meta\s*>\s*\.badge/);
+  const [baseCss, enhancementCss] = await Promise.all([
+    readFile(path.join(root, 'src/styles.css'), 'utf8'),
+    readFile(path.join(root, 'src/code-enhancements.css'), 'utf8')
+  ]);
+  assert.match(`${baseCss}\n${enhancementCss}`, /\.card-meta\s*>\s*\.badge/);
 });
