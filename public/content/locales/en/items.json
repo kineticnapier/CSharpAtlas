@@ -1,0 +1,226 @@
+{
+  "nullref": {
+    "title": "NullReferenceException",
+    "short": "A member was accessed through a null reference.",
+    "summary": "A property or method is being used on a reference that does not point to an object.",
+    "why": "name does not refer to any String object, so its Length property cannot be read.",
+    "tips": "Check the stack-trace line number, then inspect values on that line that could be null.",
+    "tags": ["null", "exception", "common"],
+    "badNotes": {
+      "2": "name may be null but is being dereferenced"
+    },
+    "goodNotes": {
+      "3": "Check that the value is not null first"
+    }
+  },
+  "cs0103": {
+    "title": "CS0103",
+    "short": "The name does not exist in the current context.",
+    "summary": "A variable, method, or other name is being referenced from a place where it has not been declared or is not visible.",
+    "why": "The compiler cannot find a name called score in the current scope.",
+    "tips": "Check spelling, where the declaration appears, and whether the reference is inside the correct braces.",
+    "tags": ["CS0103", "variable", "scope"],
+    "badNotes": {
+      "1": "score has not been declared yet"
+    },
+    "goodNotes": {
+      "1": "Declare score before using it"
+    }
+  },
+  "key-not-found": {
+    "title": "KeyNotFoundException",
+    "short": "A missing Dictionary key was accessed directly.",
+    "summary": "The indexer [] is being used to read a key that is not present in the Dictionary.",
+    "why": "Dictionary lookup through [] throws when the requested key does not exist.",
+    "tips": "Use TryGetValue when the key is not guaranteed to exist.",
+    "tags": ["Dictionary", "collection", "exception"],
+    "badNotes": {
+      "2": "A missing key causes an exception here"
+    },
+    "goodNotes": {
+      "1": "TryGetValue checks existence and retrieves the value together"
+    }
+  },
+  "dict-safe": {
+    "title": "Safely get a value from a Dictionary",
+    "short": "Use TryGetValue for keys that may not exist.",
+    "summary": "When a key may be absent, TryGetValue is usually safer than reading it directly with [].",
+    "why": "TryGetValue performs the lookup and retrieval together and returns false when the key is not found.",
+    "tips": "It is usually clearer than calling ContainsKey and then indexing with [].",
+    "tags": ["Dictionary", "collection", "TryGetValue"]
+  },
+  "json-read": {
+    "title": "Read a JSON file",
+    "short": "Convert JSON to a C# object with System.Text.Json.",
+    "summary": "This is the basic pattern for reading a JSON string and converting it to a C# type.",
+    "why": "File.ReadAllText reads the file as a string, and JsonSerializer.Deserialize<T> converts that string to the requested type.",
+    "tips": "If JSON property names differ from C# property names, use the JsonPropertyName attribute.",
+    "tags": ["JSON", "file", "System.Text.Json"]
+  },
+  "int-div": {
+    "title": "Integer division",
+    "short": "A calculation expected to produce 0.5 instead produces 0.",
+    "summary": "Using / with two int values performs integer division and discards the fractional part. No exception or warning is produced.",
+    "why": "Even if the destination is double, a / b is evaluated as int division before the result is assigned.",
+    "tips": "Because the program still runs, this kind of bug can be harder to notice than an exception.",
+    "tags": ["int", "double", "division"],
+    "badNotes": {
+      "3": "Both operands are int, so this is integer division"
+    },
+    "goodNotes": {
+      "1": "Convert one operand to double before dividing"
+    }
+  },
+  "nullable": {
+    "title": "null and nullable reference types",
+    "short": "Understand the difference between string and string?.",
+    "summary": "With nullable reference types enabled, C# can distinguish references that allow null from references that are intended not to be null.",
+    "why": "The compiler tracks possible null values and can warn about potentially unsafe dereferences.",
+    "tips": "The ! operator is an assertion to the compiler; it does not make a value safer at runtime.",
+    "tags": ["null", "nullable", "?"]
+  },
+  "scope": {
+    "title": "Scope",
+    "short": "The region where a variable or name can be used.",
+    "summary": "A variable can only be referenced within its defined scope, such as inside the block where it was declared.",
+    "why": "Limiting where names are visible helps prevent collisions and unintended references to unrelated variables.",
+    "tips": "When you see CS0103, checking the variable's scope is often a good first step.",
+    "tags": ["variable", "scope", "basics"]
+  },
+  "index-out-of-range": {
+    "title": "IndexOutOfRangeException",
+    "short": "An array element outside the valid index range was accessed.",
+    "summary": "Valid array indices run from 0 through Length - 1.",
+    "why": "An array with three elements has valid indices 0, 1, and 2. Index 3 is outside the array.",
+    "tips": "Check whether a for-loop condition accidentally uses i <= a.Length.",
+    "tags": ["array", "index", "exception"],
+    "badNotes": {
+      "2": "Index 3 is outside this array"
+    },
+    "goodNotes": {
+      "2": "The last valid index is Length - 1"
+    }
+  },
+  "format-exception": {
+    "title": "FormatException",
+    "short": "A string was not in a valid format for the requested conversion.",
+    "summary": "This occurs when methods such as Parse are given text that does not match the expected format.",
+    "why": "The text abc cannot be interpreted as an integer, so int.Parse fails.",
+    "tips": "For user input and other values that may be invalid, TryParse is often a better fit.",
+    "tags": ["Parse", "conversion", "exception"],
+    "badNotes": {
+      "1": "abc cannot be interpreted as an int"
+    },
+    "goodNotes": {
+      "1": "Use TryParse for input that may fail to convert"
+    }
+  },
+  "parse-number": {
+    "title": "Safely convert a string to a number",
+    "short": "Use TryParse to check whether conversion succeeds.",
+    "summary": "When input is not guaranteed to be numeric, TryParse is usually easier to handle than Parse.",
+    "why": "TryParse returns false instead of throwing an exception when conversion fails.",
+    "tips": "Other types provide similar methods, such as double.TryParse and DateTime.TryParse.",
+    "tags": ["TryParse", "int", "input"]
+  },
+  "file-not-found": {
+    "title": "FileNotFoundException",
+    "short": "The file being opened could not be found.",
+    "summary": "This occurs when no file exists at the specified path.",
+    "why": "Relative paths are resolved from the process's current working directory, which may not be the directory you expected.",
+    "tips": "Print Path.GetFullPath(path) to see the exact location the program is trying to use.",
+    "tags": ["File", "file", "path"],
+    "badNotes": {
+      "1": "This reads a path that may not exist"
+    },
+    "goodNotes": {
+      "2": "Check that the file exists before reading it"
+    }
+  },
+  "file-read": {
+    "title": "Read a text file",
+    "short": "Use File.ReadAllText to read an entire file as a string.",
+    "summary": "This is the simplest way to read a small text file in one operation.",
+    "why": "File.ReadAllText opens the file, returns all of its text, and closes it automatically.",
+    "tips": "For very large files, consider ReadLines or StreamReader so you can process the content incrementally.",
+    "tags": ["File", "file", "ReadAllText"]
+  },
+  "json-exception": {
+    "title": "JsonException",
+    "short": "The JSON syntax or value shape does not match what was expected.",
+    "summary": "System.Text.Json throws this when it cannot parse or convert the input JSON correctly.",
+    "why": "It can happen because the JSON itself is invalid or because a JSON value cannot be converted to the requested C# type.",
+    "tips": "The Path and BytePositionInLine values in the exception can help narrow down the problem location.",
+    "tags": ["JSON", "System.Text.Json", "exception"],
+    "badNotes": {
+      "1": "The JSON shape does not match the target int type"
+    },
+    "goodNotes": {
+      "1": "Provide JSON that can be read as an int"
+    }
+  },
+  "cs0029": {
+    "title": "CS0029",
+    "short": "One type cannot be implicitly converted to another.",
+    "summary": "The source and destination types do not match, and C# has no implicit conversion between them.",
+    "why": "string and int are different types, and C# does not automatically interpret a string's contents as a number.",
+    "tips": "Check the types involved and decide whether parsing, casting, or another conversion method is appropriate.",
+    "tags": ["CS0029", "type", "conversion"],
+    "badNotes": {
+      "1": "A string cannot be assigned directly to an int"
+    },
+    "goodNotes": {
+      "1": "Convert the string to a number explicitly"
+    }
+  },
+  "cs0246": {
+    "title": "CS0246",
+    "short": "A type or namespace name could not be found.",
+    "summary": "Check the type name, using directives, referenced assemblies, and required NuGet packages.",
+    "why": "The compiler cannot resolve that type or namespace from the current compilation.",
+    "tips": "An IDE may offer to add a using directive automatically, but the required package or assembly may also be missing.",
+    "tags": ["CS0246", "using", "namespace"],
+    "badNotes": {
+      "1": "JsonSerializer cannot be resolved from the current namespace imports"
+    },
+    "goodNotes": {
+      "1": "Import the required namespace with using"
+    }
+  },
+  "using-directive": {
+    "title": "using directives",
+    "short": "Write type names without repeating their namespace.",
+    "summary": "A using directive does not load a type at runtime; it lets source code omit a namespace prefix.",
+    "why": "With using System.Text.Json;, System.Text.Json.JsonSerializer can be written as JsonSerializer.",
+    "tips": "Adding a using directive cannot make a type available if the required assembly or NuGet package is not referenced.",
+    "tags": ["using", "namespace", "basics"]
+  },
+  "cs8602": {
+    "title": "CS8602",
+    "short": "A possibly null reference is being dereferenced.",
+    "summary": "Nullable analysis has determined that this value may be null.",
+    "why": "Because the code could produce a NullReferenceException at runtime, the compiler warns before execution.",
+    "tips": "Prefer a real null check or a design change instead of silencing the warning with ! without justification.",
+    "tags": ["CS8602", "nullable", "null"],
+    "badNotes": {
+      "2": "A reference that may be null is dereferenced here"
+    },
+    "goodNotes": {
+      "2": "Verify that the reference is not null before using it"
+    }
+  },
+  "for-loop": {
+    "title": "for-loop boundaries",
+    "short": "Confusing < and <= can easily cause out-of-range access.",
+    "summary": "To iterate through an array from the first element to the last, the usual condition is i < array.Length.",
+    "why": "The last valid index is Length - 1, so allowing i == Length goes one element too far.",
+    "tips": "For a simple traversal of every element, foreach is also worth considering.",
+    "tags": ["for", "array", "boundary"],
+    "badNotes": {
+      "1": "This allows i to reach Length"
+    },
+    "goodNotes": {
+      "1": "Use i < Length to stay inside the valid range"
+    }
+  }
+}
