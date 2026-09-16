@@ -1,0 +1,16 @@
+[
+  {
+    "id": "placeholder-migration-marker",
+    "type": "concept",
+    "title": "Migration marker",
+    "short": "Temporary marker",
+    "summary": "Temporary marker",
+    "bad": null,
+    "good": null,
+    "code": null,
+    "why": null,
+    "tips": null,
+    "tags": [],
+    "related": []
+  }
+]
