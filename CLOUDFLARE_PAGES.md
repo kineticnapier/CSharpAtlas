@@ -1,19 +1,31 @@
 # Cloudflare Pages
 
-CSharpAtlas can be deployed as a fully static Cloudflare Pages site. ASP.NET Core is not required in production.
+CSharpAtlas is a Vite static site and does not require ASP.NET Core or any server runtime.
 
 ## Pages settings
 
 - Production branch: `main`
-- Build command: `bash scripts/build-pages.sh`
-- Build output directory: `src/CSharpAtlas.Web/wwwroot`
+- Build command: `npm run build`
+- Build output directory: `dist`
 
-The build script copies the article JSON files from `src/CSharpAtlas.Web/content` into the static output directory. The browser loads and searches those files directly.
+Cloudflare Pages installs the npm dependencies, runs Vite, and publishes `dist/`. Article JSON under `public/content` is copied into the built site automatically by Vite.
 
-Git-connected Pages projects automatically create preview deployments for pull requests and non-production branches.
+Git-connected Pages projects create preview deployments for pull requests and non-production branches.
 
-## Local static preview
+## Local development
 
-Run the build script and serve `src/CSharpAtlas.Web/wwwroot` with any static HTTP server. Do not open `index.html` directly with `file://`, because the browser needs to fetch the JSON article files.
+```bash
+npm install
+npm run dev
+```
 
-The ASP.NET Core project may still be used as a local development host, but the site itself no longer depends on `/api/items`.
+The dev server listens on `0.0.0.0`, so it can also be exposed through Cloudflare Tunnel from WSL.
+
+## Production-like preview
+
+```bash
+npm run build
+npm run preview
+```
+
+This serves the generated `dist/` output locally.
