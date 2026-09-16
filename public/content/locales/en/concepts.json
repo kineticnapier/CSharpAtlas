@@ -1,0 +1,138 @@
+{
+  "value-reference-types": {
+    "title": "Value types and reference types",
+    "short": "Whether an assignment carries the value itself or a reference to an object.",
+    "summary": "C# types are broadly divided into value types and reference types, and assignment and mutation behave differently for each.",
+    "why": "int is a value type, so its value is copied. List<T> is a reference type, so the reference to the same object is copied.",
+    "tips": "Even for a reference type, the reference itself is passed as a value. Passing by reference with ref is a separate mechanism.",
+    "tags": ["value type", "reference type", "class"]
+  },
+  "boxing-unboxing": {
+    "title": "Boxing and unboxing",
+    "short": "Conversions that occur when a value type is treated as object or an interface type.",
+    "summary": "Converting a value type to object or an interface type can wrap the value in an object representation.",
+    "why": "Value types and reference types use different storage models, so boxing creates an object that can hold the value through a reference.",
+    "tips": "Generic APIs usually avoid unnecessary boxing more easily than older non-generic APIs.",
+    "tags": ["boxing", "object", "value type"]
+  },
+  "var-keyword": {
+    "title": "var and type inference",
+    "short": "Let the compiler determine a local variable's type from its initializer.",
+    "summary": "var is not dynamic typing. The compiler determines a specific static type from the initialization expression.",
+    "why": "Because the type is fixed at compile time, the variable cannot later hold an unrelated type.",
+    "tips": "var is convenient when the type is obvious from the right-hand side; use an explicit type when it makes code easier to understand.",
+    "tags": ["var", "type inference", "variable"]
+  },
+  "const-readonly": {
+    "title": "const and readonly",
+    "short": "Two ways to represent values that should not change.",
+    "summary": "const represents compile-time constants, while readonly is commonly used for fields that are assigned during construction and not changed afterward.",
+    "why": "A runtime value such as DateTime.Now cannot be const, but it can be assigned to a readonly field.",
+    "tips": "A public const value is embedded into consuming assemblies, so library compatibility matters when changing it.",
+    "tags": ["const", "readonly", "constant"]
+  },
+  "properties": {
+    "title": "Properties",
+    "short": "Members that look like fields while allowing controlled read and write behavior.",
+    "summary": "Properties expose values through get and set accessors and can include validation or computed behavior when needed.",
+    "why": "Compared with a public field, a property makes read/write permissions and later behavior changes easier to express.",
+    "tips": "Use init when a value should only be assignable during initialization.",
+    "tags": ["property", "get", "set"]
+  },
+  "records": {
+    "title": "record",
+    "short": "Define data-focused types concisely with value-based equality.",
+    "summary": "record is useful for data-centric types and provides value-based equality so instances with the same components can compare as equal.",
+    "why": "Unlike the default reference identity of a normal class, record generates equality based on its data components.",
+    "tips": "A with expression can create a new value while changing only selected members.",
+    "tags": ["record", "data", "equality"]
+  },
+  "interfaces": {
+    "title": "interface",
+    "short": "Describe a contract for capabilities a type provides.",
+    "summary": "An interface expresses what a type can do rather than how it does it, allowing multiple implementations to be used through the same abstraction.",
+    "why": "Callers can depend on only the capabilities they need instead of depending on a specific class.",
+    "tips": ".NET uses interfaces extensively, including IEnumerable<T> and IDisposable.",
+    "tags": ["interface", "abstraction", "type"]
+  },
+  "generics": {
+    "title": "Generics",
+    "short": "Accept types as parameters to write reusable, type-safe code.",
+    "summary": "Generics let code specify a concrete type at use time, as with T in List<T>.",
+    "why": "The same logic can work with int, string, and other types without duplication while preserving type information.",
+    "tips": "Use where T : ... constraints to restrict which types are valid.",
+    "tags": ["generic", "T", "type"]
+  },
+  "delegates": {
+    "title": "delegate",
+    "short": "A type for storing and passing methods as values.",
+    "summary": "A delegate can refer to methods with a specific parameter list and return type and can be handled much like a value.",
+    "why": "Passing behavior as an argument lets callers supply operations such as sorting rules or transformations.",
+    "tips": "Action is a common delegate type with no return value; Func represents delegates that return a value.",
+    "tags": ["delegate", "Func", "Action"]
+  },
+  "events": {
+    "title": "event",
+    "short": "Notify subscribers that something happened.",
+    "summary": "Based on delegates, an event exposes subscription and unsubscription while restricting who can raise the notification.",
+    "why": "This separates the object that publishes a notification from the code that reacts to it.",
+    "tips": "Leaving a subscription attached to a long-lived publisher can keep references alive longer than intended.",
+    "tags": ["event", "delegate", "notification"]
+  },
+  "lambda": {
+    "title": "Lambda expressions",
+    "short": "Write small pieces of behavior without naming a method.",
+    "summary": "Syntax such as x => x * 2 concisely defines behavior that can be converted to a delegate.",
+    "why": "LINQ and callback APIs often need short operations that are convenient to provide inline.",
+    "tips": "For multiple statements, use the block form x => { ... }.",
+    "tags": ["lambda", "=>", "LINQ"]
+  },
+  "linq-deferred": {
+    "title": "LINQ deferred execution",
+    "short": "Many operators such as Where do not enumerate immediately.",
+    "summary": "Many LINQ operations returning IEnumerable<T> do their actual work only when the sequence is enumerated, for example by foreach.",
+    "why": "Calling Where does not freeze the result; the source numbers are read when enumeration happens.",
+    "tips": "Use ToList or ToArray when you need to materialize and freeze the result at that point.",
+    "tags": ["LINQ", "deferred execution", "IEnumerable"]
+  },
+  "ienumerable": {
+    "title": "IEnumerable<T>",
+    "short": "An interface representing a sequence whose elements can be enumerated in order.",
+    "summary": "IEnumerable<T> is the basis of foreach and much of LINQ and represents a sequence that can provide elements one at a time.",
+    "why": "Code can depend only on the ability to enumerate rather than on a concrete collection such as List<T>.",
+    "tips": "IEnumerable<T> alone does not guarantee cheap Count access or indexing.",
+    "tags": ["IEnumerable", "foreach", "yield"]
+  },
+  "async-await": {
+    "title": "async / await",
+    "short": "Wait for long-running operations without simply blocking the current thread.",
+    "summary": "Awaiting an asynchronous operation that returns Task lets the method continue from that point after the operation completes.",
+    "why": "The method is structured as a continuation that resumes later instead of simply stopping the current thread for the whole wait.",
+    "tips": "async does not automatically mean the method runs on another thread.",
+    "tags": ["async", "await", "asynchronous"]
+  },
+  "task": {
+    "title": "Task",
+    "short": "Represent an operation that will complete in the future and its state.",
+    "summary": "Task represents asynchronous completion, failure, or cancellation and can be awaited.",
+    "why": "Even when a result does not exist yet, Task<T> can represent the value that will become available when the operation finishes.",
+    "tips": "Task.Run is useful for moving CPU-bound work to the thread pool; it is not required for every asynchronous operation.",
+    "tags": ["Task", "asynchronous", "await"]
+  },
+  "idisposable": {
+    "title": "IDisposable and using",
+    "short": "Reliably release resources when they are no longer needed.",
+    "summary": "Objects such as files and streams may implement IDisposable when they require explicit cleanup.",
+    "why": "The garbage collector alone cannot guarantee that operating-system resources such as file handles are released at the exact time you need.",
+    "tips": "A using statement and a using directive share the same keyword but serve different purposes.",
+    "tags": ["IDisposable", "Dispose", "using"]
+  },
+  "equality": {
+    "title": "== and Equals",
+    "short": "Ways to determine whether two values are equal.",
+    "summary": "The meaning of == depends on the type: some types compare values, while others may compare references.",
+    "why": "string defines == as content comparison. For user-defined types, equality behavior depends on the implementation.",
+    "tips": "Use ReferenceEquals when you specifically need to know whether two references point to the same object.",
+    "tags": ["Equals", "==", "comparison"]
+  }
+}
