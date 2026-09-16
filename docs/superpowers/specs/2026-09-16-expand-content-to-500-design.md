@@ -157,16 +157,20 @@ ASP.NET Core、Entity Framework Core、Unity、WPF、WinForms など特定フレ
 
 最低限、次を検査する。
 
-1. 全JSONを正常に読み込める。
+1. 対象の記事JSONをすべて正常に読み込める。
 2. 全記事の `id` が空でなく、一意である。
 3. `type` が既知の6種類のいずれかである。
-4. `title`、`short`、`summary`、`why`、`tips`、`tags`、`related` が想定型である。
-5. `related` の全IDが存在する。
-6. `related` に自分自身を含めない。
-7. `[[id]]` / `[[id|label]]` のリンク先が存在する。
-8. Wikiリンクが自分自身を指さない。
-9. 完全一致する重複タイトルがない。
-10. 総記事数を集計し、目標範囲 480〜520 件に入る。
+4. `title`、`short`、`summary`、`why`、`tips` が文字列である。
+5. `bad`、`good`、`code` が文字列または `null` である。
+6. `tags`、`related` が文字列配列である。
+7. `related` の全IDが存在する。
+8. `related` に自分自身を含めない。
+9. `[[id]]` / `[[id|label]]` のリンク先が存在する。
+10. Wikiリンクが自分自身を指さない。
+11. 完全一致する重複タイトルがない。
+12. 総記事数を集計し、目標範囲 480〜520 件に入る。
+
+`code-annotations.json` は記事JSONではないため、このスキーマ検査の対象外とする。
 
 可能なら診断出力として、type別件数、Wikiリンク数、related数、孤立記事数も表示する。
 
