@@ -5,15 +5,9 @@
     "bad": "int unused;\nConsole.WriteLine(\"Hello\");",
     "good": "int value = 10;\nConsole.WriteLine(value);",
     "code": null,
-    "related": [
-      "cs0219"
-    ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "related": ["cs0219"],
+    "badHighlight": [1],
+    "goodHighlight": [2]
   },
   {
     "id": "cs0219",
@@ -21,15 +15,9 @@
     "bad": "int answer = 42;\nConsole.WriteLine(\"done\");",
     "good": "int answer = 42;\nConsole.WriteLine(answer);",
     "code": null,
-    "related": [
-      "cs0168"
-    ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "related": ["cs0168"],
+    "badHighlight": [1],
+    "goodHighlight": [2]
   },
   {
     "id": "cs0618",
@@ -37,15 +25,9 @@
     "bad": "[Obsolete(\"Use NewMethod instead\")]\nstatic void OldMethod() { }\n\nOldMethod();",
     "good": "static void NewMethod() { }\n\nNewMethod();",
     "code": null,
-    "related": [
-      "cs1061"
-    ],
-    "badHighlight": [
-      4
-    ],
-    "goodHighlight": [
-      3
-    ]
+    "related": ["cs1061"],
+    "badHighlight": [4],
+    "goodHighlight": [3]
   },
   {
     "id": "cs1998",
@@ -57,12 +39,8 @@
       "async-await",
       "task"
     ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      3
-    ]
+    "badHighlight": [1],
+    "goodHighlight": [3]
   },
   {
     "id": "cs4014",
@@ -70,16 +48,9 @@
     "bad": "SaveAsync();\nConsole.WriteLine(\"保存完了\");",
     "good": "await SaveAsync();\nConsole.WriteLine(\"保存完了\");",
     "code": null,
-    "related": [
-      "async-await",
-      "async-void"
-    ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "related": ["async-await"],
+    "badHighlight": [1],
+    "goodHighlight": [1]
   },
   {
     "id": "cs8600",
@@ -89,15 +60,10 @@
     "code": null,
     "related": [
       "nullable",
-      "cs8602",
-      "null-coalescing"
+      "cs8602"
     ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "badHighlight": [2],
+    "goodHighlight": [2]
   },
   {
     "id": "cs8618",
@@ -109,12 +75,8 @@
       "nullable",
       "properties"
     ],
-    "badHighlight": [
-      3
-    ],
-    "goodHighlight": [
-      3
-    ]
+    "badHighlight": [3],
+    "goodHighlight": [3]
   },
   {
     "id": "cs8625",
@@ -126,11 +88,7 @@
       "nullable",
       "cs8600"
     ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [1],
+    "goodHighlight": [1]
   }
 ]
