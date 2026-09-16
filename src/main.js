@@ -4,6 +4,7 @@ import {
   copyCode,
   highlightCSharp
 } from './article-ui.js';
+import { renderWikiText } from './wiki-links.js';
 
 const labels = {
   code: 'コード',
@@ -29,7 +30,6 @@ let currentType = 'all';
 let currentQuery = '';
 let currentItems = [];
 let allItems = [];
-let wikiTerms = [];
 let codeAnnotations = {};
 
 const homeView = document.getElementById('homeView');
@@ -58,7 +58,6 @@ async function initialize() {
     ids.add(id);
   }
 
-  wikiTerms = buildWikiTerms(allItems);
   loadItems();
   syncRouteFromHash();
 }
@@ -143,7 +142,7 @@ function openItem(id) {
   const annotation = codeAnnotations[item.id] ?? {};
 
   const sections = [];
-  sections.push(`<div class="block"><h2>一言でいうと</h2><div class="note">${linkify(item.summary, item.id)}</div></div>`);
+  sections.push(`<div class="block"><h2>一言でいうと</h2><div class="note">${renderArticleText(item.summary)}</div></div>`);
 
   if (item.bad && item.good) {
     sections.push(`<div class="code-compare">
@@ -192,8 +191,8 @@ function openItem(id) {
       lineNoteMap(item.codeNotes ?? annotation.codeNotes)
     ));
   }
-  if (item.why) sections.push(`<div class="block"><h2>なぜ？</h2><p>${linkify(item.why, item.id)}</p></div>`);
-  if (item.tips) sections.push(`<div class="block"><h2>補足</h2><p>${linkify(item.tips, item.id)}</p></div>`);
+  if (item.why) sections.push(`<div class="block"><h2>なぜ？</h2><p>${renderArticleText(item.why)}</p></div>`);
+  if (item.tips) sections.push(`<div class="block"><h2>補足</h2><p>${renderArticleText(item.tips)}</p></div>`);
 
   if (item.related?.length) {
     const relatedItems = item.related.map(fetchItem).filter(Boolean);
@@ -210,7 +209,7 @@ function openItem(id) {
     <div class="detail-head">
       <span class="badge ${escapeHtml(item.type)}">${labels[item.type] ?? item.type}</span>
       <h1 class="${isCompilerType(item.type) || item.type === 'exception' ? 'mono' : ''}">${escapeHtml(item.title)}</h1>
-      <p>${linkify(item.short, item.id)}</p>
+      <p>${renderArticleText(item.short)}</p>
     </div>
     ${sections.join('')}
   `;
@@ -248,58 +247,11 @@ function openItem(id) {
 }
 
 function fetchItem(id) {
-  return allItems.find(x => x.id.toLowerCase() === id.toLowerCase()) ?? null;
+  return allItems.find(x => x.id.toLowerCase() === String(id ?? '').toLowerCase()) ?? null;
 }
 
-function buildWikiTerms(items) {
-  const byTerm = new Map();
-  for (const item of items) {
-    const terms = new Set([item.title, ...(item.tags ?? [])]);
-    for (const rawTerm of terms) {
-      const term = String(rawTerm ?? '').trim();
-      if (term.length < 2 || isGenericWikiTerm(term)) continue;
-      if (!byTerm.has(term)) byTerm.set(term, []);
-      byTerm.get(term).push(item);
-    }
-  }
-
-  const result = [];
-  for (const [term, candidates] of byTerm) {
-    const exactTitle = candidates.find(item => item.title.toLowerCase() === term.toLowerCase());
-    let target = exactTitle ?? null;
-    if (!target && candidates.length === 1) target = candidates[0];
-    if (!target) {
-      const titleMatches = candidates.filter(item => item.title.toLowerCase().includes(term.toLowerCase()));
-      if (titleMatches.length === 1) target = titleMatches[0];
-    }
-    if (target) result.push({ term, id: target.id });
-  }
-  return result.sort((a, b) => b.term.length - a.term.length);
-}
-
-function isGenericWikiTerm(term) {
-  return new Set(['例外','頻出','基本','変数','入力','変換','ファイル','配列','型','パス','境界','collection','namespace']).has(term);
-}
-
-function linkify(value, currentId) {
-  const text = String(value ?? '');
-  const terms = wikiTerms.filter(x => x.id !== currentId && text.toLowerCase().includes(x.term.toLowerCase()));
-  if (!terms.length) return escapeHtml(text);
-  const pattern = new RegExp(terms.map(x => escapeRegExp(x.term)).join('|'), 'gi');
-  const lookup = new Map(terms.map(x => [x.term.toLowerCase(), x]));
-  let result = '';
-  let lastIndex = 0;
-  for (const match of text.matchAll(pattern)) {
-    const index = match.index ?? 0;
-    result += escapeHtml(text.slice(lastIndex, index));
-    const found = lookup.get(match[0].toLowerCase());
-    result += found
-      ? `<button class="wiki-link" data-wiki-id="${escapeHtml(found.id)}">${escapeHtml(match[0])}</button>`
-      : escapeHtml(match[0]);
-    lastIndex = index + match[0].length;
-  }
-  result += escapeHtml(text.slice(lastIndex));
-  return result;
+function renderArticleText(value) {
+  return renderWikiText(value, fetchItem);
 }
 
 function explicitLineSet(lines) {
@@ -322,7 +274,6 @@ function lineNoteMap(notes) {
   return result;
 }
 
-function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function isCompilerType(type) { return type === 'compiler-error' || type === 'compiler-warning'; }
 function codeSection(title, value, className, highlightLines = new Set(), notes = new Map()) {
   const lines = String(value ?? '').split('\n');
