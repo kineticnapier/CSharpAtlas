@@ -1,3 +1,10 @@
+import {
+  articleHash,
+  articleIdFromHash,
+  copyCode,
+  highlightCSharp
+} from './article-ui.js';
+
 const labels = {
   code: 'コード',
   exception: '例外',
@@ -53,6 +60,7 @@ async function initialize() {
 
   wikiTerms = buildWikiTerms(allItems);
   loadItems();
+  syncRouteFromHash();
 }
 
 async function loadContentFile(file) {
@@ -87,7 +95,7 @@ function renderCards() {
   `).join('');
 
   cards.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', () => openItem(card.dataset.id));
+    card.addEventListener('click', () => navigateToItem(card.dataset.id));
   });
 
   empty.style.display = currentItems.length ? 'none' : 'block';
@@ -95,6 +103,38 @@ function renderCards() {
   listTitle.textContent = currentQuery
     ? `「${currentQuery}」の検索結果`
     : currentType === 'all' ? 'おすすめ' : labels[currentType];
+}
+
+function navigateToItem(id) {
+  const hash = articleHash(id);
+  if (window.location.hash === hash) {
+    openItem(id);
+    return;
+  }
+  window.location.hash = hash;
+}
+
+function navigateHome() {
+  const baseUrl = `${window.location.pathname}${window.location.search}`;
+  window.history.replaceState(null, '', baseUrl);
+  showHome();
+}
+
+function syncRouteFromHash() {
+  const id = articleIdFromHash(window.location.hash);
+  if (!id) {
+    showHome();
+    return;
+  }
+
+  if (!fetchItem(id)) {
+    const baseUrl = `${window.location.pathname}${window.location.search}`;
+    window.history.replaceState(null, '', baseUrl);
+    showHome();
+    return;
+  }
+
+  openItem(id);
 }
 
 function openItem(id) {
@@ -176,15 +216,34 @@ function openItem(id) {
   `;
 
   detailContent.querySelectorAll('[data-related-id]').forEach(button => {
-    button.addEventListener('click', () => openItem(button.dataset.relatedId));
+    button.addEventListener('click', () => navigateToItem(button.dataset.relatedId));
   });
 
   detailContent.querySelectorAll('[data-wiki-id]').forEach(button => {
-    button.addEventListener('click', () => openItem(button.dataset.wikiId));
+    button.addEventListener('click', () => navigateToItem(button.dataset.wikiId));
+  });
+
+  detailContent.querySelectorAll('[data-copy-code]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const originalLabel = button.textContent;
+      try {
+        await copyCode(decodeURIComponent(button.dataset.copyCode ?? ''));
+        button.textContent = 'コピーしました';
+        button.classList.add('copied');
+      } catch {
+        button.textContent = 'コピー失敗';
+        button.classList.add('copy-failed');
+      }
+      window.setTimeout(() => {
+        button.textContent = originalLabel;
+        button.classList.remove('copied', 'copy-failed');
+      }, 1400);
+    });
   });
 
   homeView.classList.add('hidden');
   detailView.classList.remove('hidden');
+  document.title = `${item.title} - C# Atlas`;
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
@@ -275,9 +334,10 @@ function codeSection(title, value, className, highlightLines = new Set(), notes 
     const noteHtml = isHighlighted && callout
       ? `<div class="code-note" aria-hidden="true"><span class="code-note-mark">// ↑</span> ${escapeHtml(callout)}</div>`
       : '';
-    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${escapeHtml(line) || ' '}</span></div>${noteHtml}`;
+    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${highlightCSharp(line) || ' '}</span></div>${noteHtml}`;
   }).join('');
-  return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${body}</div></div>`;
+  const encodedCode = encodeURIComponent(String(value ?? ''));
+  return `<div class="block code-block"><div class="code-block-head"><h2>${title}</h2><button type="button" class="copy-code" data-copy-code="${encodedCode}">コピー</button></div><div class="code ${className}">${body}</div></div>`;
 }
 function escapeHtml(value) {
   return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -285,6 +345,7 @@ function escapeHtml(value) {
 function showHome() {
   detailView.classList.add('hidden');
   homeView.classList.remove('hidden');
+  document.title = 'C# Atlas';
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function setType(type) {
@@ -299,8 +360,9 @@ document.querySelectorAll('[data-query]').forEach(button => button.addEventListe
   document.querySelectorAll('[data-type]').forEach(x => x.classList.toggle('active', x.dataset.type === 'all')); loadItems();
 }));
 document.querySelectorAll('[data-type]').forEach(button => button.addEventListener('click', () => setType(button.dataset.type)));
-document.querySelectorAll('[data-nav-type]').forEach(button => button.addEventListener('click', () => { showHome(); setType(button.dataset.navType); }));
-document.getElementById('homeButton').addEventListener('click', showHome);
-document.getElementById('backButton').addEventListener('click', showHome);
+document.querySelectorAll('[data-nav-type]').forEach(button => button.addEventListener('click', () => { navigateHome(); setType(button.dataset.navType); }));
+document.getElementById('homeButton').addEventListener('click', navigateHome);
+document.getElementById('backButton').addEventListener('click', navigateHome);
+window.addEventListener('hashchange', syncRouteFromHash);
 
 initialize().catch(error => { cards.innerHTML = `<div class="empty" style="display:block">${escapeHtml(error.message)}</div>`; });
