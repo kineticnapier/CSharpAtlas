@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>C# Atlas</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+<header>
+  <div class="nav">
+    <button class="logo" id="homeButton">C<span>#</span> Atlas</button>
+    <nav>
+      <button data-nav-type="all">すべて</button>
+      <button data-nav-type="code">コード集</button>
+      <button data-nav-type="exception">例外</button>
+      <button data-nav-type="compiler-error">CSエラー</button>
+      <button data-nav-type="compiler-warning">CS警告</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="homeView">
+    <div class="hero">
+      <div class="eyebrow">逆引き C# リファレンス</div>
+      <h1>やりたいことも、<br>壊れた理由も。</h1>
+      <p>C# のコード例、例外、コンパイルエラー・警告、仕組みをひとつの検索で。</p>
+      <form id="searchForm" class="search">
+        <input id="searchInput" placeholder="例: JSON 読み込み / NullReferenceException / CS0103" autocomplete="off">
+        <button type="submit">検索</button>
+      </form>
+      <div class="quick">
+        <button data-query="JSON">JSON</button>
+        <button data-query="Dictionary">Dictionary</button>
+        <button data-query="null">null</button>
+        <button data-query="CS0103">CS0103</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside>
+        <div class="aside-title">種類</div>
+        <button class="type active" data-type="all">すべて</button>
+        <button class="type" data-type="code">コード集</button>
+        <button class="type" data-type="exception">例外</button>
+        <button class="type" data-type="compiler-error">コンパイルエラー</button>
+        <button class="type" data-type="compiler-warning">コンパイル警告</button>
+        <button class="type" data-type="logic">論理エラー</button>
+        <button class="type" data-type="concept">仕組み</button>
+      </aside>
+
+      <section>
+        <div class="list-head">
+          <h2 id="listTitle">おすすめ</h2>
+          <span id="resultCount"></span>
+        </div>
+        <div id="cards" class="cards"></div>
+        <div id="empty" class="empty">一致する項目がありません。</div>
+      </section>
+    </div>
+  </section>
+
+  <section id="detailView" class="detail hidden">
+    <button id="backButton" class="back">← 一覧に戻る</button>
+    <div id="detailContent"></div>
+  </section>
+</main>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
