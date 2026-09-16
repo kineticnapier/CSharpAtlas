@@ -52,6 +52,7 @@ function wikiTargets(entry) {
 test('localized article corpus has valid IDs, types, fields, and links', async () => {
   const { base, locales } = await loadCorpus();
   const ids = new Set();
+  const missingTargets = [];
 
   for (const article of base) {
     assert.equal(typeof article.id, 'string');
@@ -68,7 +69,7 @@ test('localized article corpus has valid IDs, types, fields, and links', async (
   for (const article of base) {
     for (const target of article.related) {
       assert.notEqual(target, article.id, `${article.id}: self-related link`);
-      assert.ok(ids.has(target), `${article.id}: missing related target ${target}`);
+      if (!ids.has(target)) missingTargets.push(`${article.id}: missing related target ${target}`);
     }
   }
 
@@ -92,10 +93,11 @@ test('localized article corpus has valid IDs, types, fields, and links', async (
 
       for (const target of wikiTargets(entry)) {
         assert.notEqual(target, article.id, `${locale}/${article.id}: self wiki link`);
-        assert.ok(ids.has(target), `${locale}/${article.id}: missing wiki target ${target}`);
+        if (!ids.has(target)) missingTargets.push(`${locale}/${article.id}: missing wiki target ${target}`);
       }
     }
   }
 
-  assert.equal(base.length, 100, 'i18n foundation must preserve the existing 100 articles');
+  assert.deepEqual(missingTargets, [], `broken article links:\n${missingTargets.join('\n')}`);
+  assert.ok(base.length >= 100, 'i18n foundation must preserve at least the original 100 articles');
 });
