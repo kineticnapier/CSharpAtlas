@@ -10,6 +10,13 @@ const UI = {
     compilerWarning: 'コンパイル警告',
     logic: '論理エラー',
     concept: '仕組み',
+    heroEyebrow: '逆引き C# リファレンス',
+    heroTitle1: 'やりたいことも、',
+    heroTitle2: '壊れた理由も。',
+    heroDescription: 'C# のコード例、例外、コンパイルエラー・警告、仕組みをひとつの検索で。',
+    searchPlaceholder: '例: JSON 読み込み / NullReferenceException / CS0103',
+    categories: '種類',
+    language: '言語',
     searchButton: '検索',
     recommended: 'おすすめ',
     searchResults: query => `「${query}」の検索結果`,
@@ -27,7 +34,9 @@ const UI = {
     copied: 'コピーしました',
     copyFailed: 'コピー失敗',
     untranslatedBadge: '未翻訳',
-    fallbackBanner: '選択した言語の翻訳がまだありません。このページは日本語で表示しています。'
+    fallbackBanner: '選択した言語の翻訳がまだありません。このページは日本語で表示しています。',
+    contentLoadFailed: file => `記事の取得に失敗しました: ${file}`,
+    duplicateId: id => `記事IDが重複しています: ${id}`
   },
   en: {
     all: 'All',
@@ -37,6 +46,13 @@ const UI = {
     compilerWarning: 'Compiler warnings',
     logic: 'Logic pitfalls',
     concept: 'Concepts',
+    heroEyebrow: 'Reverse lookup C# reference',
+    heroTitle1: 'What you want to do,',
+    heroTitle2: 'and why it broke.',
+    heroDescription: 'Search C# recipes, exceptions, compiler errors and warnings, and core concepts in one place.',
+    searchPlaceholder: 'e.g. Read JSON / NullReferenceException / CS0103',
+    categories: 'Categories',
+    language: 'Language',
     searchButton: 'Search',
     recommended: 'Recommended',
     searchResults: query => `Search results for “${query}”`,
@@ -54,7 +70,9 @@ const UI = {
     copied: 'Copied',
     copyFailed: 'Copy failed',
     untranslatedBadge: 'Not translated',
-    fallbackBanner: 'English translation is not available yet. This article is being shown in Japanese.'
+    fallbackBanner: 'English translation is not available yet. This article is being shown in Japanese.',
+    contentLoadFailed: file => `Failed to load article content: ${file}`,
+    duplicateId: id => `Duplicate article ID: ${id}`
   }
 };
 
