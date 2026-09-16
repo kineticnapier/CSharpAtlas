@@ -1,0 +1,136 @@
+[
+  {
+    "id": "cs0168",
+    "type": "compiler-warning",
+    "bad": "int unused;\nConsole.WriteLine(\"Hello\");",
+    "good": "int value = 10;\nConsole.WriteLine(value);",
+    "code": null,
+    "related": [
+      "cs0219"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs0219",
+    "type": "compiler-warning",
+    "bad": "int answer = 42;\nConsole.WriteLine(\"done\");",
+    "good": "int answer = 42;\nConsole.WriteLine(answer);",
+    "code": null,
+    "related": [
+      "cs0168"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs0618",
+    "type": "compiler-warning",
+    "bad": "[Obsolete(\"Use NewMethod instead\")]\nstatic void OldMethod() { }\n\nOldMethod();",
+    "good": "static void NewMethod() { }\n\nNewMethod();",
+    "code": null,
+    "related": [
+      "cs1061"
+    ],
+    "badHighlight": [
+      4
+    ],
+    "goodHighlight": [
+      3
+    ]
+  },
+  {
+    "id": "cs1998",
+    "type": "compiler-warning",
+    "bad": "static async Task<int> GetValueAsync()\n{\n    return 42;\n}",
+    "good": "static async Task<int> GetValueAsync()\n{\n    await Task.Delay(10);\n    return 42;\n}",
+    "code": null,
+    "related": [
+      "async-await",
+      "task"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      3
+    ]
+  },
+  {
+    "id": "cs4014",
+    "type": "compiler-warning",
+    "bad": "SaveAsync();\nConsole.WriteLine(\"保存完了\");",
+    "good": "await SaveAsync();\nConsole.WriteLine(\"保存完了\");",
+    "code": null,
+    "related": [
+      "async-await",
+      "async-void"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs8600",
+    "type": "compiler-warning",
+    "bad": "string? maybeName = GetName();\nstring name = maybeName;",
+    "good": "string? maybeName = GetName();\nstring name = maybeName ?? \"Unknown\";",
+    "code": null,
+    "related": [
+      "nullable",
+      "cs8602",
+      "null-coalescing"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs8618",
+    "type": "compiler-warning",
+    "bad": "class User\n{\n    public string Name { get; set; }\n}",
+    "good": "class User\n{\n    public string Name { get; set; } = string.Empty;\n}",
+    "code": null,
+    "related": [
+      "nullable",
+      "properties"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      3
+    ]
+  },
+  {
+    "id": "cs8625",
+    "type": "compiler-warning",
+    "bad": "string name = null;",
+    "good": "string? name = null;",
+    "code": null,
+    "related": [
+      "nullable",
+      "cs8600"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  }
+]

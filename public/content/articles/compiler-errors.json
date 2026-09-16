@@ -1,0 +1,307 @@
+[
+  {
+    "id": "cs0019",
+    "type": "compiler-error",
+    "bad": "int n = 10;\nstring text = \"20\";\nConsole.WriteLine(n + text == 30);",
+    "good": "int n = 10;\nint value = int.Parse(\"20\");\nConsole.WriteLine(n + value == 30);",
+    "code": null,
+    "related": [
+      "cs0029",
+      "parse-number"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs0021",
+    "type": "compiler-error",
+    "bad": "int number = 123;\nConsole.WriteLine(number[0]);",
+    "good": "string text = \"123\";\nConsole.WriteLine(text[0]);",
+    "code": null,
+    "related": [
+      "index-out-of-range",
+      "list-basic"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs0117",
+    "type": "compiler-error",
+    "bad": "Console.PrintLine(\"Hello\");",
+    "good": "Console.WriteLine(\"Hello\");",
+    "code": null,
+    "related": [
+      "cs1061",
+      "cs0103"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs0120",
+    "type": "compiler-error",
+    "bad": "class Counter\n{\n    public int Value { get; set; }\n}\n\nConsole.WriteLine(Counter.Value);",
+    "good": "var counter = new Counter();\nConsole.WriteLine(counter.Value);",
+    "code": null,
+    "related": [
+      "properties",
+      "value-reference-types"
+    ],
+    "badHighlight": [
+      6
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs0136",
+    "type": "compiler-error",
+    "bad": "int x = 1;\nif (x > 0)\n{\n    int x = 2;\n}",
+    "good": "int x = 1;\nif (x > 0)\n{\n    int y = 2;\n}",
+    "code": null,
+    "related": [
+      "scope",
+      "cs0103"
+    ],
+    "badHighlight": [
+      4
+    ],
+    "goodHighlight": [
+      4
+    ]
+  },
+  {
+    "id": "cs0161",
+    "type": "compiler-error",
+    "bad": "static int Sign(int x)\n{\n    if (x > 0) return 1;\n}",
+    "good": "static int Sign(int x)\n{\n    if (x > 0) return 1;\n    return 0;\n}",
+    "code": null,
+    "related": [
+      "switch-expression"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      4
+    ]
+  },
+  {
+    "id": "cs0165",
+    "type": "compiler-error",
+    "bad": "int x;\nif (DateTime.Now.Hour > 12)\n    x = 1;\nConsole.WriteLine(x);",
+    "good": "int x = 0;\nif (DateTime.Now.Hour > 12)\n    x = 1;\nConsole.WriteLine(x);",
+    "code": null,
+    "related": [
+      "scope",
+      "cs8618"
+    ],
+    "badHighlight": [
+      4
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs0200",
+    "type": "compiler-error",
+    "bad": "class User\n{\n    public string Name { get; } = \"Alice\";\n}\n\nvar user = new User();\nuser.Name = \"Bob\";",
+    "good": "class User\n{\n    public string Name { get; set; } = \"Alice\";\n}\n\nvar user = new User();\nuser.Name = \"Bob\";",
+    "code": null,
+    "related": [
+      "properties",
+      "const-readonly"
+    ],
+    "badHighlight": [
+      7
+    ],
+    "goodHighlight": [
+      3
+    ]
+  },
+  {
+    "id": "cs0266",
+    "type": "compiler-error",
+    "bad": "double x = 3.14;\nint n = x;",
+    "good": "double x = 3.14;\nint n = (int)x;",
+    "code": null,
+    "related": [
+      "cs0029",
+      "invalid-cast"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs0411",
+    "type": "compiler-error",
+    "bad": "static T Create<T>() => Activator.CreateInstance<T>();\nvar value = Create();",
+    "good": "static T Create<T>() => Activator.CreateInstance<T>();\nvar value = Create<List<int>>();",
+    "code": null,
+    "related": [
+      "generics",
+      "var-keyword"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs1002",
+    "type": "compiler-error",
+    "bad": "int x = 10\nConsole.WriteLine(x);",
+    "good": "int x = 10;\nConsole.WriteLine(x);",
+    "code": null,
+    "related": [
+      "cs1513",
+      "cs1026"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs1026",
+    "type": "compiler-error",
+    "bad": "if (x > 0\n{\n    Console.WriteLine(x);\n}",
+    "good": "if (x > 0)\n{\n    Console.WriteLine(x);\n}",
+    "code": null,
+    "related": [
+      "cs1002",
+      "cs1513"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs1061",
+    "type": "compiler-error",
+    "bad": "string text = \"abc\";\nConsole.WriteLine(text.Count);",
+    "good": "string text = \"abc\";\nConsole.WriteLine(text.Length);",
+    "code": null,
+    "related": [
+      "cs0117",
+      "extension-methods"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs1501",
+    "type": "compiler-error",
+    "bad": "Console.WriteLine(\"{0} {1}\", 10);",
+    "good": "Console.WriteLine(\"{0} {1}\", 10, 20);",
+    "code": null,
+    "related": [
+      "cs1503",
+      "cs7036"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs1503",
+    "type": "compiler-error",
+    "bad": "static void Print(int value) { }\nPrint(\"10\");",
+    "good": "static void Print(int value) { }\nPrint(10);",
+    "code": null,
+    "related": [
+      "cs1501",
+      "cs0029"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "cs1513",
+    "type": "compiler-error",
+    "bad": "if (x > 0)\n{\n    Console.WriteLine(x);",
+    "good": "if (x > 0)\n{\n    Console.WriteLine(x);\n}",
+    "code": null,
+    "related": [
+      "cs1026",
+      "scope"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      4
+    ]
+  },
+  {
+    "id": "cs1525",
+    "type": "compiler-error",
+    "bad": "int x = 1 + * 2;",
+    "good": "int x = 1 + 2;",
+    "code": null,
+    "related": [
+      "cs1002",
+      "cs1026"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs7036",
+    "type": "compiler-error",
+    "bad": "static void Move(int x, int y) { }\nMove(10);",
+    "good": "static void Move(int x, int y) { }\nMove(10, 20);",
+    "code": null,
+    "related": [
+      "cs1501",
+      "cs1503"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  }
+]

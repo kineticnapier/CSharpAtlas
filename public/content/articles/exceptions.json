@@ -1,0 +1,273 @@
+[
+  {
+    "id": "argument-null",
+    "type": "exception",
+    "bad": "static int LengthOf(string text)\n{\n    ArgumentNullException.ThrowIfNull(text);\n    return text.Length;\n}\n\nLengthOf(null!);",
+    "good": "string? text = GetText();\nif (text is not null)\n{\n    Console.WriteLine(LengthOf(text));\n}",
+    "code": null,
+    "related": [
+      "nullref",
+      "nullable"
+    ],
+    "badHighlight": [
+      7
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "argument-exception",
+    "type": "exception",
+    "bad": "static void SetName(string name)\n{\n    if (name.Length == 0)\n        throw new ArgumentException(\"名前は空にできません\", nameof(name));\n}\n\nSetName(\"\");",
+    "good": "string name = \"Alice\";\nSetName(name);",
+    "code": null,
+    "related": [
+      "argument-null",
+      "argument-out-of-range"
+    ],
+    "badHighlight": [
+      7
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "argument-out-of-range",
+    "type": "exception",
+    "bad": "var list = new List<int> { 10, 20 };\nlist.GetRange(0, 3);",
+    "good": "var list = new List<int> { 10, 20 };\nvar part = list.GetRange(0, 2);",
+    "code": null,
+    "related": [
+      "index-out-of-range",
+      "argument-exception"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "invalid-operation",
+    "type": "exception",
+    "bad": "var numbers = new List<int>();\nConsole.WriteLine(numbers.First());",
+    "good": "var numbers = new List<int>();\nint? first = numbers.Count > 0 ? numbers[0] : null;",
+    "code": null,
+    "related": [
+      "linq-deferred",
+      "list-basic"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "invalid-cast",
+    "type": "exception",
+    "bad": "object value = \"123\";\nint number = (int)value;",
+    "good": "object value = \"123\";\nif (value is string text && int.TryParse(text, out int number))\n{\n    Console.WriteLine(number);\n}",
+    "code": null,
+    "related": [
+      "pattern-matching",
+      "boxing-unboxing"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "divide-by-zero",
+    "type": "exception",
+    "bad": "int x = 10;\nint y = 0;\nConsole.WriteLine(x / y);",
+    "good": "int x = 10;\nint y = 0;\nif (y != 0)\n{\n    Console.WriteLine(x / y);\n}",
+    "code": null,
+    "related": [
+      "int-div",
+      "floating-equality"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      3
+    ]
+  },
+  {
+    "id": "overflow-exception",
+    "type": "exception",
+    "bad": "int x = int.MaxValue;\nint y = checked(x + 1);",
+    "good": "long x = int.MaxValue;\nlong y = x + 1;",
+    "code": null,
+    "related": [
+      "integer-overflow"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "io-exception",
+    "type": "exception",
+    "bad": "using var a = File.OpenWrite(\"data.txt\");\nusing var b = File.OpenWrite(\"data.txt\");",
+    "good": "using (var stream = File.OpenWrite(\"data.txt\"))\n{\n    // ここで書き込む\n}\n// stream はここで閉じられる",
+    "code": null,
+    "related": [
+      "file-read",
+      "file-write",
+      "idisposable"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "directory-not-found",
+    "type": "exception",
+    "bad": "File.WriteAllText(\"logs/today.txt\", \"hello\");",
+    "good": "Directory.CreateDirectory(\"logs\");\nFile.WriteAllText(\"logs/today.txt\", \"hello\");",
+    "code": null,
+    "related": [
+      "file-not-found",
+      "directory-enumerate"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "unauthorized-access",
+    "type": "exception",
+    "bad": "File.WriteAllText(protectedPath, \"data\");",
+    "good": "string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), \"MyApp\", \"data.txt\");\nDirectory.CreateDirectory(Path.GetDirectoryName(path)!);\nFile.WriteAllText(path, \"data\");",
+    "code": null,
+    "related": [
+      "io-exception",
+      "file-write"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "object-disposed",
+    "type": "exception",
+    "bad": "var stream = new MemoryStream();\nstream.Dispose();\nstream.WriteByte(1);",
+    "good": "using var stream = new MemoryStream();\nstream.WriteByte(1);",
+    "code": null,
+    "related": [
+      "idisposable"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "not-supported",
+    "type": "exception",
+    "bad": "ICollection<int> values = Array.AsReadOnly(new[] { 1, 2, 3 });\nvalues.Add(4);",
+    "good": "var values = new List<int> { 1, 2, 3 };\nvalues.Add(4);",
+    "code": null,
+    "related": [
+      "interfaces",
+      "list-basic"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "operation-canceled",
+    "type": "exception",
+    "bad": "using var cts = new CancellationTokenSource();\ncts.Cancel();\nawait Task.Delay(1000, cts.Token);",
+    "good": "try\n{\n    await Task.Delay(1000, token);\n}\ncatch (OperationCanceledException) when (token.IsCancellationRequested)\n{\n    Console.WriteLine(\"キャンセルされました\");\n}",
+    "code": null,
+    "related": [
+      "cancellation-token",
+      "async-await"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      5
+    ]
+  },
+  {
+    "id": "task-canceled",
+    "type": "exception",
+    "bad": "using var cts = new CancellationTokenSource(10);\nawait Task.Delay(1000, cts.Token);",
+    "good": "try\n{\n    await Task.Delay(1000, token);\n}\ncatch (OperationCanceledException)\n{\n    // キャンセルとして処理する\n}",
+    "code": null,
+    "related": [
+      "operation-canceled",
+      "task"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      5
+    ]
+  },
+  {
+    "id": "timeout-exception",
+    "type": "exception",
+    "bad": "await operation.WaitAsync(TimeSpan.FromMilliseconds(1));",
+    "good": "try\n{\n    await operation.WaitAsync(TimeSpan.FromSeconds(5));\n}\ncatch (TimeoutException)\n{\n    Console.WriteLine(\"時間切れです\");\n}",
+    "code": null,
+    "related": [
+      "task",
+      "async-await"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      5
+    ]
+  },
+  {
+    "id": "uri-format",
+    "type": "exception",
+    "bad": "var uri = new Uri(\"http://[invalid\");",
+    "good": "if (Uri.TryCreate(\"https://example.com/\", UriKind.Absolute, out var uri))\n{\n    Console.WriteLine(uri.Host);\n}",
+    "code": null,
+    "related": [
+      "http-get",
+      "format-exception"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  }
+]

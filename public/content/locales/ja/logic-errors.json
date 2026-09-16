@@ -1,0 +1,75 @@
+{
+  "floating-equality": {
+    "title": "浮動小数点数を == で比較する",
+    "short": "計算上は同じはずなのに double の == が false になることがある。",
+    "summary": "double は多くの小数を2進数で正確に表せないため、計算後にごく小さな誤差が残ることがあります。",
+    "why": "0.1 や 0.2 は double の内部表現では有限桁で正確に表せず、丸め誤差を含みます。",
+    "tips": "許容誤差は用途の値の大きさや必要精度に応じて決めます。一般的な比較の仕組みは [[equality]] も参照してください。金額などでは decimal が適する場合があります。",
+    "tags": [
+      "double",
+      "浮動小数点",
+      "比較"
+    ],
+    "badNotes": {
+      "2": "double を == で直接比較している"
+    },
+    "goodNotes": {
+      "3": "差が許容誤差内かで比較する"
+    }
+  },
+  "integer-overflow": {
+    "title": "整数オーバーフロー",
+    "short": "大きな整数計算が例外なしで別の値へ回り込むことがある。",
+    "summary": "通常の unchecked な整数演算では、型の範囲を超えた結果が回り込む場合があります。[[overflow-exception|checked]] を使うと範囲超過を例外として検出できます。",
+    "why": "int は有限ビット幅なので、表現可能範囲を超えると下位ビットだけが残る演算になる場合があります。",
+    "tips": "値が大きくなる計算では long を使うだけで十分か、checked で [[overflow-exception|OverflowException]] を発生させるべきかを考えます。",
+    "tags": [
+      "int",
+      "overflow",
+      "checked"
+    ],
+    "badNotes": {
+      "2": "int の範囲を超えると値が回り込む"
+    },
+    "goodNotes": {
+      "2": "checked でオーバーフローを検出する"
+    }
+  },
+  "reference-equality": {
+    "title": "参照の同一性と値の等価性を混同する",
+    "short": "中身が同じオブジェクトを『同じもの』と判定できないことがある。",
+    "summary": "[[value-reference-types|参照型]]である class の既定の等価性では、内容ではなく同じインスタンスかどうかが比較される場合があります。",
+    "why": "通常の class は、等価性を独自実装しなければ別々に生成したインスタンスを同じ値とはみなしません。",
+    "tips": "値として比較したい型では [[records|record]] や [[equality|Equals / GetHashCode]] の実装を検討します。",
+    "tags": [
+      "class",
+      "参照",
+      "=="
+    ],
+    "badNotes": {
+      "4": "通常の class では別インスタンスとして比較される"
+    },
+    "goodNotes": {
+      "1": "値ベースで比較したいなら record を使える"
+    }
+  },
+  "deferred-enumeration": {
+    "title": "LINQ を何度も列挙して処理が繰り返される",
+    "short": "同じ IEnumerable を使っただけなのに重い処理が複数回走る。",
+    "summary": "[[linq-deferred|遅延実行]]されるLINQの列は、列挙するたびに元の処理を再実行することがあります。",
+    "why": "Count() と foreach がそれぞれ query を最初から列挙するため、GetItems や IsValid が繰り返し実行されます。",
+    "tips": "再列挙が問題になる場合だけ ToList などで具体化します。[[ienumerable|IEnumerable]] を常に具体化すればよいわけではありません。",
+    "tags": [
+      "LINQ",
+      "IEnumerable",
+      "遅延実行"
+    ],
+    "badNotes": {
+      "2": "Count() で query を1回列挙する",
+      "3": "foreach でもう一度列挙する"
+    },
+    "goodNotes": {
+      "1": "ToList で結果を一度だけ具体化する"
+    }
+  }
+}

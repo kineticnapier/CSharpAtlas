@@ -1,0 +1,302 @@
+{
+  "nullref": {
+    "title": "NullReferenceException",
+    "short": "null の値からメンバーを使おうとした。",
+    "summary": "中身がないものに対して、プロパティやメソッドを使おうとしています。",
+    "why": "name はどの String オブジェクトも指していません。そのため Length を取得できません。",
+    "tips": "スタックトレースの行番号を見て、その行にある null になり得る変数を探します。",
+    "tags": [
+      "null",
+      "例外",
+      "頻出"
+    ],
+    "badNotes": {
+      "2": "null の可能性がある name を参照している"
+    },
+    "goodNotes": {
+      "3": "null でないことを確認する"
+    }
+  },
+  "cs0103": {
+    "title": "CS0103",
+    "short": "その名前は現在の場所では存在しない。",
+    "summary": "変数名やメソッド名などを、宣言されていない場所から参照しています。",
+    "why": "コンパイラが現在のスコープから score という名前を見つけられません。",
+    "tips": "スペルミス、宣言位置、波括弧の内外を確認します。",
+    "tags": [
+      "CS0103",
+      "変数",
+      "スコープ"
+    ],
+    "badNotes": {
+      "1": "score がまだ宣言されていない"
+    },
+    "goodNotes": {
+      "1": "使用する前に score を宣言する"
+    }
+  },
+  "key-not-found": {
+    "title": "KeyNotFoundException",
+    "short": "Dictionary に存在しないキーを直接取得した。",
+    "summary": "登録されていないキーを Dictionary の [] で取得しようとしています。",
+    "why": "Dictionary の [] による取得は、キーが存在しなければ例外を投げます。",
+    "tips": "存在する保証がないキーなら TryGetValue を使います。",
+    "tags": [
+      "Dictionary",
+      "collection",
+      "例外"
+    ],
+    "badNotes": {
+      "2": "存在しないキーだと例外になる"
+    },
+    "goodNotes": {
+      "1": "TryGetValue で存在確認と取得をまとめる"
+    }
+  },
+  "dict-safe": {
+    "title": "Dictionary から安全に値を取得する",
+    "short": "存在するか分からないキーには TryGetValue を使う。",
+    "summary": "キーがあるか分からない場合、[] で直接読むより TryGetValue が安全です。",
+    "why": "TryGetValue はキーの検索と値の取得を一度で行い、見つからなければ false を返します。",
+    "tips": "ContainsKey のあとに [] で読むより、通常はこちらの方が素直です。",
+    "tags": [
+      "Dictionary",
+      "collection",
+      "TryGetValue"
+    ]
+  },
+  "json-read": {
+    "title": "JSON ファイルを読み込む",
+    "short": "System.Text.Json で JSON をオブジェクトに変換する。",
+    "summary": "JSON文字列を読み込み、C#の型へ変換する基本形です。",
+    "why": "File.ReadAllText で文字列として読み込み、JsonSerializer.Deserialize<T> で指定した型に変換します。",
+    "tips": "JSON側の名前とプロパティ名が違う場合は JsonPropertyName 属性を使います。",
+    "tags": [
+      "JSON",
+      "ファイル",
+      "System.Text.Json"
+    ]
+  },
+  "int-div": {
+    "title": "整数除算",
+    "short": "0.5 のつもりが 0 になる。",
+    "summary": "int 同士の / は小数部分を捨てた整数になります。例外も警告も出ません。",
+    "why": "代入先が double でも、a / b の計算が先に int 同士で行われます。",
+    "tips": "動くのに答えがおかしいため、例外より発見しにくい種類です。",
+    "tags": [
+      "int",
+      "double",
+      "除算"
+    ],
+    "badNotes": {
+      "3": "int 同士なので整数除算になる"
+    },
+    "goodNotes": {
+      "1": "片方を double にしてから割る"
+    }
+  },
+  "nullable": {
+    "title": "null と nullable 参照型",
+    "short": "string と string? の違いを整理する。",
+    "summary": "nullable 参照型を有効にすると、null を許す参照と許さない参照をコード上で区別できます。",
+    "why": "コンパイラが null の可能性を追跡し、危険な参照に警告を出しやすくなります。",
+    "tips": "! はコンパイラへの宣言であって、実行時の安全性を上げるものではありません。",
+    "tags": [
+      "null",
+      "nullable",
+      "?"
+    ]
+  },
+  "scope": {
+    "title": "スコープ",
+    "short": "変数や名前が使える範囲。",
+    "summary": "変数は宣言された波括弧の内側など、決められた範囲でだけ参照できます。",
+    "why": "名前の有効範囲を限定することで、同名変数の衝突や意図しない参照を防ぎます。",
+    "tips": "CS0103 が出たときは、まずスコープを見ると原因が見つかることがあります。",
+    "tags": [
+      "変数",
+      "スコープ",
+      "基本"
+    ]
+  },
+  "index-out-of-range": {
+    "title": "IndexOutOfRangeException",
+    "short": "配列の範囲外の要素にアクセスした。",
+    "summary": "配列の有効な添字は 0 から Length - 1 までです。",
+    "why": "要素数が3なら使える添字は 0, 1, 2 です。3番目ではなく添字3を指定すると範囲外になります。",
+    "tips": "for ループの条件が i <= a.Length になっていないか確認します。",
+    "tags": [
+      "配列",
+      "index",
+      "例外"
+    ],
+    "badNotes": {
+      "2": "添字 3 は配列の範囲外"
+    },
+    "goodNotes": {
+      "2": "最後の添字は Length - 1"
+    }
+  },
+  "format-exception": {
+    "title": "FormatException",
+    "short": "文字列の形式が変換先として不正だった。",
+    "summary": "Parse などで、期待した形式ではない文字列を変換しようとすると発生します。",
+    "why": "abc は整数として解釈できないため int.Parse は失敗します。",
+    "tips": "ユーザー入力など失敗し得る値には TryParse が向いています。",
+    "tags": [
+      "Parse",
+      "変換",
+      "例外"
+    ],
+    "badNotes": {
+      "1": "abc は int として解釈できない"
+    },
+    "goodNotes": {
+      "1": "失敗し得る入力は TryParse で確認する"
+    }
+  },
+  "parse-number": {
+    "title": "文字列を安全に数値へ変換する",
+    "short": "TryParse で変換できるか確認する。",
+    "summary": "入力が必ず数値とは限らない場合は Parse より TryParse が扱いやすいです。",
+    "why": "TryParse は失敗時に例外を投げず false を返します。",
+    "tips": "double.TryParse や DateTime.TryParse など、他の型にも同様のメソッドがあります。",
+    "tags": [
+      "TryParse",
+      "int",
+      "入力"
+    ]
+  },
+  "file-not-found": {
+    "title": "FileNotFoundException",
+    "short": "開こうとしたファイルが見つからない。",
+    "summary": "指定したパスにファイルが存在しないときに発生します。",
+    "why": "相対パスは実行時のカレントディレクトリ基準なので、想定と違う場所を見ていることもあります。",
+    "tips": "Path.GetFullPath(path) を表示すると、実際にどこを探しているか確認できます。",
+    "tags": [
+      "File",
+      "ファイル",
+      "パス"
+    ],
+    "badNotes": {
+      "1": "存在しないパスをそのまま読み込んでいる"
+    },
+    "goodNotes": {
+      "2": "読み込む前にファイルの存在を確認する"
+    }
+  },
+  "file-read": {
+    "title": "テキストファイルを読み込む",
+    "short": "File.ReadAllText でファイル全体を文字列として読む。",
+    "summary": "小さなテキストファイルを一度に読み込む最も簡単な形です。",
+    "why": "File.ReadAllText はファイルを開き、すべての文字列を返して自動で閉じます。",
+    "tips": "巨大なファイルなら ReadLines や StreamReader で順番に読む方法もあります。",
+    "tags": [
+      "File",
+      "ファイル",
+      "ReadAllText"
+    ]
+  },
+  "json-exception": {
+    "title": "JsonException",
+    "short": "JSON の形式や型が期待と合わない。",
+    "summary": "System.Text.Json が入力JSONを正しく解析・変換できないときに発生します。",
+    "why": "JSON自体が壊れている場合だけでなく、JSONの値とC#側の型が合わない場合にも発生します。",
+    "tips": "例外メッセージの Path や BytePositionInLine を見ると問題箇所を絞れます。",
+    "tags": [
+      "JSON",
+      "System.Text.Json",
+      "例外"
+    ],
+    "badNotes": {
+      "1": "JSON の形と変換先の int が一致しない"
+    },
+    "goodNotes": {
+      "1": "int として読める JSON を渡す"
+    }
+  },
+  "cs0029": {
+    "title": "CS0029",
+    "short": "ある型を別の型へ暗黙的に変換できない。",
+    "summary": "代入元と代入先の型が一致せず、自動変換もできないときに出ます。",
+    "why": "string と int は別の型であり、C# は文字列の内容を勝手に数値へ解釈しません。",
+    "tips": "型名を確認し、Parse・キャスト・変換メソッドのどれが適切か判断します。",
+    "tags": [
+      "CS0029",
+      "型",
+      "変換"
+    ],
+    "badNotes": {
+      "1": "string を int へそのまま代入できない"
+    },
+    "goodNotes": {
+      "1": "文字列を明示的に数値へ変換する"
+    }
+  },
+  "cs0246": {
+    "title": "CS0246",
+    "short": "型または名前空間名が見つからない。",
+    "summary": "型名のスペル、using、参照しているアセンブリやNuGetパッケージなどを確認します。",
+    "why": "現在のコンパイル対象から、その型や名前空間を解決できません。",
+    "tips": "IDEの自動importで直る場合もありますが、必要なパッケージ自体が入っていないこともあります。",
+    "tags": [
+      "CS0246",
+      "using",
+      "namespace"
+    ],
+    "badNotes": {
+      "1": "JsonSerializer を現在の名前空間から解決できない"
+    },
+    "goodNotes": {
+      "1": "必要な名前空間を using する"
+    }
+  },
+  "using-directive": {
+    "title": "using ディレクティブ",
+    "short": "名前空間を省略して型名を書けるようにする。",
+    "summary": "using は型を読み込む処理ではなく、名前空間名を省略して書くための指定です。",
+    "why": "using System.Text.Json; があると System.Text.Json.JsonSerializer を JsonSerializer と書けます。",
+    "tips": "using を追加しても、参照アセンブリやNuGetパッケージが存在しなければ型は使えません。",
+    "tags": [
+      "using",
+      "namespace",
+      "基本"
+    ]
+  },
+  "cs8602": {
+    "title": "CS8602",
+    "short": "null の可能性がある参照を逆参照している。",
+    "summary": "nullable 解析が、この値は null かもしれないと判断しています。",
+    "why": "実行時に NullReferenceException になる可能性があるため、コンパイラが事前に警告します。",
+    "tips": "安易に ! で消すより、null チェックや設計の見直しを優先します。",
+    "tags": [
+      "CS8602",
+      "nullable",
+      "null"
+    ],
+    "badNotes": {
+      "2": "null かもしれない参照を逆参照している"
+    },
+    "goodNotes": {
+      "2": "null でないことを確認してから使う"
+    }
+  },
+  "for-loop": {
+    "title": "for ループの境界",
+    "short": "< と <= の違いで範囲外アクセスが起きやすい。",
+    "summary": "配列を先頭から最後まで走査するなら、通常は i < array.Length を使います。",
+    "why": "最後の有効な添字は Length - 1 なので、i == Length まで進めると1つはみ出します。",
+    "tips": "単純な全要素走査なら foreach も候補です。",
+    "tags": [
+      "for",
+      "配列",
+      "境界"
+    ],
+    "badNotes": {
+      "1": "i == Length まで進んでしまう"
+    },
+    "goodNotes": {
+      "1": "i < Length で範囲内に止める"
+    }
+  }
+}

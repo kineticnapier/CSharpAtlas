@@ -1,0 +1,270 @@
+[
+  {
+    "id": "nullref",
+    "type": "exception",
+    "bad": "string? name = null;\nConsole.WriteLine(name.Length);",
+    "good": "string? name = null;\n\nif (name != null)\n{\n    Console.WriteLine(name.Length);\n}",
+    "code": null,
+    "related": [
+      "nullable"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      3
+    ]
+  },
+  {
+    "id": "cs0103",
+    "type": "compiler-error",
+    "bad": "Console.WriteLine(score);",
+    "good": "int score = 100;\nConsole.WriteLine(score);",
+    "code": null,
+    "related": [
+      "scope"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "key-not-found",
+    "type": "exception",
+    "bad": "var d = new Dictionary<string, int>();\nConsole.WriteLine(d[\"score\"]);",
+    "good": "if (d.TryGetValue(\"score\", out int score))\n{\n    Console.WriteLine(score);\n}",
+    "code": null,
+    "related": [
+      "dict-safe"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "dict-safe",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var scores = new Dictionary<string, int>\n{\n    [\"Alice\"] = 100\n};\n\nif (scores.TryGetValue(\"Alice\", out int score))\n{\n    Console.WriteLine(score);\n}",
+    "related": [
+      "key-not-found"
+    ]
+  },
+  {
+    "id": "json-read",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\n\nstring json = File.ReadAllText(\"data.json\");\nUser? user = JsonSerializer.Deserialize<User>(json);",
+    "related": [
+      "nullref",
+      "json-exception",
+      "file-not-found"
+    ]
+  },
+  {
+    "id": "int-div",
+    "type": "logic",
+    "bad": "int a = 1;\nint b = 2;\ndouble x = a / b;\n// x == 0",
+    "good": "double x = (double)a / b;\n// x == 0.5",
+    "code": null,
+    "related": [
+      "parse-number"
+    ],
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "nullable",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string name = \"Alice\";\nstring? nickname = null;\n\nConsole.WriteLine(nickname?.Length ?? 0);",
+    "related": [
+      "nullref",
+      "cs8602"
+    ]
+  },
+  {
+    "id": "scope",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "if (true)\n{\n    int x = 10;\n    Console.WriteLine(x);\n}\n\n// Console.WriteLine(x); // ここでは使えない",
+    "related": [
+      "cs0103"
+    ]
+  },
+  {
+    "id": "index-out-of-range",
+    "type": "exception",
+    "bad": "int[] a = { 10, 20, 30 };\nConsole.WriteLine(a[3]);",
+    "good": "int[] a = { 10, 20, 30 };\nConsole.WriteLine(a[a.Length - 1]);",
+    "code": null,
+    "related": [
+      "for-loop"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "format-exception",
+    "type": "exception",
+    "bad": "int n = int.Parse(\"abc\");",
+    "good": "if (int.TryParse(\"123\", out int n))\n{\n    Console.WriteLine(n);\n}",
+    "code": null,
+    "related": [
+      "parse-number"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "parse-number",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string text = \"42\";\n\nif (int.TryParse(text, out int value))\n{\n    Console.WriteLine(value);\n}",
+    "related": [
+      "format-exception",
+      "int-div"
+    ]
+  },
+  {
+    "id": "file-not-found",
+    "type": "exception",
+    "bad": "string text = File.ReadAllText(\"missing.txt\");",
+    "good": "string path = \"data.txt\";\nif (File.Exists(path))\n{\n    string text = File.ReadAllText(path);\n}",
+    "code": null,
+    "related": [
+      "file-read",
+      "json-read"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "file-read",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string path = \"data.txt\";\nstring text = File.ReadAllText(path);\nConsole.WriteLine(text);",
+    "related": [
+      "file-not-found"
+    ]
+  },
+  {
+    "id": "json-exception",
+    "type": "exception",
+    "bad": "JsonSerializer.Deserialize<int>(\"{\\\"x\\\":1}\");",
+    "good": "JsonSerializer.Deserialize<int>(\"123\");",
+    "code": null,
+    "related": [
+      "json-read"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs0029",
+    "type": "compiler-error",
+    "bad": "int n = \"123\";",
+    "good": "int n = int.Parse(\"123\");",
+    "code": null,
+    "related": [
+      "parse-number"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs0246",
+    "type": "compiler-error",
+    "bad": "JsonSerializer.Serialize(new { x = 1 });",
+    "good": "using System.Text.Json;\n\nJsonSerializer.Serialize(new { x = 1 });",
+    "code": null,
+    "related": [
+      "using-directive"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "using-directive",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\n\nstring json = JsonSerializer.Serialize(new { Name = \"Alice\" });",
+    "related": [
+      "cs0246"
+    ]
+  },
+  {
+    "id": "cs8602",
+    "type": "compiler-warning",
+    "bad": "string? name = GetName();\nConsole.WriteLine(name.Length);",
+    "good": "string? name = GetName();\nif (name is not null)\n{\n    Console.WriteLine(name.Length);\n}",
+    "code": null,
+    "related": [
+      "nullable",
+      "nullref"
+    ],
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
+  },
+  {
+    "id": "for-loop",
+    "type": "concept",
+    "bad": "for (int i = 0; i <= a.Length; i++)\n{\n    Console.WriteLine(a[i]);\n}",
+    "good": "for (int i = 0; i < a.Length; i++)\n{\n    Console.WriteLine(a[i]);\n}",
+    "code": null,
+    "related": [
+      "index-out-of-range"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  }
+]

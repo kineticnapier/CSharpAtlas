@@ -1,0 +1,199 @@
+[
+  {
+    "id": "value-reference-types",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int a = 10;\nint b = a;\nb = 20;\n// a は 10 のまま\n\nvar x = new List<int> { 1 };\nvar y = x;\ny.Add(2);\n// x からも 2 が見える",
+    "related": [
+      "boxing-unboxing",
+      "equality"
+    ]
+  },
+  {
+    "id": "boxing-unboxing",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int n = 42;\nobject boxed = n;      // boxing\nint value = (int)boxed; // unboxing",
+    "related": [
+      "value-reference-types",
+      "invalid-cast",
+      "generics"
+    ]
+  },
+  {
+    "id": "var-keyword",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var count = 10;        // int\nvar name = \"Alice\";   // string\nvar users = new List<string>();",
+    "related": [
+      "generics",
+      "cs0411"
+    ]
+  },
+  {
+    "id": "const-readonly",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "const int MaxCount = 100;\n\nclass App\n{\n    private readonly DateTime startedAt = DateTime.Now;\n}",
+    "related": [
+      "properties",
+      "cs0200"
+    ]
+  },
+  {
+    "id": "properties",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "class User\n{\n    public string Name { get; set; } = string.Empty;\n    public int NameLength => Name.Length;\n}",
+    "related": [
+      "cs0200",
+      "records",
+      "cs8618"
+    ]
+  },
+  {
+    "id": "records",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "public record User(string Name, int Age);\n\nvar a = new User(\"Alice\", 15);\nvar b = new User(\"Alice\", 15);\nConsole.WriteLine(a == b); // True",
+    "related": [
+      "equality",
+      "properties"
+    ]
+  },
+  {
+    "id": "interfaces",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "interface IGreeter\n{\n    string Greet();\n}\n\nclass Greeter : IGreeter\n{\n    public string Greet() => \"Hello\";\n}",
+    "related": [
+      "ienumerable",
+      "idisposable",
+      "generics"
+    ]
+  },
+  {
+    "id": "generics",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static T First<T>(T[] values)\n{\n    return values[0];\n}\n\nint n = First(new[] { 10, 20 });",
+    "related": [
+      "cs0411",
+      "interfaces",
+      "boxing-unboxing"
+    ]
+  },
+  {
+    "id": "delegates",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Func<int, int> twice = x => x * 2;\nConsole.WriteLine(twice(5)); // 10",
+    "related": [
+      "lambda",
+      "events"
+    ]
+  },
+  {
+    "id": "events",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "class Counter\n{\n    public event Action? Changed;\n    public void Increment() => Changed?.Invoke();\n}\n\nvar counter = new Counter();\ncounter.Changed += () => Console.WriteLine(\"changed\");",
+    "related": [
+      "delegates",
+      "lambda"
+    ]
+  },
+  {
+    "id": "lambda",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new[] { 1, 2, 3, 4 };\nvar even = numbers.Where(x => x % 2 == 0);",
+    "related": [
+      "delegates",
+      "linq-deferred",
+      "list-filter"
+    ]
+  },
+  {
+    "id": "linq-deferred",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new List<int> { 1, 2, 3 };\nvar query = numbers.Where(x => x >= 2);\nnumbers.Add(4);\n\nConsole.WriteLine(string.Join(\", \", query)); // 2, 3, 4",
+    "related": [
+      "ienumerable",
+      "deferred-enumeration",
+      "list-filter"
+    ]
+  },
+  {
+    "id": "ienumerable",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "IEnumerable<int> GetNumbers()\n{\n    yield return 1;\n    yield return 2;\n    yield return 3;\n}\n\nforeach (int n in GetNumbers())\n    Console.WriteLine(n);",
+    "related": [
+      "interfaces",
+      "linq-deferred"
+    ]
+  },
+  {
+    "id": "async-await",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static async Task WorkAsync()\n{\n    await Task.Delay(1000);\n    Console.WriteLine(\"done\");\n}\n\nawait WorkAsync();",
+    "related": [
+      "task",
+      "cs1998",
+      "cs4014"
+    ]
+  },
+  {
+    "id": "task",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Task<int> task = Task.Run(() => 21 * 2);\nint answer = await task;\nConsole.WriteLine(answer);",
+    "related": [
+      "async-await",
+      "operation-canceled",
+      "task-delay"
+    ]
+  },
+  {
+    "id": "idisposable",
+    "type": "concept",
+    "bad": "var stream = File.OpenRead(\"data.txt\");\n// Dispose を忘れる可能性がある",
+    "good": "using var stream = File.OpenRead(\"data.txt\");\n// スコープを抜けると Dispose される",
+    "code": null,
+    "related": [
+      "object-disposed",
+      "using-directive",
+      "io-exception"
+    ]
+  },
+  {
+    "id": "equality",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string a = new string(new[] { 'h', 'i' });\nstring b = \"hi\";\nConsole.WriteLine(a == b); // True\nConsole.WriteLine(a.Equals(b)); // True",
+    "related": [
+      "records",
+      "reference-equality",
+      "floating-equality"
+    ]
+  }
+]

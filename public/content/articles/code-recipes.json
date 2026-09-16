@@ -1,0 +1,207 @@
+[
+  {
+    "id": "list-basic",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new List<int> { 10, 20 };\nnumbers.Add(30);\nnumbers.Remove(20);\n\nConsole.WriteLine(numbers.Count);\nConsole.WriteLine(numbers[0]);",
+    "related": [
+      "index-out-of-range",
+      "list-filter",
+      "list-sort"
+    ]
+  },
+  {
+    "id": "list-filter",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new List<int> { 1, 2, 3, 4, 5 };\nvar even = numbers.Where(x => x % 2 == 0).ToList();\n\nConsole.WriteLine(string.Join(\", \", even));",
+    "related": [
+      "linq-deferred",
+      "lambda",
+      "list-basic"
+    ]
+  },
+  {
+    "id": "list-sort",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new List<int> { 3, 1, 2 };\nnumbers.Sort();\n\nvar descending = numbers.OrderByDescending(x => x).ToList();",
+    "related": [
+      "list-basic",
+      "lambda"
+    ]
+  },
+  {
+    "id": "hashset-basic",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var ids = new HashSet<int>();\nids.Add(10);\nids.Add(10);\nids.Add(20);\n\nConsole.WriteLine(ids.Count); // 2\nConsole.WriteLine(ids.Contains(20));",
+    "related": [
+      "linq-distinct",
+      "equality"
+    ]
+  },
+  {
+    "id": "string-split-join",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string text = \"10 20 30\";\nstring[] parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);\nstring joined = string.Join(\", \", parts);\nConsole.WriteLine(joined);",
+    "related": [
+      "parse-number",
+      "string-interpolation"
+    ]
+  },
+  {
+    "id": "string-interpolation",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string name = \"Alice\";\nint score = 95;\nConsole.WriteLine($\"{name}: {score}点\");",
+    "related": [
+      "date-format",
+      "string-split-join"
+    ]
+  },
+  {
+    "id": "date-format",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "DateTime now = DateTime.Now;\nConsole.WriteLine(now.ToString(\"yyyy-MM-dd HH:mm:ss\"));",
+    "related": [
+      "string-interpolation",
+      "format-exception"
+    ]
+  },
+  {
+    "id": "file-write",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string path = \"output.txt\";\nFile.WriteAllText(path, \"Hello, C#!\");",
+    "related": [
+      "file-read",
+      "directory-not-found",
+      "io-exception"
+    ]
+  },
+  {
+    "id": "directory-enumerate",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "foreach (string path in Directory.EnumerateFiles(\".\", \"*.txt\"))\n{\n    Console.WriteLine(path);\n}",
+    "related": [
+      "directory-not-found",
+      "ienumerable"
+    ]
+  },
+  {
+    "id": "json-write",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\n\nvar user = new { Name = \"Alice\", Score = 100 };\nstring json = JsonSerializer.Serialize(user, new JsonSerializerOptions\n{\n    WriteIndented = true\n});\nConsole.WriteLine(json);",
+    "related": [
+      "json-read",
+      "json-exception",
+      "file-write"
+    ]
+  },
+  {
+    "id": "http-get",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var client = new HttpClient();\nstring text = await client.GetStringAsync(\"https://example.com/\");\nConsole.WriteLine(text.Length);",
+    "related": [
+      "async-await",
+      "uri-format",
+      "cancellation-token"
+    ]
+  },
+  {
+    "id": "regex-basic",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.RegularExpressions;\n\nstring text = \"ID: 12345\";\nMatch match = Regex.Match(text, @\"\\d+\");\nif (match.Success)\n    Console.WriteLine(match.Value);",
+    "related": [
+      "string-split-join"
+    ]
+  },
+  {
+    "id": "task-delay",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "Console.WriteLine(\"start\");\nawait Task.Delay(1000);\nConsole.WriteLine(\"1秒後\");",
+    "related": [
+      "task",
+      "async-await",
+      "cancellation-token"
+    ]
+  },
+  {
+    "id": "cancellation-token",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var cts = new CancellationTokenSource();\nCancellationToken token = cts.Token;\n\nTask work = Task.Run(async () =>\n{\n    while (true)\n    {\n        token.ThrowIfCancellationRequested();\n        await Task.Delay(100, token);\n    }\n}, token);\n\ncts.Cancel();",
+    "related": [
+      "operation-canceled",
+      "task-canceled",
+      "task-delay"
+    ]
+  },
+  {
+    "id": "linq-select",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new[] { 1, 2, 3 };\nvar squares = numbers.Select(x => x * x).ToArray();\n\nConsole.WriteLine(string.Join(\", \", squares));",
+    "related": [
+      "list-filter",
+      "lambda",
+      "linq-deferred"
+    ]
+  },
+  {
+    "id": "linq-groupby",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var words = new[] { \"apple\", \"ant\", \"banana\" };\nvar groups = words.GroupBy(x => x[0]);\n\nforeach (var group in groups)\n{\n    Console.WriteLine($\"{group.Key}: {string.Join(\", \", group)}\");\n}",
+    "related": [
+      "lambda",
+      "ienumerable"
+    ]
+  },
+  {
+    "id": "linq-distinct",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new[] { 1, 1, 2, 3, 3 };\nvar unique = numbers.Distinct().ToArray();\nConsole.WriteLine(string.Join(\", \", unique));",
+    "related": [
+      "hashset-basic",
+      "equality"
+    ]
+  },
+  {
+    "id": "try-catch",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "try\n{\n    int value = int.Parse(input);\n    Console.WriteLine(value);\n}\ncatch (FormatException ex)\n{\n    Console.WriteLine($\"数値ではありません: {ex.Message}\");\n}",
+    "related": [
+      "format-exception",
+      "parse-number"
+    ]
+  }
+]
