@@ -16,12 +16,14 @@ const contentFiles = [
   'code-recipes.json',
   'logic-errors.json'
 ];
+const annotationFile = 'code-annotations.json';
 
 let currentType = 'all';
 let currentQuery = '';
 let currentItems = [];
 let allItems = [];
 let wikiTerms = [];
+let codeAnnotations = {};
 
 const homeView = document.getElementById('homeView');
 const detailView = document.getElementById('detailView');
@@ -33,8 +35,14 @@ const searchInput = document.getElementById('searchInput');
 const detailContent = document.getElementById('detailContent');
 
 async function initialize() {
-  const groups = await Promise.all(contentFiles.map(loadContentFile));
+  const [groups, annotations] = await Promise.all([
+    Promise.all(contentFiles.map(loadContentFile)),
+    loadContentFile(annotationFile)
+  ]);
   allItems = groups.flat();
+  codeAnnotations = annotations && typeof annotations === 'object' && !Array.isArray(annotations)
+    ? annotations
+    : {};
 
   const ids = new Set();
   for (const item of allItems) {
@@ -74,7 +82,7 @@ function renderCards() {
       <span class="badge ${escapeHtml(item.type)}">${labels[item.type] ?? item.type}</span>
       <h3 class="${isCompilerType(item.type) || item.type === 'exception' ? 'mono' : ''}">${escapeHtml(item.title)}</h3>
       <p>${escapeHtml(item.short)}</p>
-      <div class="tags">${item.tags.slice(0, 3).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
+      <div class="tags">${(item.tags ?? []).slice(0, 3).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
     </button>
   `).join('');
 
@@ -92,21 +100,58 @@ function renderCards() {
 function openItem(id) {
   const item = fetchItem(id);
   if (!item) return;
+  const annotation = codeAnnotations[item.id] ?? {};
 
   const sections = [];
   sections.push(`<div class="block"><h2>一言でいうと</h2><div class="note">${linkify(item.summary, item.id)}</div></div>`);
 
   if (item.bad && item.good) {
     sections.push(`<div class="code-compare">
-      ${codeSection('原因', item.bad, 'bad')}
-      ${codeSection('直し方', item.good, 'good')}
+      ${codeSection(
+        '原因',
+        item.bad,
+        'bad',
+        explicitLineSet(item.badHighlight ?? annotation.badHighlight),
+        lineNoteMap(item.badNotes ?? annotation.badNotes)
+      )}
+      ${codeSection(
+        '直し方',
+        item.good,
+        'good',
+        explicitLineSet(item.goodHighlight ?? annotation.goodHighlight),
+        lineNoteMap(item.goodNotes ?? annotation.goodNotes)
+      )}
     </div>`);
   } else {
-    if (item.bad) sections.push(codeSection('原因', item.bad, 'bad'));
-    if (item.good) sections.push(codeSection('直し方', item.good, 'good'));
+    if (item.bad) {
+      sections.push(codeSection(
+        '原因',
+        item.bad,
+        'bad',
+        explicitLineSet(item.badHighlight ?? annotation.badHighlight),
+        lineNoteMap(item.badNotes ?? annotation.badNotes)
+      ));
+    }
+    if (item.good) {
+      sections.push(codeSection(
+        '直し方',
+        item.good,
+        'good',
+        explicitLineSet(item.goodHighlight ?? annotation.goodHighlight),
+        lineNoteMap(item.goodNotes ?? annotation.goodNotes)
+      ));
+    }
   }
 
-  if (item.code) sections.push(codeSection('コード', item.code, ''));
+  if (item.code) {
+    sections.push(codeSection(
+      'コード',
+      item.code,
+      '',
+      explicitLineSet(item.codeHighlight ?? annotation.codeHighlight),
+      lineNoteMap(item.codeNotes ?? annotation.codeNotes)
+    ));
+  }
   if (item.why) sections.push(`<div class="block"><h2>なぜ？</h2><p>${linkify(item.why, item.id)}</p></div>`);
   if (item.tips) sections.push(`<div class="block"><h2>補足</h2><p>${linkify(item.tips, item.id)}</p></div>`);
 
@@ -150,7 +195,7 @@ function fetchItem(id) {
 function buildWikiTerms(items) {
   const byTerm = new Map();
   for (const item of items) {
-    const terms = new Set([item.title, ...item.tags]);
+    const terms = new Set([item.title, ...(item.tags ?? [])]);
     for (const rawTerm of terms) {
       const term = String(rawTerm ?? '').trim();
       if (term.length < 2 || isGenericWikiTerm(term)) continue;
@@ -198,9 +243,42 @@ function linkify(value, currentId) {
   return result;
 }
 
+function explicitLineSet(lines) {
+  if (!Array.isArray(lines)) return new Set();
+  return new Set(lines
+    .map(Number)
+    .filter(Number.isInteger)
+    .filter(line => line > 0)
+    .map(line => line - 1));
+}
+
+function lineNoteMap(notes) {
+  const result = new Map();
+  if (!notes || typeof notes !== 'object' || Array.isArray(notes)) return result;
+  for (const [rawLine, rawNote] of Object.entries(notes)) {
+    const line = Number(rawLine);
+    const note = String(rawNote ?? '').trim();
+    if (Number.isInteger(line) && line > 0 && note) result.set(line - 1, note);
+  }
+  return result;
+}
+
 function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function isCompilerType(type) { return type === 'compiler-error' || type === 'compiler-warning'; }
-function codeSection(title, value, className) { return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${escapeHtml(value)}</div></div>`; }
+function codeSection(title, value, className, highlightLines = new Set(), notes = new Map()) {
+  const lines = String(value ?? '').split('\n');
+  const body = lines.map((line, index) => {
+    const note = notes.get(index) ?? '';
+    const isHighlighted = highlightLines.has(index) || Boolean(note);
+    const fallback = className === 'bad' ? 'ここが原因' : className === 'good' ? 'ここを修正' : '';
+    const callout = note || fallback;
+    const noteHtml = isHighlighted && callout
+      ? `<div class="code-note" aria-hidden="true"><span class="code-note-mark">// ↑</span> ${escapeHtml(callout)}</div>`
+      : '';
+    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${escapeHtml(line) || ' '}</span></div>${noteHtml}`;
+  }).join('');
+  return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${body}</div></div>`;
+}
 function escapeHtml(value) {
   return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 }
