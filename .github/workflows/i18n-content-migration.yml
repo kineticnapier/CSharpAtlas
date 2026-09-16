@@ -1,0 +1,36 @@
+name: i18n content migration
+
+on:
+  push:
+    branches:
+      - content/expand-to-500
+    paths:
+      - scripts/migrate-content-i18n.mjs
+      - test/content-migration.test.js
+      - .github/workflows/i18n-content-migration.yml
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: content/expand-to-500
+      - name: Generate split article data
+        run: node scripts/migrate-content-i18n.mjs
+      - name: Verify migration parity
+        run: node --test test/content-migration.test.js
+      - name: Commit generated content
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/content/articles public/content/locales/ja
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "refactor: split article structure from Japanese content"
+          git push origin HEAD:content/expand-to-500
