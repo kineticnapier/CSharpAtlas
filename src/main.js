@@ -97,16 +97,20 @@ function openItem(id) {
   sections.push(`<div class="block"><h2>一言でいうと</h2><div class="note">${linkify(item.summary, item.id)}</div></div>`);
 
   if (item.bad && item.good) {
+    const changed = changedLineSets(item.bad, item.good);
+    const badHighlights = explicitLineSet(item.badHighlight) ?? changed.bad;
+    const goodHighlights = explicitLineSet(item.goodHighlight) ?? changed.good;
+
     sections.push(`<div class="code-compare">
-      ${codeSection('原因', item.bad, 'bad')}
-      ${codeSection('直し方', item.good, 'good')}
+      ${codeSection('原因', item.bad, 'bad', badHighlights)}
+      ${codeSection('直し方', item.good, 'good', goodHighlights)}
     </div>`);
   } else {
-    if (item.bad) sections.push(codeSection('原因', item.bad, 'bad'));
-    if (item.good) sections.push(codeSection('直し方', item.good, 'good'));
+    if (item.bad) sections.push(codeSection('原因', item.bad, 'bad', explicitLineSet(item.badHighlight)));
+    if (item.good) sections.push(codeSection('直し方', item.good, 'good', explicitLineSet(item.goodHighlight)));
   }
 
-  if (item.code) sections.push(codeSection('コード', item.code, ''));
+  if (item.code) sections.push(codeSection('コード', item.code, '', explicitLineSet(item.codeHighlight)));
   if (item.why) sections.push(`<div class="block"><h2>なぜ？</h2><p>${linkify(item.why, item.id)}</p></div>`);
   if (item.tips) sections.push(`<div class="block"><h2>補足</h2><p>${linkify(item.tips, item.id)}</p></div>`);
 
@@ -198,9 +202,63 @@ function linkify(value, currentId) {
   return result;
 }
 
+function changedLineSets(badCode, goodCode) {
+  const bad = String(badCode ?? '').split('\n');
+  const good = String(goodCode ?? '').split('\n');
+  const dp = Array.from({ length: bad.length + 1 }, () => Array(good.length + 1).fill(0));
+
+  for (let i = bad.length - 1; i >= 0; i--) {
+    for (let j = good.length - 1; j >= 0; j--) {
+      dp[i][j] = bad[i] === good[j]
+        ? dp[i + 1][j + 1] + 1
+        : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+
+  const unchangedBad = new Set();
+  const unchangedGood = new Set();
+  let i = 0;
+  let j = 0;
+  while (i < bad.length && j < good.length) {
+    if (bad[i] === good[j]) {
+      unchangedBad.add(i);
+      unchangedGood.add(j);
+      i++;
+      j++;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i++;
+    } else {
+      j++;
+    }
+  }
+
+  return {
+    bad: new Set(bad.map((_, index) => index).filter(index => !unchangedBad.has(index))),
+    good: new Set(good.map((_, index) => index).filter(index => !unchangedGood.has(index)))
+  };
+}
+
+function explicitLineSet(lines) {
+  if (!Array.isArray(lines)) return null;
+  return new Set(lines
+    .map(Number)
+    .filter(Number.isInteger)
+    .filter(line => line > 0)
+    .map(line => line - 1));
+}
+
 function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function isCompilerType(type) { return type === 'compiler-error' || type === 'compiler-warning'; }
-function codeSection(title, value, className) { return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${escapeHtml(value)}</div></div>`; }
+function codeSection(title, value, className, highlightLines = null) {
+  const lines = String(value ?? '').split('\n');
+  const highlighted = highlightLines ?? new Set();
+  const callout = className === 'bad' ? '原因' : className === 'good' ? '修正' : '';
+  const body = lines.map((line, index) => {
+    const isHighlighted = highlighted.has(index);
+    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${escapeHtml(line) || ' '}</span>${isHighlighted && callout ? `<span class="code-callout">// ← ${callout}</span>` : ''}</div>`;
+  }).join('');
+  return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${body}</div></div>`;
+}
 function escapeHtml(value) {
   return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 }
