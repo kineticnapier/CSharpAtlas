@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
+    "test": "node --test",
     "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "vite": "^7.0.0"
