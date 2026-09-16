@@ -13,3 +13,8 @@ test('language selector and translation status have explicit styles', async () =
   assert.match(css, /\.translation-banner/);
   assert.match(css, /\.sr-only/);
 });
+
+test('card metadata badges keep the compact badge override', async () => {
+  const css = await readFile(path.join(root, 'src/styles.css'), 'utf8');
+  assert.match(css, /\.card-meta\s*>\s*\.badge/);
+});
