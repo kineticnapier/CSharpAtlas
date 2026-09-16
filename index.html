@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>C# Atlas</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/src/styles.css">
 </head>
 <body>
 <header>
@@ -14,7 +14,8 @@
       <button data-nav-type="all">すべて</button>
       <button data-nav-type="code">コード集</button>
       <button data-nav-type="exception">例外</button>
-      <button data-nav-type="compiler">CSエラー</button>
+      <button data-nav-type="compiler-error">CSエラー</button>
+      <button data-nav-type="compiler-warning">CS警告</button>
     </nav>
   </div>
 </header>
@@ -24,7 +25,7 @@
     <div class="hero">
       <div class="eyebrow">逆引き C# リファレンス</div>
       <h1>やりたいことも、<br>壊れた理由も。</h1>
-      <p>C# のコード例、例外、コンパイルエラー、仕組みをひとつの検索で。</p>
+      <p>C# のコード例、例外、コンパイルエラー・警告、仕組みをひとつの検索で。</p>
       <form id="searchForm" class="search">
         <input id="searchInput" placeholder="例: JSON 読み込み / NullReferenceException / CS0103" autocomplete="off">
         <button type="submit">検索</button>
@@ -43,7 +44,8 @@
         <button class="type active" data-type="all">すべて</button>
         <button class="type" data-type="code">コード集</button>
         <button class="type" data-type="exception">例外</button>
-        <button class="type" data-type="compiler">コンパイル</button>
+        <button class="type" data-type="compiler-error">コンパイルエラー</button>
+        <button class="type" data-type="compiler-warning">コンパイル警告</button>
         <button class="type" data-type="logic">論理エラー</button>
         <button class="type" data-type="concept">仕組み</button>
       </aside>
@@ -65,6 +67,6 @@
   </section>
 </main>
 
-<script src="/app.js"></script>
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>
