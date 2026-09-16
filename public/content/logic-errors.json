@@ -9,7 +9,7 @@
     "good": "double x = 0.1 + 0.2;\ndouble tolerance = 1e-10;\nConsole.WriteLine(Math.Abs(x - 0.3) < tolerance);",
     "code": null,
     "why": "0.1 や 0.2 は double の内部表現では有限桁で正確に表せず、丸め誤差を含みます。",
-    "tips": "許容誤差は用途の値の大きさや必要精度に応じて決めます。金額などでは decimal が適する場合があります。",
+    "tips": "許容誤差は用途の値の大きさや必要精度に応じて決めます。一般的な比較の仕組みは [[equality]] も参照してください。金額などでは decimal が適する場合があります。",
     "tags": ["double", "浮動小数点", "比較"],
     "related": ["equality", "divide-by-zero"]
   },
@@ -23,7 +23,7 @@
     "good": "int x = int.MaxValue;\nint y = checked(x + 1);",
     "code": null,
     "why": "int は有限ビット幅なので、表現可能範囲を超えると下位ビットだけが残る演算になる場合があります。",
-    "tips": "値が大きくなる計算では long を使うだけで十分か、checked が必要かを考えます。",
+    "tips": "値が大きくなる計算では long を使うだけで十分か、checked で [[overflow-exception|OverflowException]] を発生させるべきかを考えます。",
     "tags": ["int", "overflow", "checked"],
     "related": ["overflow-exception"]
   },
@@ -37,7 +37,7 @@
     "good": "record Point(int X);\nvar a = new Point(1);\nvar b = new Point(1);\nConsole.WriteLine(a == b); // True",
     "code": null,
     "why": "通常の class は、等価性を独自実装しなければ別々に生成したインスタンスを同じ値とはみなしません。",
-    "tips": "値として比較したい型では record や Equals / GetHashCode の実装を検討します。",
+    "tips": "値として比較したい型では [[records|record]] や [[equality|Equals / GetHashCode]] の実装を検討します。",
     "tags": ["class", "参照", "=="],
     "related": ["equality", "records", "value-reference-types"]
   },
@@ -46,12 +46,12 @@
     "type": "logic",
     "title": "LINQ を何度も列挙して処理が繰り返される",
     "short": "同じ IEnumerable を使っただけなのに重い処理が複数回走る。",
-    "summary": "遅延実行されるLINQの列は、列挙するたびに元の処理を再実行することがあります。",
+    "summary": "[[linq-deferred|遅延実行]]されるLINQの列は、列挙するたびに元の処理を再実行することがあります。",
     "bad": "var query = GetItems().Where(IsValid);\nConsole.WriteLine(query.Count());\nforeach (var item in query)\n    Console.WriteLine(item);",
     "good": "var items = GetItems().Where(IsValid).ToList();\nConsole.WriteLine(items.Count);\nforeach (var item in items)\n    Console.WriteLine(item);",
     "code": null,
     "why": "Count() と foreach がそれぞれ query を最初から列挙するため、GetItems や IsValid が繰り返し実行されます。",
-    "tips": "再列挙が問題になる場合だけ ToList などで具体化します。常に具体化すればよいわけではありません。",
+    "tips": "再列挙が問題になる場合だけ ToList などで具体化します。[[ienumerable|IEnumerable]] を常に具体化すればよいわけではありません。",
     "tags": ["LINQ", "IEnumerable", "遅延実行"],
     "related": ["linq-deferred", "ienumerable"]
   }
