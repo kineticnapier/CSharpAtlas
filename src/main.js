@@ -16,12 +16,14 @@ const contentFiles = [
   'code-recipes.json',
   'logic-errors.json'
 ];
+const annotationFile = 'code-annotations.json';
 
 let currentType = 'all';
 let currentQuery = '';
 let currentItems = [];
 let allItems = [];
 let wikiTerms = [];
+let codeAnnotations = {};
 
 const homeView = document.getElementById('homeView');
 const detailView = document.getElementById('detailView');
@@ -33,8 +35,14 @@ const searchInput = document.getElementById('searchInput');
 const detailContent = document.getElementById('detailContent');
 
 async function initialize() {
-  const groups = await Promise.all(contentFiles.map(loadContentFile));
+  const [groups, annotations] = await Promise.all([
+    Promise.all(contentFiles.map(loadContentFile)),
+    loadContentFile(annotationFile)
+  ]);
   allItems = groups.flat();
+  codeAnnotations = annotations && typeof annotations === 'object' && !Array.isArray(annotations)
+    ? annotations
+    : {};
 
   const ids = new Set();
   for (const item of allItems) {
@@ -74,7 +82,7 @@ function renderCards() {
       <span class="badge ${escapeHtml(item.type)}">${labels[item.type] ?? item.type}</span>
       <h3 class="${isCompilerType(item.type) || item.type === 'exception' ? 'mono' : ''}">${escapeHtml(item.title)}</h3>
       <p>${escapeHtml(item.short)}</p>
-      <div class="tags">${item.tags.slice(0, 3).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
+      <div class="tags">${(item.tags ?? []).slice(0, 3).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
     </button>
   `).join('');
 
@@ -92,25 +100,58 @@ function renderCards() {
 function openItem(id) {
   const item = fetchItem(id);
   if (!item) return;
+  const annotation = codeAnnotations[item.id] ?? {};
 
   const sections = [];
   sections.push(`<div class="block"><h2>一言でいうと</h2><div class="note">${linkify(item.summary, item.id)}</div></div>`);
 
   if (item.bad && item.good) {
-    const changed = changedLineSets(item.bad, item.good);
-    const badHighlights = explicitLineSet(item.badHighlight) ?? changed.bad;
-    const goodHighlights = explicitLineSet(item.goodHighlight) ?? changed.good;
-
     sections.push(`<div class="code-compare">
-      ${codeSection('原因', item.bad, 'bad', badHighlights)}
-      ${codeSection('直し方', item.good, 'good', goodHighlights)}
+      ${codeSection(
+        '原因',
+        item.bad,
+        'bad',
+        explicitLineSet(item.badHighlight ?? annotation.badHighlight),
+        lineNoteMap(item.badNotes ?? annotation.badNotes)
+      )}
+      ${codeSection(
+        '直し方',
+        item.good,
+        'good',
+        explicitLineSet(item.goodHighlight ?? annotation.goodHighlight),
+        lineNoteMap(item.goodNotes ?? annotation.goodNotes)
+      )}
     </div>`);
   } else {
-    if (item.bad) sections.push(codeSection('原因', item.bad, 'bad', explicitLineSet(item.badHighlight)));
-    if (item.good) sections.push(codeSection('直し方', item.good, 'good', explicitLineSet(item.goodHighlight)));
+    if (item.bad) {
+      sections.push(codeSection(
+        '原因',
+        item.bad,
+        'bad',
+        explicitLineSet(item.badHighlight ?? annotation.badHighlight),
+        lineNoteMap(item.badNotes ?? annotation.badNotes)
+      ));
+    }
+    if (item.good) {
+      sections.push(codeSection(
+        '直し方',
+        item.good,
+        'good',
+        explicitLineSet(item.goodHighlight ?? annotation.goodHighlight),
+        lineNoteMap(item.goodNotes ?? annotation.goodNotes)
+      ));
+    }
   }
 
-  if (item.code) sections.push(codeSection('コード', item.code, '', explicitLineSet(item.codeHighlight)));
+  if (item.code) {
+    sections.push(codeSection(
+      'コード',
+      item.code,
+      '',
+      explicitLineSet(item.codeHighlight ?? annotation.codeHighlight),
+      lineNoteMap(item.codeNotes ?? annotation.codeNotes)
+    ));
+  }
   if (item.why) sections.push(`<div class="block"><h2>なぜ？</h2><p>${linkify(item.why, item.id)}</p></div>`);
   if (item.tips) sections.push(`<div class="block"><h2>補足</h2><p>${linkify(item.tips, item.id)}</p></div>`);
 
@@ -154,7 +195,7 @@ function fetchItem(id) {
 function buildWikiTerms(items) {
   const byTerm = new Map();
   for (const item of items) {
-    const terms = new Set([item.title, ...item.tags]);
+    const terms = new Set([item.title, ...(item.tags ?? [])]);
     for (const rawTerm of terms) {
       const term = String(rawTerm ?? '').trim();
       if (term.length < 2 || isGenericWikiTerm(term)) continue;
@@ -202,44 +243,8 @@ function linkify(value, currentId) {
   return result;
 }
 
-function changedLineSets(badCode, goodCode) {
-  const bad = String(badCode ?? '').split('\n');
-  const good = String(goodCode ?? '').split('\n');
-  const dp = Array.from({ length: bad.length + 1 }, () => Array(good.length + 1).fill(0));
-
-  for (let i = bad.length - 1; i >= 0; i--) {
-    for (let j = good.length - 1; j >= 0; j--) {
-      dp[i][j] = bad[i] === good[j]
-        ? dp[i + 1][j + 1] + 1
-        : Math.max(dp[i + 1][j], dp[i][j + 1]);
-    }
-  }
-
-  const unchangedBad = new Set();
-  const unchangedGood = new Set();
-  let i = 0;
-  let j = 0;
-  while (i < bad.length && j < good.length) {
-    if (bad[i] === good[j]) {
-      unchangedBad.add(i);
-      unchangedGood.add(j);
-      i++;
-      j++;
-    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
-      i++;
-    } else {
-      j++;
-    }
-  }
-
-  return {
-    bad: new Set(bad.map((_, index) => index).filter(index => !unchangedBad.has(index))),
-    good: new Set(good.map((_, index) => index).filter(index => !unchangedGood.has(index)))
-  };
-}
-
 function explicitLineSet(lines) {
-  if (!Array.isArray(lines)) return null;
+  if (!Array.isArray(lines)) return new Set();
   return new Set(lines
     .map(Number)
     .filter(Number.isInteger)
@@ -247,15 +252,27 @@ function explicitLineSet(lines) {
     .map(line => line - 1));
 }
 
+function lineNoteMap(notes) {
+  const result = new Map();
+  if (!notes || typeof notes !== 'object' || Array.isArray(notes)) return result;
+  for (const [rawLine, rawNote] of Object.entries(notes)) {
+    const line = Number(rawLine);
+    const note = String(rawNote ?? '').trim();
+    if (Number.isInteger(line) && line > 0 && note) result.set(line - 1, note);
+  }
+  return result;
+}
+
 function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function isCompilerType(type) { return type === 'compiler-error' || type === 'compiler-warning'; }
-function codeSection(title, value, className, highlightLines = null) {
+function codeSection(title, value, className, highlightLines = new Set(), notes = new Map()) {
   const lines = String(value ?? '').split('\n');
-  const highlighted = highlightLines ?? new Set();
-  const callout = className === 'bad' ? '原因' : className === 'good' ? '修正' : '';
   const body = lines.map((line, index) => {
-    const isHighlighted = highlighted.has(index);
-    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${escapeHtml(line) || ' '}</span>${isHighlighted && callout ? `<span class="code-callout">// ← ${callout}</span>` : ''}</div>`;
+    const note = notes.get(index) ?? '';
+    const isHighlighted = highlightLines.has(index) || Boolean(note);
+    const fallback = className === 'bad' ? 'ここが原因' : className === 'good' ? 'ここを修正' : '';
+    const callout = note || fallback;
+    return `<div class="code-line${isHighlighted ? ' highlighted' : ''}" data-line="${index + 1}"><span class="code-text">${escapeHtml(line) || ' '}</span>${isHighlighted && callout ? `<span class="code-callout" aria-hidden="true">// ← ${escapeHtml(callout)}</span>` : ''}</div>`;
   }).join('');
   return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${body}</div></div>`;
 }
