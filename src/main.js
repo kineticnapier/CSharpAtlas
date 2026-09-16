@@ -7,6 +7,16 @@ const labels = {
   concept: '仕組み'
 };
 
+const contentFiles = [
+  'items.json',
+  'exceptions.json',
+  'compiler-errors.json',
+  'compiler-warnings.json',
+  'concepts.json',
+  'code-recipes.json',
+  'logic-errors.json'
+];
+
 let currentType = 'all';
 let currentQuery = '';
 let currentItems = [];
@@ -23,22 +33,39 @@ const searchInput = document.getElementById('searchInput');
 const detailContent = document.getElementById('detailContent');
 
 async function initialize() {
-  const response = await fetch('/api/items');
-  if (!response.ok) throw new Error('記事の取得に失敗しました。');
-  allItems = await response.json();
+  const groups = await Promise.all(contentFiles.map(loadContentFile));
+  allItems = groups.flat();
+
+  const ids = new Set();
+  for (const item of allItems) {
+    const id = item.id.toLowerCase();
+    if (ids.has(id)) throw new Error(`記事IDが重複しています: ${item.id}`);
+    ids.add(id);
+  }
+
   wikiTerms = buildWikiTerms(allItems);
-  await loadItems();
+  loadItems();
 }
 
-async function loadItems() {
-  const params = new URLSearchParams();
-  if (currentQuery) params.set('q', currentQuery);
-  if (currentType !== 'all') params.set('type', currentType);
+async function loadContentFile(file) {
+  const response = await fetch(`./content/${file}`);
+  if (!response.ok) throw new Error(`記事の取得に失敗しました: ${file}`);
+  return response.json();
+}
 
-  const response = await fetch(`/api/items?${params}`);
-  if (!response.ok) throw new Error('記事の取得に失敗しました。');
-  currentItems = await response.json();
+function loadItems() {
+  const words = currentQuery.toLowerCase().split(/\s+/).filter(Boolean);
+  currentItems = allItems.filter(item => {
+    if (currentType !== 'all' && item.type !== currentType) return false;
+    if (!words.length) return true;
+    return words.every(word => matches(item, word));
+  });
   renderCards();
+}
+
+function matches(item, word) {
+  return [item.title, item.short, item.summary, ...(item.tags ?? [])]
+    .some(value => String(value ?? '').toLowerCase().includes(word));
 }
 
 function renderCards() {
@@ -62,8 +89,8 @@ function renderCards() {
     : currentType === 'all' ? 'おすすめ' : labels[currentType];
 }
 
-async function openItem(id) {
-  const item = allItems.find(x => x.id.toLowerCase() === id.toLowerCase()) ?? await fetchItem(id);
+function openItem(id) {
+  const item = fetchItem(id);
   if (!item) return;
 
   const sections = [];
@@ -84,8 +111,8 @@ async function openItem(id) {
   if (item.tips) sections.push(`<div class="block"><h2>補足</h2><p>${linkify(item.tips, item.id)}</p></div>`);
 
   if (item.related?.length) {
-    const relatedItems = await Promise.all(item.related.map(fetchItem));
-    const links = relatedItems.filter(Boolean).map(related => `
+    const relatedItems = item.related.map(fetchItem).filter(Boolean);
+    const links = relatedItems.map(related => `
       <button data-related-id="${escapeHtml(related.id)}">
         <strong>${escapeHtml(related.title)}</strong>
         <small>${labels[related.type] ?? related.type} — ${escapeHtml(related.short)}</small>
@@ -116,16 +143,12 @@ async function openItem(id) {
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-async function fetchItem(id) {
-  const cached = allItems.find(x => x.id.toLowerCase() === id.toLowerCase());
-  if (cached) return cached;
-  const response = await fetch(`/api/items/${encodeURIComponent(id)}`);
-  return response.ok ? response.json() : null;
+function fetchItem(id) {
+  return allItems.find(x => x.id.toLowerCase() === id.toLowerCase()) ?? null;
 }
 
 function buildWikiTerms(items) {
   const byTerm = new Map();
-
   for (const item of items) {
     const terms = new Set([item.title, ...item.tags]);
     for (const rawTerm of terms) {
@@ -140,117 +163,66 @@ function buildWikiTerms(items) {
   for (const [term, candidates] of byTerm) {
     const exactTitle = candidates.find(item => item.title.toLowerCase() === term.toLowerCase());
     let target = exactTitle ?? null;
-
     if (!target && candidates.length === 1) target = candidates[0];
     if (!target) {
       const titleMatches = candidates.filter(item => item.title.toLowerCase().includes(term.toLowerCase()));
       if (titleMatches.length === 1) target = titleMatches[0];
     }
-
     if (target) result.push({ term, id: target.id });
   }
-
   return result.sort((a, b) => b.term.length - a.term.length);
 }
 
 function isGenericWikiTerm(term) {
-  return new Set([
-    '例外', '頻出', '基本', '変数', '入力', '変換', 'ファイル', '配列',
-    '型', 'パス', '境界', 'collection', 'namespace'
-  ]).has(term);
+  return new Set(['例外','頻出','基本','変数','入力','変換','ファイル','配列','型','パス','境界','collection','namespace']).has(term);
 }
 
 function linkify(value, currentId) {
   const text = String(value ?? '');
   const terms = wikiTerms.filter(x => x.id !== currentId && text.toLowerCase().includes(x.term.toLowerCase()));
   if (!terms.length) return escapeHtml(text);
-
   const pattern = new RegExp(terms.map(x => escapeRegExp(x.term)).join('|'), 'gi');
   const lookup = new Map(terms.map(x => [x.term.toLowerCase(), x]));
   let result = '';
   let lastIndex = 0;
-
   for (const match of text.matchAll(pattern)) {
     const index = match.index ?? 0;
     result += escapeHtml(text.slice(lastIndex, index));
     const found = lookup.get(match[0].toLowerCase());
-    if (found) {
-      result += `<button class="wiki-link" data-wiki-id="${escapeHtml(found.id)}">${escapeHtml(match[0])}</button>`;
-    } else {
-      result += escapeHtml(match[0]);
-    }
+    result += found
+      ? `<button class="wiki-link" data-wiki-id="${escapeHtml(found.id)}">${escapeHtml(match[0])}</button>`
+      : escapeHtml(match[0]);
     lastIndex = index + match[0].length;
   }
-
   result += escapeHtml(text.slice(lastIndex));
   return result;
 }
 
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function isCompilerType(type) {
-  return type === 'compiler-error' || type === 'compiler-warning';
-}
-
-function codeSection(title, value, className) {
-  return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${escapeHtml(value)}</div></div>`;
-}
-
+function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function isCompilerType(type) { return type === 'compiler-error' || type === 'compiler-warning'; }
+function codeSection(title, value, className) { return `<div class="block code-block"><h2>${title}</h2><div class="code ${className}">${escapeHtml(value)}</div></div>`; }
 function escapeHtml(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+  return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 }
-
 function showHome() {
   detailView.classList.add('hidden');
   homeView.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
-
 function setType(type) {
   currentType = type;
-  document.querySelectorAll('[data-type]').forEach(button => {
-    button.classList.toggle('active', button.dataset.type === type);
-  });
+  document.querySelectorAll('[data-type]').forEach(button => button.classList.toggle('active', button.dataset.type === type));
   loadItems();
 }
 
-document.getElementById('searchForm').addEventListener('submit', event => {
-  event.preventDefault();
-  currentQuery = searchInput.value.trim();
-  loadItems();
-});
-
-document.querySelectorAll('[data-query]').forEach(button => {
-  button.addEventListener('click', () => {
-    currentQuery = button.dataset.query;
-    searchInput.value = currentQuery;
-    currentType = 'all';
-    document.querySelectorAll('[data-type]').forEach(x => x.classList.toggle('active', x.dataset.type === 'all'));
-    loadItems();
-  });
-});
-
-document.querySelectorAll('[data-type]').forEach(button => {
-  button.addEventListener('click', () => setType(button.dataset.type));
-});
-
-document.querySelectorAll('[data-nav-type]').forEach(button => {
-  button.addEventListener('click', () => {
-    showHome();
-    setType(button.dataset.navType);
-  });
-});
-
+document.getElementById('searchForm').addEventListener('submit', event => { event.preventDefault(); currentQuery = searchInput.value.trim(); loadItems(); });
+document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => {
+  currentQuery = button.dataset.query; searchInput.value = currentQuery; currentType = 'all';
+  document.querySelectorAll('[data-type]').forEach(x => x.classList.toggle('active', x.dataset.type === 'all')); loadItems();
+}));
+document.querySelectorAll('[data-type]').forEach(button => button.addEventListener('click', () => setType(button.dataset.type)));
+document.querySelectorAll('[data-nav-type]').forEach(button => button.addEventListener('click', () => { showHome(); setType(button.dataset.navType); }));
 document.getElementById('homeButton').addEventListener('click', showHome);
 document.getElementById('backButton').addEventListener('click', showHome);
 
-initialize().catch(error => {
-  cards.innerHTML = `<div class="empty" style="display:block">${escapeHtml(error.message)}</div>`;
-});
+initialize().catch(error => { cards.innerHTML = `<div class="empty" style="display:block">${escapeHtml(error.message)}</div>`; });
