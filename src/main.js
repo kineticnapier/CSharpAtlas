@@ -4,6 +4,7 @@ import {
   copyCode,
   highlightCSharp
 } from './article-ui.js';
+import { matchesArticle } from './article-search.js';
 import { renderWikiText } from './wiki-links.js';
 
 const labels = {
@@ -73,14 +74,9 @@ function loadItems() {
   currentItems = allItems.filter(item => {
     if (currentType !== 'all' && item.type !== currentType) return false;
     if (!words.length) return true;
-    return words.every(word => matches(item, word));
+    return words.every(word => matchesArticle(item, word));
   });
   renderCards();
-}
-
-function matches(item, word) {
-  return [item.title, item.short, item.summary, ...(item.tags ?? [])]
-    .some(value => String(value ?? '').toLowerCase().includes(word));
 }
 
 function renderCards() {
