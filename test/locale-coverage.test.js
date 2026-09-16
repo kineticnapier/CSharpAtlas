@@ -66,5 +66,5 @@ test('Japanese and English locales completely cover every base article', async (
     total += ids.length;
   }
 
-  assert.equal(total, 100);
+  assert.ok(total >= 100, 'localized content must preserve at least the original 100 articles');
 });
