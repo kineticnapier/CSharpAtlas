@@ -15,60 +15,87 @@ const categories = [
   'code-recipes.json',
   'logic-errors.json'
 ];
-const visibleFields = [
-  'id', 'type', 'title', 'short', 'summary', 'bad', 'good', 'code',
-  'why', 'tips', 'tags', 'related'
-];
-const highlightFields = ['badHighlight', 'goodHighlight', 'codeHighlight'];
-const noteFields = ['badNotes', 'goodNotes', 'codeNotes'];
+const validTypes = new Set([
+  'code',
+  'exception',
+  'compiler-error',
+  'compiler-warning',
+  'logic',
+  'concept'
+]);
+const requiredLocaleText = ['title', 'short', 'summary', 'why', 'tips'];
+const wikiPattern = /\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g;
 
 async function json(file) {
   return JSON.parse(await readFile(file, 'utf8'));
 }
 
-function pick(object, keys) {
-  return Object.fromEntries(keys.filter(key => key in object).map(key => [key, object[key]]));
+async function loadCorpus() {
+  const baseGroups = await Promise.all(categories.map(file => json(path.join(contentDir, 'articles', file))));
+  const localeGroups = {};
+  for (const locale of ['ja', 'en']) {
+    const groups = await Promise.all(categories.map(file => json(path.join(contentDir, 'locales', locale, file))));
+    localeGroups[locale] = Object.assign({}, ...groups);
+  }
+  return { base: baseGroups.flat(), locales: localeGroups };
 }
 
-test('split Japanese content reconstructs all legacy articles and annotations', async () => {
-  const annotations = await json(path.join(contentDir, 'code-annotations.json'));
-  let count = 0;
+function wikiTargets(entry) {
+  const targets = [];
+  for (const field of ['short', 'summary', 'why', 'tips']) {
+    const text = String(entry[field] ?? '');
+    for (const match of text.matchAll(wikiPattern)) targets.push(match[1].trim());
+  }
+  return targets;
+}
 
-  for (const category of categories) {
-    const legacy = await json(path.join(contentDir, category));
-    const base = await json(path.join(contentDir, 'articles', category));
-    const ja = await json(path.join(contentDir, 'locales', 'ja', category));
-    const baseById = new Map(base.map(article => [article.id, article]));
+test('localized article corpus has valid IDs, types, fields, and links', async () => {
+  const { base, locales } = await loadCorpus();
+  const ids = new Set();
 
-    assert.equal(base.length, legacy.length, `${category}: article count changed`);
-
-    for (const oldArticle of legacy) {
-      const baseArticle = baseById.get(oldArticle.id);
-      assert.ok(baseArticle, `${category}: missing base article ${oldArticle.id}`);
-      const localeArticle = ja[oldArticle.id];
-      assert.ok(localeArticle, `${category}: missing Japanese locale ${oldArticle.id}`);
-
-      const reconstructed = { ...baseArticle, ...localeArticle };
-      assert.deepEqual(
-        pick(reconstructed, visibleFields),
-        pick(oldArticle, visibleFields),
-        `${oldArticle.id}: visible article content changed`
-      );
-
-      const annotation = annotations[oldArticle.id] ?? {};
-      assert.deepEqual(
-        pick(baseArticle, highlightFields),
-        pick(annotation, highlightFields),
-        `${oldArticle.id}: highlight metadata changed`
-      );
-      assert.deepEqual(
-        pick(localeArticle, noteFields),
-        pick(annotation, noteFields),
-        `${oldArticle.id}: code note text changed`
-      );
-      count += 1;
+  for (const article of base) {
+    assert.equal(typeof article.id, 'string');
+    assert.ok(article.id.trim(), 'article id must not be empty');
+    assert.equal(ids.has(article.id), false, `duplicate article id: ${article.id}`);
+    ids.add(article.id);
+    assert.ok(validTypes.has(article.type), `${article.id}: unknown type ${article.type}`);
+    assert.ok(Array.isArray(article.related), `${article.id}: related must be an array`);
+    for (const field of ['bad', 'good', 'code']) {
+      assert.ok(article[field] === null || typeof article[field] === 'string', `${article.id}: ${field} must be string or null`);
     }
   }
 
-  assert.equal(count, 100);
+  for (const article of base) {
+    for (const target of article.related) {
+      assert.notEqual(target, article.id, `${article.id}: self-related link`);
+      assert.ok(ids.has(target), `${article.id}: missing related target ${target}`);
+    }
+  }
+
+  for (const locale of ['ja', 'en']) {
+    const entries = locales[locale];
+    assert.deepEqual(new Set(Object.keys(entries)), ids, `${locale}: locale IDs differ from base IDs`);
+    const titles = new Map();
+
+    for (const article of base) {
+      const entry = entries[article.id];
+      for (const field of requiredLocaleText) {
+        assert.equal(typeof entry[field], 'string', `${locale}/${article.id}: ${field} must be a string`);
+        assert.ok(entry[field].trim(), `${locale}/${article.id}: ${field} must not be empty`);
+      }
+      assert.ok(Array.isArray(entry.tags), `${locale}/${article.id}: tags must be an array`);
+      assert.ok(entry.tags.every(tag => typeof tag === 'string'), `${locale}/${article.id}: tags must contain strings`);
+
+      const normalizedTitle = entry.title.trim().toLocaleLowerCase(locale === 'en' ? 'en' : 'ja');
+      assert.equal(titles.has(normalizedTitle), false, `${locale}: duplicate title ${entry.title}`);
+      titles.set(normalizedTitle, article.id);
+
+      for (const target of wikiTargets(entry)) {
+        assert.notEqual(target, article.id, `${locale}/${article.id}: self wiki link`);
+        assert.ok(ids.has(target), `${locale}/${article.id}: missing wiki target ${target}`);
+      }
+    }
+  }
+
+  assert.equal(base.length, 100, 'i18n foundation must preserve the existing 100 articles');
 });
