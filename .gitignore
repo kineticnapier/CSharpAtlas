@@ -1,7 +1,4 @@
-bin/
-obj/
-.vs/
+node_modules/
+dist/
 .vscode/
-*.user
-*.suo
 .DS_Store
