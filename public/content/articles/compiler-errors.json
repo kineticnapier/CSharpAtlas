@@ -9,12 +9,8 @@
       "cs0029",
       "parse-number"
     ],
-    "badHighlight": [
-      3
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "badHighlight": [3],
+    "goodHighlight": [2]
   },
   {
     "id": "cs0021",
@@ -26,12 +22,8 @@
       "index-out-of-range",
       "list-basic"
     ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [2],
+    "goodHighlight": [1]
   },
   {
     "id": "cs0117",
@@ -43,12 +35,8 @@
       "cs1061",
       "cs0103"
     ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [1],
+    "goodHighlight": [1]
   },
   {
     "id": "cs0120",
@@ -60,12 +48,8 @@
       "properties",
       "value-reference-types"
     ],
-    "badHighlight": [
-      6
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [6],
+    "goodHighlight": [1]
   },
   {
     "id": "cs0136",
@@ -77,12 +61,8 @@
       "scope",
       "cs0103"
     ],
-    "badHighlight": [
-      4
-    ],
-    "goodHighlight": [
-      4
-    ]
+    "badHighlight": [4],
+    "goodHighlight": [4]
   },
   {
     "id": "cs0161",
@@ -90,15 +70,9 @@
     "bad": "static int Sign(int x)\n{\n    if (x > 0) return 1;\n}",
     "good": "static int Sign(int x)\n{\n    if (x > 0) return 1;\n    return 0;\n}",
     "code": null,
-    "related": [
-      "switch-expression"
-    ],
-    "badHighlight": [
-      3
-    ],
-    "goodHighlight": [
-      4
-    ]
+    "related": [],
+    "badHighlight": [3],
+    "goodHighlight": [4]
   },
   {
     "id": "cs0165",
@@ -110,12 +84,8 @@
       "scope",
       "cs8618"
     ],
-    "badHighlight": [
-      4
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [4],
+    "goodHighlight": [1]
   },
   {
     "id": "cs0200",
@@ -127,12 +97,8 @@
       "properties",
       "const-readonly"
     ],
-    "badHighlight": [
-      7
-    ],
-    "goodHighlight": [
-      3
-    ]
+    "badHighlight": [7],
+    "goodHighlight": [3]
   },
   {
     "id": "cs0266",
@@ -144,12 +110,8 @@
       "cs0029",
       "invalid-cast"
     ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "badHighlight": [2],
+    "goodHighlight": [2]
   },
   {
     "id": "cs0411",
@@ -161,12 +123,8 @@
       "generics",
       "var-keyword"
     ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "badHighlight": [2],
+    "goodHighlight": [2]
   },
   {
     "id": "cs1002",
@@ -178,12 +136,8 @@
       "cs1513",
       "cs1026"
     ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [1],
+    "goodHighlight": [1]
   },
   {
     "id": "cs1026",
@@ -195,12 +149,8 @@
       "cs1002",
       "cs1513"
     ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [1],
+    "goodHighlight": [1]
   },
   {
     "id": "cs1061",
@@ -209,15 +159,10 @@
     "good": "string text = \"abc\";\nConsole.WriteLine(text.Length);",
     "code": null,
     "related": [
-      "cs0117",
-      "extension-methods"
+      "cs0117"
     ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "badHighlight": [2],
+    "goodHighlight": [2]
   },
   {
     "id": "cs1501",
@@ -229,12 +174,8 @@
       "cs1503",
       "cs7036"
     ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [1],
+    "goodHighlight": [1]
   },
   {
     "id": "cs1503",
@@ -246,12 +187,8 @@
       "cs1501",
       "cs0029"
     ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "badHighlight": [2],
+    "goodHighlight": [2]
   },
   {
     "id": "cs1513",
@@ -263,12 +200,8 @@
       "cs1026",
       "scope"
     ],
-    "badHighlight": [
-      3
-    ],
-    "goodHighlight": [
-      4
-    ]
+    "badHighlight": [3],
+    "goodHighlight": [4]
   },
   {
     "id": "cs1525",
@@ -280,12 +213,8 @@
       "cs1002",
       "cs1026"
     ],
-    "badHighlight": [
-      1
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "badHighlight": [1],
+    "goodHighlight": [1]
   },
   {
     "id": "cs7036",
@@ -297,11 +226,7 @@
       "cs1501",
       "cs1503"
     ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "badHighlight": [2],
+    "goodHighlight": [2]
   }
 ]
