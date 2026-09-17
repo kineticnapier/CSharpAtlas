@@ -598,5 +598,37 @@
     "why": "in パラメーターは読み取り専用なので、Increment は一時的な Counter を変更し、呼び出し元の counter は変わりません。",
     "tips": "[[ref-out-in|in パラメーター]] 経由の読み取り専用アクセスは、可変 struct 自体を不変にはしません。不変な struct を優先し、変更しないメンバーを readonly にして不要なコピーを避けます。",
     "tags": ["readonly struct", "防御的コピー", "in"]
+  },
+  "sorted-collections": {
+    "title": "SortedDictionary と SortedSet の選び方",
+    "short": "マップのキーや集合要素を常に順序付きで保持する。",
+    "summary": "SortedDictionary<TKey,TValue> はキー順のペアを、SortedSet<T> は順序付きの一意な値を保持します。どちらも comparer が位置と一意性の両方を決めます。",
+    "why": "OrdinalIgnoreCase は大文字小文字を区別せず文字列を並べ、Ada と ada を同じ集合要素として扱います。",
+    "tips": "[[custom-ordering|comparer]] が0を返す値は、通常のオブジェクト等価性が異なる場合でも同じキーまたは要素のスロットを占めます。",
+    "tags": ["SortedDictionary", "SortedSet", "comparer"]
+  },
+  "readonly-collection-views": {
+    "title": "読み取り専用のビューと不変データの違い",
+    "short": "利用者の操作を制限しても、格納領域の固定までは保証しない。",
+    "summary": "IReadOnlyList<T> と ReadOnlyCollection<T> はその参照から変更操作を使えなくしますが、別の所有者は基の List<T> を変更できます。",
+    "why": "owner が green を追加すると両方のビューが3件を返し、不変スナップショットではなく生きたビューだと分かります。",
+    "tips": "読み取り専用の [[interfaces|インターフェイス]] は、その参照から使える操作を制限します。オブジェクトの寿命、別名参照、他の所有者までは制御しません。",
+    "tags": ["IReadOnlyList", "ReadOnlyCollection", "不変性"]
+  },
+  "list-capacity": {
+    "title": "List<T> の Count と Capacity",
+    "short": "論理上の要素数と予約済み格納領域を区別する。",
+    "summary": "Count は実在する要素数です。Capacity は予約した内部領域の大きさで、要素を作らず Count より大きくできます。",
+    "why": "capacity 100 で構築しても Count は0で、Add を行ったときだけ要素が作られ Count が変わります。",
+    "tips": "[[list-basic|List<T> への要素追加]]は Count を変えます。信頼できる件数予測があれば事前確保で再割り当てを減らせますが、余剰容量もメモリを保持します。",
+    "tags": ["List", "Count", "Capacity"]
+  },
+  "collection-expressions": {
+    "title": "コレクション式とスプレッド要素",
+    "short": "ターゲット型付きのコレクションを作り、元列を展開する。",
+    "summary": "C# 12 のコレクション式は角括弧を使い、ターゲット型を必要とします。スプレッド要素は元の列を列挙し、新しいコレクションへ値を即座に追加します。",
+    "why": "int[] ターゲットが最初の結果型を決め、List<int> ターゲットが2つ目を可変リストにします。",
+    "tips": "[[ienumerable|IEnumerable の元列]]をスプレッドすると構築時に列挙します。将来の元列変更へ遅延リンクを保持するわけではありません。",
+    "tags": ["コレクション式", "スプレッド", "C# 12"]
   }
 }

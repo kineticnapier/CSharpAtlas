@@ -211,5 +211,213 @@
     "good": null,
     "code": "var download = new Download();\nEventHandler<ProgressEventArgs> handler = OnProgress;\ndownload.ProgressChanged += handler;\ndownload.Report(50);\ndownload.ProgressChanged -= handler;\n\nstatic void OnProgress(object? sender, ProgressEventArgs e)\n    => Console.WriteLine($\"{e.Percent}%\");\n\nsealed class Download\n{\n    public event EventHandler<ProgressEventArgs>? ProgressChanged;\n    public void Report(int percent)\n        => ProgressChanged?.Invoke(this, new ProgressEventArgs(percent));\n}\n\nsealed class ProgressEventArgs(int percent) : EventArgs\n{\n    public int Percent { get; } = percent;\n}",
     "related": ["events", "delegates", "idisposable"]
+  },
+  {
+    "id": "queue-stack",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var arrivals = new Queue<string>();\narrivals.Enqueue(\"Ada\");\narrivals.Enqueue(\"Grace\");\nif (arrivals.TryDequeue(out string? next))\n    Console.WriteLine(next); // Ada\n\nvar history = new Stack<string>();\nhistory.Push(\"first\");\nhistory.Push(\"second\");\nif (history.TryPop(out string? latest))\n    Console.WriteLine(latest); // second",
+    "related": ["list-basic", "invalid-operation", "ienumerable"]
+  },
+  {
+    "id": "priority-queue",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var jobs = new PriorityQueue<string, int>();\njobs.Enqueue(\"report\", 20);\njobs.Enqueue(\"alert\", 5);\njobs.Enqueue(\"backup\", 20);\n\nwhile (jobs.TryDequeue(out string? job, out int priority))\n    Console.WriteLine($\"{priority}: {job}\");",
+    "related": ["custom-ordering", "queue-stack"]
+  },
+  {
+    "id": "linked-list",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var route = new LinkedList<string>();\nLinkedListNode<string> station = route.AddLast(\"Central\");\nroute.AddBefore(station, \"West\");\nroute.AddAfter(station, \"East\");\nroute.Remove(station);\n\nConsole.WriteLine(string.Join(\" -> \", route));",
+    "related": ["list-basic", "queue-stack"]
+  },
+  {
+    "id": "immutable-collections",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Collections.Immutable;\n\nImmutableArray<string> first = [\"red\", \"blue\"];\nImmutableArray<string> second = first.Add(\"green\");\n\nConsole.WriteLine(first.Length);  // 2\nConsole.WriteLine(second.Length); // 3",
+    "related": ["readonly-collection-views", "record-shallow-copy", "arrays-basics"]
+  },
+  {
+    "id": "dictionary-update-insert",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var scores = new Dictionary<string, int>();\nscores.Add(\"Ada\", 90);             // duplicate: throws\nbool added = scores.TryAdd(\"Ada\", 95); // duplicate: false\nscores[\"Ada\"] = 95;                  // insert or replace\nbool removed = scores.Remove(\"Ada\", out int oldScore);\n\nConsole.WriteLine($\"{added}, {removed}, {oldScore}\");",
+    "related": ["dict-safe", "key-not-found", "dictionary-duplicate-keys"]
+  },
+  {
+    "id": "dictionary-comparers",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)\n{\n    [\"Content-Type\"] = \"text/plain\"\n};\n\nConsole.WriteLine(headers[\"content-type\"]);\nConsole.WriteLine(headers.TryAdd(\"CONTENT-TYPE\", \"application/json\")); // False",
+    "related": ["dict-safe", "custom-equality-hashing"]
+  },
+  {
+    "id": "hashset-set-operations",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var first = new HashSet<int> { 1, 2, 3 };\nvar second = new HashSet<int> { 3, 4 };\n\nvar union = new HashSet<int>(first);\nunion.UnionWith(second);\nvar common = new HashSet<int>(first);\ncommon.IntersectWith(second);\nvar onlyFirst = new HashSet<int>(first);\nonlyFirst.ExceptWith(second);\n\nConsole.WriteLine(first.Overlaps(second));\nConsole.WriteLine(common.IsSubsetOf(union));",
+    "related": ["hashset-basic", "linq-set-operators", "equality"]
+  },
+  {
+    "id": "array-copy-clear",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var source = new[] { new Box(1), new Box(2), new Box(3) };\nvar target = new Box?[3];\nArray.Copy(source, 1, target, 0, 2);\ntarget[0]!.Value = 20; // source[1] is the same Box\nArray.Clear(target, 1, 2); // sets those slots to null\n\nConsole.WriteLine(source[1].Value); // 20\n\nsealed class Box(int value) { public int Value { get; set; } = value; }",
+    "related": ["arrays-basics", "default-values", "value-reference-types"]
+  },
+  {
+    "id": "array-binary-search",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string[] names = [\"Ada\", \"grace\", \"Linus\"];\nArray.Sort(names, StringComparer.OrdinalIgnoreCase);\n\nint result = Array.BinarySearch(names, \"Ken\", StringComparer.OrdinalIgnoreCase);\nif (result < 0)\n{\n    int insertionIndex = ~result;\n    Console.WriteLine($\"Insert at {insertionIndex}\");\n}",
+    "related": ["arrays-basics", "custom-ordering", "list-sort"]
+  },
+  {
+    "id": "list-removeall",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var numbers = new List<int> { 1, 2, 3, 4, 5, 6 };\nint removed = numbers.RemoveAll(number => number % 2 == 0);\n\nConsole.WriteLine(removed); // 3\nConsole.WriteLine(string.Join(\", \", numbers)); // 1, 3, 5",
+    "related": ["list-filter", "collection-modified-enumeration", "lambda"]
+  },
+  {
+    "id": "linq-any-all",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "int[] values = [2, 4, 7];\nbool hasOdd = values.Any(value => value % 2 != 0);\nbool allPositive = values.All(value => value > 0);\n\nint[] empty = [];\nConsole.WriteLine(empty.Any());             // False\nConsole.WriteLine(empty.All(value => false)); // True",
+    "related": ["list-filter", "boolean-operators", "ienumerable"]
+  },
+  {
+    "id": "linq-first-single",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var users = new[] { new User(1, \"Ada\"), new User(2, \"Grace\") };\nUser first = users.First(user => user.Id > 0);\nUser only = users.Single(user => user.Id == 2);\nUser? missing = users.SingleOrDefault(user => user.Id == 3);\n\nConsole.WriteLine($\"{first.Name}, {only.Name}, {missing is null}\");\n\nsealed record User(int Id, string Name);",
+    "related": ["invalid-operation", "linq-any-all", "nullable-value-types"]
+  },
+  {
+    "id": "linq-aggregate",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string[] words = [\"C#\", \"LINQ\", \"fold\"];\nstring sentence = words.Aggregate(\n    \"Topics:\",\n    (accumulator, word) => $\"{accumulator} {word}\");\n\nstring empty = Array.Empty<string>().Aggregate(\"Topics:\", (text, word) => text + word);\nConsole.WriteLine(sentence);\nConsole.WriteLine(empty); // Topics:",
+    "related": ["linq-sum-average", "lambda", "ienumerable"]
+  },
+  {
+    "id": "linq-sum-average",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var orders = new[] { new Order(12), new Order(18) };\nint total = orders.Sum(order => order.Quantity);\ndouble average = orders.Average(order => order.Quantity);\n\nint?[] optional = [10, null, 20];\nConsole.WriteLine(optional.Sum());     // 30\nConsole.WriteLine(optional.Average()); // 15\n\nsealed record Order(int Quantity);",
+    "related": ["linq-aggregate", "overflow-exception", "nullable-value-types"]
+  },
+  {
+    "id": "linq-minby-maxby",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var products = new[]\n{\n    new Product(\"Pen\", 3m),\n    new Product(\"Book\", 20m),\n    new Product(\"Bag\", 45m)\n};\n\nProduct cheapest = products.MinBy(product => product.Price)!;\nProduct priciest = products.MaxBy(product => product.Price)!;\nConsole.WriteLine($\"{cheapest.Name} / {priciest.Name}\");\n\nsealed record Product(string Name, decimal Price);",
+    "related": ["custom-ordering", "linq-first-single", "list-sort"]
+  },
+  {
+    "id": "linq-selectmany",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var departments = new[]\n{\n    new Department(\"R&D\", [\"Ada\", \"Grace\"]),\n    new Department(\"Ops\", [\"Linus\"])\n};\n\nvar members = departments.SelectMany(\n    department => department.Members,\n    (department, member) => new { department.Name, Member = member });\n\nforeach (var item in members) Console.WriteLine($\"{item.Name}: {item.Member}\");\n\nsealed record Department(string Name, string[] Members);",
+    "related": ["linq-select", "ienumerable", "linq-join"]
+  },
+  {
+    "id": "linq-join",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var customers = new[] { new Customer(1, \"Ada\"), new Customer(2, \"Grace\") };\nvar orders = new[] { new Order(1, \"Book\"), new Order(1, \"Pen\"), new Order(3, \"Bag\") };\n\nvar rows = customers.Join(\n    orders,\n    customer => customer.Id,\n    order => order.CustomerId,\n    (customer, order) => new { customer.Name, order.Item });\n\nforeach (var row in rows) Console.WriteLine($\"{row.Name}: {row.Item}\");\n\nsealed record Customer(int Id, string Name);\nsealed record Order(int CustomerId, string Item);",
+    "related": ["linq-groupjoin", "dict-safe", "anonymous-types"]
+  },
+  {
+    "id": "linq-groupjoin",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var customers = new[] { new Customer(1, \"Ada\"), new Customer(2, \"Grace\") };\nvar orders = new[] { new Order(1, \"Book\"), new Order(1, \"Pen\") };\n\nvar grouped = customers.GroupJoin(\n    orders, c => c.Id, o => o.CustomerId,\n    (customer, matches) => new { customer, matches });\n\nvar leftJoin = grouped.SelectMany(\n    row => row.matches.DefaultIfEmpty(),\n    (row, order) => new { row.customer.Name, Item = order?.Item ?? \"(none)\" });\n\nforeach (var row in leftJoin) Console.WriteLine($\"{row.Name}: {row.Item}\");\n\nsealed record Customer(int Id, string Name);\nsealed record Order(int CustomerId, string Item);",
+    "related": ["linq-join", "linq-defaultifempty", "linq-selectmany"]
+  },
+  {
+    "id": "linq-pagination",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "int pageNumber = 2;\nint pageSize = 3;\nif (pageNumber < 1 || pageSize < 1)\n    throw new ArgumentOutOfRangeException();\n\nint offset = checked((pageNumber - 1) * pageSize);\nvar page = Enumerable.Range(1, 10)\n    .OrderBy(value => value)\n    .Skip(offset)\n    .Take(pageSize)\n    .ToArray();\n\nConsole.WriteLine(string.Join(\", \", page)); // 4, 5, 6",
+    "related": ["list-sort", "linq-deferred", "integer-overflow"]
+  },
+  {
+    "id": "linq-chunk",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "foreach (int[] batch in Enumerable.Range(1, 8).Chunk(3))\n{\n    Console.WriteLine($\"{batch.Length}: {string.Join(\", \", batch)}\");\n}\n// lengths: 3, 3, 2",
+    "related": ["ienumerable", "arrays-basics", "linq-pagination"]
+  },
+  {
+    "id": "linq-zip",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string[] names = [\"Ada\", \"Grace\", \"Linus\"];\nint[] scores = [90, 85];\n\nforeach ((string name, int score) in names.Zip(scores))\n    Console.WriteLine($\"{name}: {score}\");\n// Linus has no paired output because scores ends first.",
+    "related": ["tuples-deconstruction", "linq-join", "ienumerable"]
+  },
+  {
+    "id": "linq-set-operators",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string[] first = [\"Ada\", \"GRACE\", \"Ada\"];\nstring[] second = [\"ada\", \"Linus\"];\nvar comparer = StringComparer.OrdinalIgnoreCase;\n\nvar union = first.Union(second, comparer);\nvar common = first.Intersect(second, comparer);\nvar difference = first.Except(second, comparer);\n\nConsole.WriteLine(string.Join(\", \", union));\nConsole.WriteLine(string.Join(\", \", common));\nConsole.WriteLine(string.Join(\", \", difference));",
+    "related": ["hashset-set-operations", "linq-distinct", "equality"]
+  },
+  {
+    "id": "linq-tolookup",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var orders = new[]\n{\n    new Order(1, \"Book\"),\n    new Order(1, \"Pen\"),\n    new Order(2, \"Bag\")\n};\n\nILookup<int, Order> byCustomer = orders.ToLookup(order => order.CustomerId);\nConsole.WriteLine(string.Join(\", \", byCustomer[1].Select(order => order.Item)));\nConsole.WriteLine(byCustomer[99].Count()); // 0\n\nsealed record Order(int CustomerId, string Item);",
+    "related": ["linq-groupby", "dict-safe", "linq-deferred"]
+  },
+  {
+    "id": "linq-cast-oftype",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "object?[] mixed = [1, \"two\", null, 3];\n\nint[] integers = mixed.OfType<int>().ToArray(); // 1, 3\nConsole.WriteLine(string.Join(\", \", integers));\n\nIEnumerable<object?> compatible = [\"Ada\", null];\nforeach (string? value in compatible.Cast<string?>())\n    Console.WriteLine(value ?? \"(null)\");",
+    "related": ["invalid-cast", "pattern-matching", "ienumerable"]
+  },
+  {
+    "id": "linq-sequenceequal",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string[] first = [\"Ada\", \"Grace\"];\nstring[] second = [\"ada\", \"GRACE\"];\n\nbool sameContents = first.SequenceEqual(second, StringComparer.OrdinalIgnoreCase);\nbool sameReference = ReferenceEquals(first, second);\nConsole.WriteLine($\"{sameContents}, {sameReference}\"); // True, False",
+    "related": ["equality", "reference-equality", "linq-set-operators"]
+  },
+  {
+    "id": "linq-defaultifempty",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "int[] values = [];\nint[] supplied = values.DefaultIfEmpty(-1).ToArray();\nint implicitDefault = values.DefaultIfEmpty().Single();\n\nConsole.WriteLine(supplied[0]);        // -1\nConsole.WriteLine(implicitDefault);    // 0\nConsole.WriteLine(new[] { 5 }.DefaultIfEmpty(-1).Single()); // 5",
+    "related": ["linq-groupjoin", "linq-sum-average", "default-values"]
   }
 ]

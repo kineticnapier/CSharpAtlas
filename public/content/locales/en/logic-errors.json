@@ -115,5 +115,37 @@
     "tags": ["closure", "for loop", "callback"],
     "badNotes": {"2": "All iterations use the same i variable", "3": "The lambda captures i rather than its current value"},
     "goodNotes": {"4": "Each iteration creates a distinct current variable", "5": "The callback captures that iteration's storage"}
+  },
+  "dictionary-duplicate-keys": {
+    "title": "Forgetting a duplicate-key policy in ToDictionary",
+    "short": "Two projected rows choose the same key and dictionary creation fails.",
+    "summary": "ToDictionary requires every projected key to be unique under its comparer and throws ArgumentException when it encounters a duplicate.",
+    "why": "Both rows use key 1. The correction groups them and explicitly chooses Last as the winner before creating one entry per key.",
+    "tips": "Use [[linq-groupby|GroupBy]] as the final representation when multiple values per key are valid; otherwise document whether duplicates are rejected or which value wins.",
+    "tags": ["ToDictionary", "duplicate key", "GroupBy"]
+  },
+  "collection-modified-enumeration": {
+    "title": "Mutating a collection during enumeration",
+    "short": "A structural List change invalidates the active enumerator.",
+    "summary": "List<T>.Enumerator tracks the collection version. Adding or removing elements after enumeration begins invalidates that state and a later MoveNext throws InvalidOperationException.",
+    "why": "The bad loop removes from the same List it is traversing. RemoveAll performs the removal as one collection operation without an external enumerator.",
+    "tips": "The [[ienumerable|enumerator state]] represents one traversal, not a live cursor resilient to structural mutation; collect changes separately or use a suitable bulk operation.",
+    "tags": ["List", "enumerator", "mutation"]
+  },
+  "mutable-hash-keys": {
+    "title": "Mutating a hash key makes entries unreachable",
+    "short": "Changing equality-relevant state moves a key logically without rehashing it.",
+    "summary": "A Dictionary chooses a bucket from the key's hash at insertion. Mutating fields used by equality or hashing can make later lookup inspect a different bucket.",
+    "why": "Changing Code from A to B changes the same object's hash without relocating its stored entry. An immutable record key keeps membership stable.",
+    "tips": "The [[custom-equality-hashing|hash and equality contract]] must remain consistent for the entire time a key belongs to a Dictionary or HashSet.",
+    "tags": ["Dictionary", "mutable key", "GetHashCode"]
+  },
+  "linq-orderby-reset": {
+    "title": "Repeated OrderBy calls replace the primary sort key",
+    "short": "A second ordering starts over instead of adding a tie-breaker.",
+    "summary": "OrderBy begins a new ordered sequence. Calling it again makes the new key primary and discards the prior key's role in the requested ordering.",
+    "why": "ThenBy extends the Group ordering with Rank only inside equal groups, preserving the intended two-key contract.",
+    "tips": "Use [[list-sort|OrderBy to begin an order]] and ThenBy or ThenByDescending to extend it with additional keys.",
+    "tags": ["LINQ", "OrderBy", "ThenBy"]
   }
 }

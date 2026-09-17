@@ -222,5 +222,213 @@
     "why": "Download は sender に自身を、データに ProgressEventArgs を渡します。名前付き変数へ保持したハンドラーなら、+= で追加した同じデリゲートを -= で確実に削除できます。",
     "tips": "[[events|イベント]] の境界は購読を許し、通知の発行は Download だけに保ちます。長寿命の購読は不要時に解除するか IDisposable の寿命へ結び付けます。",
     "tags": ["EventHandler", "イベントデータ", "購読解除"]
+  },
+  "queue-stack": {
+    "title": "Queue<T> と Stack<T> で順番を管理する",
+    "short": "FIFO と LIFO を選び、空のコレクションも安全に扱う。",
+    "summary": "Queue<T> は最初に Enqueue した要素を、Stack<T> は最後に Push した要素を先に取り出します。TryDequeue と TryPop は空でも例外を投げず false を返します。",
+    "why": "キューは Ada を先に、スタックは second を先に表示し、それぞれの取り出し規則を明確にします。",
+    "tips": "[[ienumerable|IEnumerable として内容を見る]]だけでは要素を削除しません。Dequeue、TryDequeue、Pop、TryPop は次の要素を取り除きます。",
+    "tags": ["Queue", "Stack", "FIFO"]
+  },
+  "priority-queue": {
+    "title": "PriorityQueue<TElement,TPriority> で優先順に取り出す",
+    "short": "要素とは別の優先度が最小の項目から取り出す。",
+    "summary": "PriorityQueue は要素と優先度を別々に保持し、既定では最小の優先度を先に取り出します。同じ優先度同士の順序は保証されません。",
+    "why": "alert の優先度は 5 なので、挿入順に関係なく優先度 20 の2件より先に取り出されます。",
+    "tips": "[[custom-ordering|優先度の比較規則]]が取り出し順を決めます。同順位の安定した順序が必要なら、優先度へ明示的なタイブレーク値を含めます。",
+    "tags": ["PriorityQueue", "優先度", "TryDequeue"]
+  },
+  "linked-list": {
+    "title": "LinkedList<T> でノードの前後へ挿入する",
+    "short": "保持したノードを基準に前後の位置を更新する。",
+    "summary": "LinkedList<T> は既知のノードの前後へ定数時間で挿入・削除できますが、値や位置からノードを探す処理には走査が必要です。",
+    "why": "Central ノードを保持することで、AddBefore、AddAfter、Remove がそのリンクを直接操作できます。",
+    "tips": "[[list-basic|添字を使う List<T>]] と異なり、任意の添字へ高速にはアクセスできません。保持するノードはそのリストに所属している間だけ使います。",
+    "tags": ["LinkedList", "ノード", "挿入"]
+  },
+  "immutable-collections": {
+    "title": "ImmutableArray<T> で不変のスナップショットを持つ",
+    "short": "以前の値を変えず、変更後の列を別の値として作る。",
+    "summary": "ImmutableArray<T> はコンテナーの安定したスナップショットを保持します。Add は新しい値を返すため、first は変わらず second だけが green を含みます。",
+    "why": "不変コンテナーのスロットは置き換えられませんが、スロットに格納した参照が可変オブジェクトを指すことはあります。",
+    "tips": "安定した不変コンテナーは、別の所有者による変更が見える [[readonly-collection-views|読み取り専用ビュー]] とは異なります。",
+    "tags": ["ImmutableArray", "不変", "スナップショット"]
+  },
+  "dictionary-update-insert": {
+    "title": "Dictionary の追加・更新・削除を使い分ける",
+    "short": "重複キーの扱いに合う操作を選ぶ。",
+    "summary": "Add は重複時に例外を投げ、TryAdd は false を返します。インデクサー代入は追加または置換を行い、Remove は成功と削除値を同時に返せます。",
+    "why": "各操作を要件に合わせると、意図しない上書きや拒否を避け、重複ポリシーをコードで示せます。",
+    "tips": "追加時の方針と [[dict-safe|キーを安全に検索する方法]] は別の問題です。読み取りでキー不在が想定内なら TryGetValue を使います。",
+    "tags": ["Dictionary", "TryAdd", "Remove"]
+  },
+  "dictionary-comparers": {
+    "title": "Dictionary のキー比較を指定する",
+    "short": "すべてのキー操作へ同じ等価性の規則を適用する。",
+    "summary": "Dictionary のコンストラクターへ渡した comparer は、その Dictionary の追加、検索、置換、削除を一貫して支配します。",
+    "why": "OrdinalIgnoreCase では Content-Type の大文字小文字違いが同じキーになるため、検索は成功し、重複する TryAdd は false になります。",
+    "tips": "渡す comparer は [[custom-equality-hashing|等価性とハッシュ値の契約]] を守り、等しいキーへ整合するハッシュ値を返す必要があります。",
+    "tags": ["Dictionary", "StringComparer", "キー等価性"]
+  },
+  "hashset-set-operations": {
+    "title": "集合の和・積・差を求める",
+    "short": "要素の集合を組み合わせ、集合間の関係を調べる。",
+    "summary": "UnionWith、IntersectWith、ExceptWith は呼び出し元を変更します。元の集合を残す必要がある場合は先にコピーします。",
+    "why": "3つのコピーがそれぞれ、全要素、共通要素、first だけの要素を独立して計算します。",
+    "tips": "[[hashset-basic|HashSet の所属判定]]は comparer の等価性を使い、IsSubsetOf や Overlaps も同じ規則で判定します。",
+    "tags": ["HashSet", "和集合", "積集合"]
+  },
+  "array-copy-clear": {
+    "title": "配列の部分コピーと初期化",
+    "short": "範囲をコピーし、指定スロットを既定値へ戻す。",
+    "summary": "Array.Copy は指定部分をコピーし、コピー元と先が重なる場合も正しく扱います。Array.Clear は範囲内の各スロットへ既定値を代入します。",
+    "why": "オブジェクト配列のコピーは浅いため、target も同じ Box への参照を受け取ります。一方、target のクリアは参照スロットを null にします。",
+    "tips": "[[value-reference-types|参照型のコピー]]では、コピーした参照からオブジェクトの状態を変えると、同じオブジェクトを指すすべての参照から見えます。",
+    "tags": ["Array.Copy", "Array.Clear", "浅いコピー"]
+  },
+  "array-binary-search": {
+    "title": "整列済み配列を二分探索する",
+    "short": "整列済みデータを探し、不在時の挿入位置を求める。",
+    "summary": "Array.BinarySearch は一致すれば添字を返します。不在なら、その値を挿入できる添字のビット反転値を返します。",
+    "why": "負の結果へ ~ を適用すると、もう一度走査せず挿入位置を復元できます。",
+    "tips": "ソートと検索には同じ [[custom-ordering|比較規則]] を使う必要があります。異なる規則を使った二分探索の結果は保証されません。",
+    "tags": ["Array", "BinarySearch", "挿入位置"]
+  },
+  "list-removeall": {
+    "title": "List<T> から条件に合う要素をまとめて削除する",
+    "short": "述語で List を変更し、削除件数を受け取る。",
+    "summary": "RemoveAll は List を走査し、一致するすべての要素をその場で削除して、削除した件数を返します。",
+    "why": "偶数は numbers 自体から消え、removed には一致した3件が記録されます。",
+    "tips": "元の List を変えず別の絞り込み列が必要なら、[[list-filter|Where によるフィルター]] を使います。",
+    "tags": ["List", "RemoveAll", "述語"]
+  },
+  "linq-any-all": {
+    "title": "Any と All で条件を判定する",
+    "short": "一部またはすべての要素が条件を満たすか調べる。",
+    "summary": "Any は最初の成功で、All は最初の失敗で評価を止めます。空の列に対する Any は false、述語付き All は空虚真により true です。",
+    "why": "結果が確定した後の要素を調べる必要がないため、どちらも短絡評価します。",
+    "tips": "この停止規則は、結果が決まると残りを評価しない [[boolean-operators|論理演算子の短絡評価]] と同じ考え方です。",
+    "tags": ["LINQ", "Any", "All"]
+  },
+  "linq-first-single": {
+    "title": "First と Single で要素数の契約を表す",
+    "short": "許容する一致件数を表す演算子を選ぶ。",
+    "summary": "First は1件以上から先頭を返し、Single はちょうど1件を要求します。OrDefault でない形式は0件で失敗し、Single は複数件でも失敗します。",
+    "why": "Single はユーザーが一意という契約を表します。SingleOrDefault は不在を許しますが、default(T) 自体が有効値なら曖昧です。",
+    "tips": "件数の契約違反は [[invalid-operation|InvalidOperationException]] になります。既定値が曖昧なら nullable、Any、明示的な番兵値を検討します。",
+    "tags": ["LINQ", "First", "Single"]
+  },
+  "linq-aggregate": {
+    "title": "Aggregate で独自の集約を行う",
+    "short": "明示した初期値へ列の要素を畳み込む。",
+    "summary": "Aggregate は累積状態と現在の要素を関数へ渡し、その結果を次の要素に対する新しい状態として使います。",
+    "why": "Topics: を明示的な seed にしたため、入力が空でも先頭要素を要求せず結果を定義できます。",
+    "tips": "[[lambda|累積関数]]の第1引数は以前の状態、第2引数は現在の要素です。可能なら意外な副作用を持たせません。",
+    "tags": ["LINQ", "Aggregate", "畳み込み"]
+  },
+  "linq-sum-average": {
+    "title": "LINQ で合計と平均を求める",
+    "short": "数値そのもの、または selector で取り出した値を集約する。",
+    "summary": "Sum と Average には数値列用と selector 用のオーバーロードがあります。非 nullable の Average は空列で例外となり、nullable の Average は値がなければ null を返します。nullable 集約は null を無視します。",
+    "why": "selector が各 Quantity を取り出します。nullable の例では欠損値を除外し、合計30、平均15になります。",
+    "tips": "nullable 入力は [[nullable-value-types|欠損値の意味]] に従います。空の数値列の Sum は0で、整数用 Sum は合計が範囲外なら OverflowException を投げることがあります。",
+    "tags": ["LINQ", "Sum", "Average"]
+  },
+  "linq-minby-maxby": {
+    "title": "MinBy と MaxBy で極値の要素を取り出す",
+    "short": "選択したキーが最小・最大の元要素を返す。",
+    "summary": "MinBy と MaxBy は列全体をソートせず走査し、選択したキーだけではなく元の要素を返します。",
+    "why": "Price が順序キーなので、完全な Pen オブジェクトと Bag オブジェクトを1回の走査で取得できます。",
+    "tips": "キーには既定または指定した [[custom-ordering|順序規則]] が使われます。空の参照型列は null、空の非 nullable 値型列は InvalidOperationException です。",
+    "tags": ["LINQ", "MinBy", "MaxBy"]
+  },
+  "linq-selectmany": {
+    "title": "SelectMany で入れ子の列を平坦化する",
+    "short": "各子要素を出力し、必要なら親の値も保持する。",
+    "summary": "Select は入力ごとに1つの結果を作ります。SelectMany は各入力の子列を列挙し、すべての子結果を1つの列へ平坦化します。",
+    "why": "result selector は Department と各 member の両方を受け取るため、平坦化後も部署名を保持できます。",
+    "tips": "結果を入れ子のままにするか平坦化するかは、[[linq-select|Select の入力1件につき出力1件]]という規則と比較して選びます。",
+    "tags": ["LINQ", "SelectMany", "平坦化"]
+  },
+  "linq-join": {
+    "title": "Join でキーの一致するデータを結合する",
+    "short": "等しいキーからメモリ上の内部結合行を作る。",
+    "summary": "Join は外側と内側のキーを照合します。一致しない要素は行を作らず、同じキーの内側要素が複数なら外側1件から複数行を作ります。",
+    "why": "Ada は Book と Pen の2行を作り、Grace と顧客3の注文は一致相手がないため内部結合から除かれます。",
+    "tips": "result selector は後続処理に必要なフィールドだけを持つ [[anonymous-types|匿名の結合形状]] を作れます。",
+    "tags": ["LINQ", "Join", "内部結合"]
+  },
+  "linq-groupjoin": {
+    "title": "GroupJoin で親ごとに対応する要素をまとめる",
+    "short": "各外側要素へ一致するすべての内側要素を関連付ける。",
+    "summary": "GroupJoin は一致する内側要素がなくても外側要素ごとに1つの結果を返します。その空グループを平坦化すると左外部結合を作れます。",
+    "why": "DefaultIfEmpty が Grace の空グループへ null の注文を1つ補うため、SelectMany はフォールバック項目とともに親を残します。",
+    "tips": "平坦化時に [[linq-defaultifempty|DefaultIfEmpty]] を使うと不一致の親を残せます。使わなければ空グループは行を生成しません。",
+    "tags": ["LINQ", "GroupJoin", "左外部結合"]
+  },
+  "linq-pagination": {
+    "title": "Skip と Take でページを切り出す",
+    "short": "ページ指定を検証し、オフセットから有限の範囲を得る。",
+    "summary": "Skip は指定した先頭部分を飛ばし、Take はページサイズ以下を返します。例では無効な値を拒否し、オフセットを checked で計算します。",
+    "why": "決定的な OrderBy により、元の並びが変わっても2ページ目は一貫して4から6になります。",
+    "tips": "ページングには安定した [[list-sort|順序規則]] が必要です。一般の遅延 IEnumerable では後方ページまでに先行要素をすべて列挙する場合があります。",
+    "tags": ["LINQ", "Skip", "Take"]
+  },
+  "linq-chunk": {
+    "title": "Chunk で一定件数のまとまりを作る",
+    "short": "元の要素を指定件数以下の配列単位で処理する。",
+    "summary": "Chunk は元の列を列挙し、指定サイズを上限とする別々の配列を返します。最後の配列は短いことがあります。",
+    "why": "8個の値を3個ずつにすると、長さ3、3、2の配列になります。",
+    "tips": "各結果は独立した [[arrays-basics|配列]] で、Length は上限値ではなく、そのチャンクが実際に持つ要素数です。",
+    "tags": ["LINQ", "Chunk", "バッチ"]
+  },
+  "linq-zip": {
+    "title": "Zip で複数の列を位置ごとに組み合わせる",
+    "short": "同じ位置にある要素同士を組み合わせる。",
+    "summary": "Zip は入力列を同時に進め、最短の入力が終わった時点で停止します。長い入力に残る要素は結果に含まれません。",
+    "why": "scores は2件なので、Ada と Grace だけが点数と組になり、Linus は出力されません。",
+    "tips": "Zip は位置で組み合わせ、[[linq-join|Join はキーで照合]]します。同一性で結ぶ場合は Join を選びます。",
+    "tags": ["LINQ", "Zip", "タプル"]
+  },
+  "linq-set-operators": {
+    "title": "LINQ の集合演算で列を比較する",
+    "short": "重複のない和・積・差の列を新しく作る。",
+    "summary": "Union、Intersect、Except は新しい遅延列を返し、指定した等価性 comparer に従って重複する要素を除きます。",
+    "why": "OrdinalIgnoreCase は Ada と ada を同じ要素として、3つの演算すべてで一貫して扱います。",
+    "tips": "comparer が [[equality|要素の等価性契約]] を定義し、2つの値を同じ集合要素とみなすか決めます。",
+    "tags": ["LINQ", "Union", "Except"]
+  },
+  "linq-tolookup": {
+    "title": "ToLookup で複数値を持つ索引を作る",
+    "short": "キーから繰り返し参照できる一対多索引を実体化する。",
+    "summary": "ToLookup は一対多の索引を直ちに構築します。存在しないキーを指定しても例外ではなく空の列を返します。",
+    "why": "顧客1は2つの注文を繰り返し取得でき、顧客99のグループは Count が0になります。",
+    "tips": "ToLookup は遅延する [[linq-groupby|GroupBy の列挙]] と異なりその場で実体化し、取り込んだデータへの反復キー参照に向きます。",
+    "tags": ["LINQ", "ToLookup", "索引"]
+  },
+  "linq-cast-oftype": {
+    "title": "Cast と OfType で型付きの列へ変換する",
+    "short": "異種要素へ厳密なキャストか型による絞り込みを選ぶ。",
+    "summary": "Cast<T> はすべての要素をキャストし、互換な null は保持します。OfType<T> は T へ代入可能な要素だけを出力し、非 nullable の実行時型では null を除きます。",
+    "why": "OfType<int> は1と3を残します。Cast の例は string と null を受け入れますが、int を加えると列挙がそこへ到達した時点で失敗します。",
+    "tips": "Cast は遅延実行なので、互換性のない要素による [[invalid-cast|InvalidCastException]] はクエリ作成時ではなく列挙時に発生します。",
+    "tags": ["LINQ", "Cast", "OfType"]
+  },
+  "linq-sequenceequal": {
+    "title": "SequenceEqual で要素の並びを比較する",
+    "short": "1つの等価性規則で要素の値と位置を比較する。",
+    "summary": "SequenceEqual は2つの列を同時に進め、長さが同じで、同じ位置の要素がすべて等しいことを要求します。",
+    "why": "大文字小文字を無視する comparer により、2つの配列が別オブジェクトでも順序付き内容は等しくなります。",
+    "tips": "SequenceEqual は [[equality|要素の等価性契約]] を使います。重複数と順序も意味を持つため、集合の等価性とは異なります。",
+    "tags": ["LINQ", "SequenceEqual", "順序付き比較"]
+  },
+  "linq-defaultifempty": {
+    "title": "DefaultIfEmpty で空の列を補う",
+    "short": "元の列が空の場合だけ1つの代替値を返す。",
+    "summary": "DefaultIfEmpty は空でない元列をそのまま通します。空なら明示した代替値、または default(T) をちょうど1回返します。",
+    "why": "空の整数配列は指定時に -1、省略時に0を作り、5を含む元列は5のままです。",
+    "tips": "省略時の代替値は [[default-values|default(T)]] です。1つの代替行は左外部結合を支え、後続の集約における空の扱いも変えられます。",
+    "tags": ["LINQ", "DefaultIfEmpty", "代替値"]
   }
 }

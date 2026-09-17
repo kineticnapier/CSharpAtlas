@@ -150,5 +150,213 @@
     "why": "Download supplies itself as sender and a ProgressEventArgs instance as data. Keeping the handler in a named variable makes -= remove the exact delegate that += added.",
     "tips": "The [[events|event]] boundary permits subscription but reserves notification for Download. Long-lived subscriptions should be removed or owned by an IDisposable lifetime when they are no longer needed.",
     "tags": ["EventHandler", "event data", "unsubscribe"]
+  },
+  "queue-stack": {
+    "title": "Managing order with Queue<T> and Stack<T>",
+    "short": "Choose FIFO or LIFO removal and handle an empty collection safely.",
+    "summary": "Queue<T> removes the earliest enqueued item, while Stack<T> removes the most recently pushed item. TryDequeue and TryPop report an empty collection without throwing.",
+    "why": "The queue prints Ada first and the stack prints second first, making the retrieval policy explicit.",
+    "tips": "Viewing contents through [[ienumerable|IEnumerable]] only enumerates them; Dequeue, TryDequeue, Pop, and TryPop remove the next item.",
+    "tags": ["Queue", "Stack", "FIFO"]
+  },
+  "priority-queue": {
+    "title": "Retrieving work with PriorityQueue<TElement,TPriority>",
+    "short": "Remove the element whose independent priority compares smallest.",
+    "summary": "PriorityQueue stores an element and priority separately. By default, the smallest priority is dequeued first, and equal priorities have no guaranteed relative order.",
+    "why": "The alert has priority 5, so it leaves before both priority-20 jobs regardless of insertion order.",
+    "tips": "A supplied [[custom-ordering|priority comparison]] controls removal order; add a tie-break component to the priority when equal-priority stability matters.",
+    "tags": ["PriorityQueue", "priority", "TryDequeue"]
+  },
+  "linked-list": {
+    "title": "Inserting around nodes with LinkedList<T>",
+    "short": "Retain a node to update adjacent positions without an index.",
+    "summary": "LinkedList<T> can insert or remove next to a known node in constant time, but finding a node by value or position still requires traversal.",
+    "why": "Keeping the Central node lets AddBefore, AddAfter, and Remove operate directly on its links.",
+    "tips": "Unlike [[list-basic|indexed List<T> operations]], linked nodes do not provide fast arbitrary index lookup; retain a node only while it belongs to that list.",
+    "tags": ["LinkedList", "node", "insertion"]
+  },
+  "immutable-collections": {
+    "title": "Keeping immutable snapshots with ImmutableArray<T>",
+    "short": "Derive a changed sequence without modifying the earlier value.",
+    "summary": "ImmutableArray<T> keeps a stable container snapshot. Add returns a new value, so first remains unchanged while second includes green.",
+    "why": "The immutable container cannot have its slots replaced, although a reference stored in a slot may still point to a mutable object.",
+    "tips": "This stable container differs from a live [[readonly-collection-views|read-only view]], which can reflect mutations performed by another owner.",
+    "tags": ["ImmutableArray", "immutable", "snapshot"]
+  },
+  "dictionary-update-insert": {
+    "title": "Inserting, updating, and removing Dictionary entries",
+    "short": "Select an operation whose duplicate-key policy matches the requirement.",
+    "summary": "Add rejects a duplicate by throwing, TryAdd reports false, indexer assignment inserts or replaces, and Remove can report both success and the removed value.",
+    "why": "Each operation makes a different policy visible instead of accidentally overwriting or rejecting data.",
+    "tips": "Insertion policy is separate from [[dict-safe|safe key lookup]]; use TryGetValue when absence during reading is expected.",
+    "tags": ["Dictionary", "TryAdd", "Remove"]
+  },
+  "dictionary-comparers": {
+    "title": "Choosing Dictionary key comparers",
+    "short": "Apply one explicit equality policy to every key operation.",
+    "summary": "A comparer passed to the Dictionary constructor governs insertion, lookup, replacement, and removal for the lifetime of that dictionary.",
+    "why": "OrdinalIgnoreCase makes the three spellings of Content-Type the same key, so lookup succeeds and the duplicate TryAdd returns false.",
+    "tips": "A supplied comparer must obey the [[custom-equality-hashing|equality and hash-code contract]] so equal keys always receive compatible hash codes.",
+    "tags": ["Dictionary", "StringComparer", "key equality"]
+  },
+  "hashset-set-operations": {
+    "title": "Computing set unions, intersections, and differences",
+    "short": "Combine membership sets and test their relationships.",
+    "summary": "UnionWith, IntersectWith, and ExceptWith mutate their receiver. Copy the source first when the original set must remain unchanged.",
+    "why": "The three copied sets independently compute all members, common members, and members found only in first.",
+    "tips": "The [[hashset-basic|HashSet membership model]] uses its equality comparer for both operations and tests such as IsSubsetOf and Overlaps.",
+    "tags": ["HashSet", "union", "intersection"]
+  },
+  "array-copy-clear": {
+    "title": "Copying and clearing array segments",
+    "short": "Copy a bounded range and reset slots to their default values.",
+    "summary": "Array.Copy copies a selected segment and correctly handles overlapping source and destination ranges. Array.Clear assigns default to each selected slot.",
+    "why": "Copying an array of objects is shallow: target receives references to the same Box instances, while clearing target slots sets those references to null.",
+    "tips": "Under [[value-reference-types|reference-type copying]], changing a copied object's state is visible through every reference to that object.",
+    "tags": ["Array.Copy", "Array.Clear", "shallow copy"]
+  },
+  "array-binary-search": {
+    "title": "Binary search in a sorted array",
+    "short": "Search ordered data and decode a missing value's insertion point.",
+    "summary": "Array.BinarySearch returns an index for a match. For a missing value it returns the bitwise complement of the index where that value could be inserted.",
+    "why": "Applying ~ to the negative result recovers the insertion index without performing a second scan.",
+    "tips": "The sort and search must use the same [[custom-ordering|comparison policy]]; otherwise binary search results are undefined.",
+    "tags": ["Array", "BinarySearch", "insertion point"]
+  },
+  "list-removeall": {
+    "title": "Removing matching elements from a List<T>",
+    "short": "Mutate a list with a predicate and receive the removed count.",
+    "summary": "RemoveAll traverses the list, removes every matching element in place, and returns how many elements were removed.",
+    "why": "The even values disappear from numbers itself, and removed records that three elements matched.",
+    "tips": "Use [[list-filter|Where filtering]] when you need a separate filtered sequence instead of changing the original list.",
+    "tags": ["List", "RemoveAll", "predicate"]
+  },
+  "linq-any-all": {
+    "title": "Testing sequence conditions with Any and All",
+    "short": "Test whether some or every element satisfies a predicate.",
+    "summary": "Any stops after the first success; All stops after the first failure. On an empty sequence Any is false, while All with a predicate is vacuously true.",
+    "why": "Neither operator needs to inspect later elements after its result has become certain.",
+    "tips": "Their short-circuit behavior follows the same idea as [[boolean-operators|short-circuit Boolean operators]], which skip work once the outcome is known.",
+    "tags": ["LINQ", "Any", "All"]
+  },
+  "linq-first-single": {
+    "title": "Expressing cardinality with First and Single",
+    "short": "Choose the operator that states how many matches are valid.",
+    "summary": "First accepts one or more matches and returns the first. Single requires exactly one; the non-OrDefault forms fail on no match, and Single also fails on multiple matches.",
+    "why": "Single expresses the unique-user contract, while SingleOrDefault permits absence but can be ambiguous when default(T) is itself a valid value.",
+    "tips": "A violated cardinality contract raises [[invalid-operation|InvalidOperationException]]; use nullable results, Any, or an explicit sentinel when default-value ambiguity matters.",
+    "tags": ["LINQ", "First", "Single"]
+  },
+  "linq-aggregate": {
+    "title": "Custom reductions with Aggregate",
+    "short": "Fold sequence elements into an explicitly seeded accumulator.",
+    "summary": "Aggregate passes the accumulated state and current element to a function, then uses its result as the state for the next element.",
+    "why": "Because Topics: is an explicit seed, even an empty input has a defined result instead of requiring a first element.",
+    "tips": "The [[lambda|accumulator function]] receives previous state first and the current element second; keep it free of surprising mutation when possible.",
+    "tags": ["LINQ", "Aggregate", "fold"]
+  },
+  "linq-sum-average": {
+    "title": "Computing sums and averages with LINQ",
+    "short": "Aggregate numeric values directly or through a selector.",
+    "summary": "Sum and Average have numeric overloads and selector overloads. Non-nullable Average throws on empty input, while nullable Average returns null when no values exist; nullable aggregates ignore null values.",
+    "why": "The selector extracts each quantity. The nullable example excludes the missing value, producing 30 and an average of 15.",
+    "tips": "Nullable inputs follow [[nullable-value-types|missing-value semantics]]. Sum of an empty numeric sequence is zero, and checked integer Sum overloads can throw OverflowException when the total is outside range.",
+    "tags": ["LINQ", "Sum", "Average"]
+  },
+  "linq-minby-maxby": {
+    "title": "Selecting extreme elements with MinBy and MaxBy",
+    "short": "Return the element with the smallest or largest selected key.",
+    "summary": "MinBy and MaxBy scan the sequence without sorting it and return a source element, not merely the selected key.",
+    "why": "Price supplies the ordering key, so the complete Pen and Bag objects are returned in one pass.",
+    "tips": "The selected key uses its default or supplied [[custom-ordering|ordering]]. Empty reference-type sources return null; empty non-nullable value-type sources throw InvalidOperationException.",
+    "tags": ["LINQ", "MinBy", "MaxBy"]
+  },
+  "linq-selectmany": {
+    "title": "Flattening nested sequences with SelectMany",
+    "short": "Emit every child while optionally retaining its parent.",
+    "summary": "Select produces one result for each input. SelectMany enumerates a child sequence for each input and flattens all child results into one sequence.",
+    "why": "The result selector receives both the Department and each member, preserving the department name in every flattened result.",
+    "tips": "Compare this with [[linq-select|Select's one-output-per-input transformation]] when choosing whether the result should remain nested or become flat.",
+    "tags": ["LINQ", "SelectMany", "flatten"]
+  },
+  "linq-join": {
+    "title": "Joining sequences by matching keys",
+    "short": "Build in-memory inner-join rows for equal keys.",
+    "summary": "Join matches outer and inner keys. Unmatched elements produce no row, while one outer element can produce multiple rows when several inner elements share its key.",
+    "why": "Ada produces Book and Pen rows; Grace and the customer-3 order are omitted because an inner join has no match for them.",
+    "tips": "The result selector creates an [[anonymous-types|anonymous combined shape]] containing exactly the fields needed by later query stages.",
+    "tags": ["LINQ", "Join", "inner join"]
+  },
+  "linq-groupjoin": {
+    "title": "Grouping matches per parent with GroupJoin",
+    "short": "Associate every outer element with all matching inner elements.",
+    "summary": "GroupJoin returns one result for each outer element, including an empty group when no inner elements match. Flattening that group can implement a left join.",
+    "why": "DefaultIfEmpty contributes one null order for Grace's empty group, so SelectMany still emits the parent with a fallback item.",
+    "tips": "Use [[linq-defaultifempty|DefaultIfEmpty]] while flattening to retain unmatched parents; without it, an empty group contributes no row.",
+    "tags": ["LINQ", "GroupJoin", "left join"]
+  },
+  "linq-pagination": {
+    "title": "Selecting pages with Skip and Take",
+    "short": "Validate a page request, compute its offset, and take a bounded slice.",
+    "summary": "Skip discards the requested prefix and Take emits at most the page size. The example rejects invalid values and uses checked arithmetic for the offset.",
+    "why": "A deterministic OrderBy makes page two consistently contain values 4 through 6, even if the source's original order changes.",
+    "tips": "Pagination needs a stable [[list-sort|ordering policy]]. On a general deferred IEnumerable, reaching a later page may still enumerate every preceding element.",
+    "tags": ["LINQ", "Skip", "Take"]
+  },
+  "linq-chunk": {
+    "title": "Batching sequence elements with Chunk",
+    "short": "Process source elements in arrays up to a chosen size.",
+    "summary": "Chunk enumerates the source into separate arrays whose maximum length is the requested chunk size. The final array can be shorter.",
+    "why": "Eight values with a size of three produce arrays of lengths three, three, and two.",
+    "tips": "Each result is an independent [[arrays-basics|array]] whose Length is its actual element count, not always the requested maximum.",
+    "tags": ["LINQ", "Chunk", "batch"]
+  },
+  "linq-zip": {
+    "title": "Combining sequences positionally with Zip",
+    "short": "Pair elements that occupy the same position.",
+    "summary": "Zip advances its inputs together and stops as soon as the shortest input ends, so extra elements in longer inputs are omitted.",
+    "why": "Only Ada and Grace receive scores because scores has two elements; Linus is never paired.",
+    "tips": "Zip is positional, unlike a [[linq-join|key-based Join]]; choose Join when elements should match by identity rather than index.",
+    "tags": ["LINQ", "Zip", "tuple"]
+  },
+  "linq-set-operators": {
+    "title": "Comparing sequences with LINQ set operators",
+    "short": "Create duplicate-free unions, intersections, and differences.",
+    "summary": "Union, Intersect, and Except return new deferred sequences and suppress duplicate members according to the supplied equality comparer.",
+    "why": "OrdinalIgnoreCase treats Ada and ada as the same member consistently across all three operations.",
+    "tips": "The comparer defines the [[equality|element equality contract]] that decides whether two values represent one set member.",
+    "tags": ["LINQ", "Union", "Except"]
+  },
+  "linq-tolookup": {
+    "title": "Building a multi-value index with ToLookup",
+    "short": "Materialize reusable groups addressable by key.",
+    "summary": "ToLookup immediately builds a one-to-many index. Indexing a missing key returns an empty sequence rather than throwing.",
+    "why": "Customer 1 can retrieve both orders repeatedly, while customer 99 produces a group with count zero.",
+    "tips": "Unlike deferred [[linq-groupby|GroupBy enumeration]], ToLookup materializes now and is convenient for repeated keyed access to the captured data.",
+    "tags": ["LINQ", "ToLookup", "index"]
+  },
+  "linq-cast-oftype": {
+    "title": "Producing typed sequences with Cast and OfType",
+    "short": "Choose strict conversion or type-based filtering for mixed elements.",
+    "summary": "Cast<T> attempts to cast every element and preserves a compatible null. OfType<T> emits only elements assignable to T and filters null for non-nullable runtime types.",
+    "why": "OfType<int> keeps 1 and 3. The compatible Cast example accepts strings and null, but adding an int would fail when enumeration reaches it.",
+    "tips": "Because Cast is deferred, an incompatible element raises [[invalid-cast|InvalidCastException]] during enumeration rather than when the query is created.",
+    "tags": ["LINQ", "Cast", "OfType"]
+  },
+  "linq-sequenceequal": {
+    "title": "Comparing ordered contents with SequenceEqual",
+    "short": "Compare element values and positions under one equality policy.",
+    "summary": "SequenceEqual advances both sequences together and requires equal lengths and equal elements in the same order.",
+    "why": "The case-insensitive comparer makes the ordered contents equal even though the two array objects have different identities.",
+    "tips": "SequenceEqual consumes an [[equality|element equality contract]]; it differs from set equality because duplicates and order remain significant.",
+    "tags": ["LINQ", "SequenceEqual", "ordered equality"]
+  },
+  "linq-defaultifempty": {
+    "title": "Supplying an element for an empty sequence with DefaultIfEmpty",
+    "short": "Yield one fallback only when the source has no elements.",
+    "summary": "DefaultIfEmpty passes through a nonempty source unchanged. For an empty source it yields either the explicit fallback or default(T) exactly once.",
+    "why": "The empty integer array produces -1 when supplied and zero when no explicit value is given; a source containing 5 keeps 5.",
+    "tips": "The implicit fallback follows [[default-values|default(T)]]. One fallback row supports left joins and can deliberately change how downstream aggregation treats emptiness.",
+    "tags": ["LINQ", "DefaultIfEmpty", "fallback"]
   }
 }

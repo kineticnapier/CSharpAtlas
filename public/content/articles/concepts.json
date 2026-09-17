@@ -598,5 +598,37 @@
     "good": null,
     "code": "var counter = new Counter { Value = 1 };\nTryIncrement(in counter);\nConsole.WriteLine(counter.Value); // 1\n\nstatic void TryIncrement(in Counter value)\n{\n    value.Increment(); // mutates a defensive copy\n}\n\nstruct Counter\n{\n    public int Value;\n    public void Increment() => Value++;\n    public readonly int Read() => Value;\n}\n\nreadonly struct Point(int x, int y)\n{\n    public int X { get; } = x;\n    public int Y { get; } = y;\n}",
     "related": ["struct-design", "ref-out-in", "mutable-struct-copy"]
+  },
+  {
+    "id": "sorted-collections",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var prices = new SortedDictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)\n{\n    [\"book\"] = 20m,\n    [\"Pen\"] = 3m\n};\nvar names = new SortedSet<string>(StringComparer.OrdinalIgnoreCase)\n{\n    \"Ada\", \"ada\", \"Grace\"\n};\n\nConsole.WriteLine(string.Join(\", \", prices.Keys));\nConsole.WriteLine(names.Count); // 2",
+    "related": ["custom-ordering", "dict-safe", "hashset-basic"]
+  },
+  {
+    "id": "readonly-collection-views",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var owner = new List<string> { \"red\", \"blue\" };\nIReadOnlyList<string> interfaceView = owner;\nIReadOnlyList<string> wrapper = owner.AsReadOnly();\n\nowner.Add(\"green\");\nConsole.WriteLine(interfaceView.Count); // 3\nConsole.WriteLine(wrapper.Count);       // 3",
+    "related": ["interfaces", "not-supported", "immutable-collections"]
+  },
+  {
+    "id": "list-capacity",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var items = new List<int>(capacity: 100);\nConsole.WriteLine(items.Count);    // 0\nConsole.WriteLine(items.Capacity); // at least 100\n\nitems.Add(42);\nConsole.WriteLine(items.Count);    // 1\nitems.TrimExcess();",
+    "related": ["list-basic", "arrays-basics", "index-out-of-range"]
+  },
+  {
+    "id": "collection-expressions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[] middle = [2, 3];\nint[] values = [1, .. middle, 4];\nList<int> list = [.. values, 5];\n\nConsole.WriteLine(string.Join(\", \", values));\nConsole.WriteLine(list.Count);",
+    "related": ["arrays-basics", "object-collection-initializers", "ienumerable"]
   }
 ]

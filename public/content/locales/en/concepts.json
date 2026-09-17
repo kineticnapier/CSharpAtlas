@@ -598,5 +598,37 @@
     "why": "The in parameter is readonly storage, so Increment operates on a temporary Counter and the caller's counter remains unchanged.",
     "tips": "Readonly access through an [[ref-out-in|in parameter]] does not make a mutable struct immutable. Prefer immutable structs and mark non-mutating members readonly to avoid unnecessary copies.",
     "tags": ["readonly struct", "defensive copy", "in"]
+  },
+  "sorted-collections": {
+    "title": "Choosing SortedDictionary and SortedSet",
+    "short": "Keep map keys or set members continuously ordered.",
+    "summary": "SortedDictionary<TKey,TValue> stores key-value pairs by key order, while SortedSet<T> stores unique values in order. Their comparer determines both position and uniqueness.",
+    "why": "OrdinalIgnoreCase orders text without case distinctions and treats Ada and ada as the same set member.",
+    "tips": "A zero result from [[custom-ordering|the comparer]] means the values occupy one key or member slot even when ordinary object equality might differ.",
+    "tags": ["SortedDictionary", "SortedSet", "comparer"]
+  },
+  "readonly-collection-views": {
+    "title": "Read-only views versus immutable data",
+    "short": "Restrict a consumer's operations without promising frozen storage.",
+    "summary": "IReadOnlyList<T> and ReadOnlyCollection<T> omit mutation operations for that reference, but another owner can still change the underlying List<T>.",
+    "why": "Both views report three elements after owner adds green, demonstrating that they are live views rather than immutable snapshots.",
+    "tips": "A read-only [[interfaces|interface]] limits the operations available through that reference; it does not control object lifetime, aliases, or other owners.",
+    "tags": ["IReadOnlyList", "ReadOnlyCollection", "immutability"]
+  },
+  "list-capacity": {
+    "title": "Count and Capacity in List<T>",
+    "short": "Separate logical elements from reserved backing storage.",
+    "summary": "Count is the number of elements that exist. Capacity is the size of reserved internal storage and can be larger without creating any elements.",
+    "why": "Constructing with capacity 100 still has Count zero; only Add creates an element and changes Count.",
+    "tips": "Adding through [[list-basic|List<T> operations]] changes Count. Preallocating can reduce resizing when a reliable size estimate exists, but excess capacity also retains memory.",
+    "tags": ["List", "Count", "Capacity"]
+  },
+  "collection-expressions": {
+    "title": "Collection expressions and spread elements",
+    "short": "Construct a target-typed collection and expand source elements into it.",
+    "summary": "C# 12 collection expressions use brackets and require a target type. A spread element enumerates its source and eagerly contributes those values to the new collection.",
+    "why": "The int[] target determines the first result type, while the List<int> target selects a mutable list for the second expression.",
+    "tips": "Spreading [[ienumerable|an IEnumerable source]] enumerates it during construction; it does not retain a lazy link to future source changes.",
+    "tags": ["collection expression", "spread", "C# 12"]
   }
 }

@@ -117,5 +117,37 @@
     "related": ["closures", "lambda", "for-loop"],
     "badHighlight": [2, 3],
     "goodHighlight": [4, 5]
+  },
+  {
+    "id": "dictionary-duplicate-keys",
+    "type": "logic",
+    "bad": "var rows = new[] { new Row(1, \"old\"), new Row(1, \"new\") };\nvar byId = rows.ToDictionary(row => row.Id);\n\nsealed record Row(int Id, string Value);",
+    "good": "var rows = new[] { new Row(1, \"old\"), new Row(1, \"new\") };\nvar byId = rows\n    .GroupBy(row => row.Id)\n    .ToDictionary(group => group.Key, group => group.Last());\n\nsealed record Row(int Id, string Value);",
+    "code": null,
+    "related": ["linq-groupby", "dictionary-update-insert", "argument-exception"]
+  },
+  {
+    "id": "collection-modified-enumeration",
+    "type": "logic",
+    "bad": "var numbers = new List<int> { 1, 2, 3, 4 };\nforeach (int number in numbers)\n    if (number % 2 == 0) numbers.Remove(number);",
+    "good": "var numbers = new List<int> { 1, 2, 3, 4 };\nnumbers.RemoveAll(number => number % 2 == 0);\nConsole.WriteLine(string.Join(\", \", numbers));",
+    "code": null,
+    "related": ["list-removeall", "invalid-operation", "ienumerable"]
+  },
+  {
+    "id": "mutable-hash-keys",
+    "type": "logic",
+    "bad": "var key = new Key { Code = \"A\" };\nvar values = new Dictionary<Key, string> { [key] = \"stored\" };\nkey.Code = \"B\";\nConsole.WriteLine(values.ContainsKey(key)); // may be False\n\nsealed class Key\n{\n    public required string Code { get; set; }\n    public override bool Equals(object? obj) => obj is Key other && Code == other.Code;\n    public override int GetHashCode() => Code.GetHashCode();\n}",
+    "good": "var key = new Key(\"A\");\nvar values = new Dictionary<Key, string> { [key] = \"stored\" };\nConsole.WriteLine(values.ContainsKey(new Key(\"A\"))); // True\n\nsealed record Key(string Code);",
+    "code": null,
+    "related": ["custom-equality-hashing", "dict-safe", "hashset-basic"]
+  },
+  {
+    "id": "linq-orderby-reset",
+    "type": "logic",
+    "bad": "var rows = new[] { new Row(\"B\", 1), new Row(\"A\", 2), new Row(\"A\", 1) };\nvar sorted = rows.OrderBy(row => row.Group).OrderBy(row => row.Rank);\n\nsealed record Row(string Group, int Rank);",
+    "good": "var rows = new[] { new Row(\"B\", 1), new Row(\"A\", 2), new Row(\"A\", 1) };\nvar sorted = rows.OrderBy(row => row.Group).ThenBy(row => row.Rank);\n\nsealed record Row(string Group, int Rank);",
+    "code": null,
+    "related": ["list-sort", "custom-ordering", "linq-deferred"]
   }
 ]

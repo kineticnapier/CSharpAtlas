@@ -131,5 +131,37 @@
     "tags": ["クロージャ", "for ループ", "コールバック"],
     "badNotes": {"2": "すべての反復が同じ i 変数を使う", "3": "ラムダは現在値ではなく i を捕捉する"},
     "goodNotes": {"4": "反復ごとに別の current 変数を作る", "5": "コールバックはその反復の格納場所を捕捉する"}
+  },
+  "dictionary-duplicate-keys": {
+    "title": "ToDictionary で重複キーの扱いを決め忘れる",
+    "short": "投影した2行が同じキーを選び、Dictionary の作成が失敗する。",
+    "summary": "ToDictionary は comparer 上で投影キーがすべて一意であることを要求し、重複に遭遇すると ArgumentException を投げます。",
+    "why": "2行ともキー1を使います。修正版は行をまとめ、キーごとに Last を採用すると明示してから1エントリを作ります。",
+    "tips": "キーごとに複数値が正しい最終形なら [[linq-groupby|GroupBy]] を使います。そうでなければ、重複を拒否するか、どの値を勝者にするか文書化します。",
+    "tags": ["ToDictionary", "重複キー", "GroupBy"]
+  },
+  "collection-modified-enumeration": {
+    "title": "列挙中のコレクション変更で反復が壊れる",
+    "short": "List の構造変更により使用中の列挙子が無効になる。",
+    "summary": "List<T>.Enumerator はコレクションのバージョンを記録します。列挙開始後の追加・削除はその状態を無効にし、後の MoveNext が InvalidOperationException を投げます。",
+    "why": "誤ったループは走査中の同じ List から削除します。RemoveAll は外部の列挙子を使わず、1つのコレクション操作として削除します。",
+    "tips": "[[ienumerable|列挙子の状態]] は1回の走査を表し、構造変更へ追従する生きたカーソルではありません。変更を別に集めるか、一括操作を使います。",
+    "tags": ["List", "列挙子", "変更"]
+  },
+  "mutable-hash-keys": {
+    "title": "ハッシュのキーを変更して検索できなくなる",
+    "short": "等価性に関わる状態を変えると、再ハッシュなしで論理位置が変わる。",
+    "summary": "Dictionary は挿入時のキーハッシュからバケットを選びます。等価性やハッシュに使うフィールドを変更すると、後の検索が別のバケットを見ることがあります。",
+    "why": "Code を A から B へ変えると、格納済みエントリを移動せず同じオブジェクトのハッシュが変わります。不変 record キーなら所属が安定します。",
+    "tips": "[[custom-equality-hashing|ハッシュと等価性の契約]] は、キーが Dictionary や HashSet に所属する全期間で一貫していなければなりません。",
+    "tags": ["Dictionary", "可変キー", "GetHashCode"]
+  },
+  "linq-orderby-reset": {
+    "title": "OrderBy の重ね書きで第一ソートキーを失う",
+    "short": "2回目の順序付けがタイブレークではなく最初からやり直す。",
+    "summary": "OrderBy は新しい順序付き列を開始します。もう一度呼ぶと新しいキーが第一キーとなり、以前のキーは意図した順序での役割を失います。",
+    "why": "ThenBy は Group が等しい範囲だけへ Rank を追加し、意図した2キーの契約を保ちます。",
+    "tips": "[[list-sort|OrderBy で順序を開始]]し、ThenBy または ThenByDescending で追加キーを拡張します。",
+    "tags": ["LINQ", "OrderBy", "ThenBy"]
   }
 }
