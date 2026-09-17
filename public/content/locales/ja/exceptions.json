@@ -5,17 +5,9 @@
     "summary": "メソッドが必要としている引数に null が渡されたときに使われる例外です。",
     "why": "引数が null のまま処理を続けると、その後の処理が成立しないため早い段階で失敗させます。",
     "tips": "自作メソッドでは ArgumentNullException.ThrowIfNull を使うと簡潔に検査できます。",
-    "tags": [
-      "ArgumentNullException",
-      "null",
-      "引数"
-    ],
-    "badNotes": {
-      "7": "null を許さない引数へ null を渡している"
-    },
-    "goodNotes": {
-      "2": "null でない場合だけ呼び出す"
-    }
+    "tags": ["ArgumentNullException", "null", "引数"],
+    "badNotes": {"7": "null を許さない引数へ null を渡している"},
+    "goodNotes": {"2": "null でない場合だけ呼び出す"}
   },
   "argument-exception": {
     "title": "ArgumentException",
@@ -23,17 +15,9 @@
     "summary": "型は正しくても、値そのものが受け付けられないときに使われる例外です。",
     "why": "引数の型だけでは表せない制約をメソッド側で検査しているためです。",
     "tips": "範囲外なら ArgumentOutOfRangeException、null なら ArgumentNullException の方が原因を伝えやすいです。",
-    "tags": [
-      "ArgumentException",
-      "引数",
-      "例外"
-    ],
-    "badNotes": {
-      "7": "空文字はこのメソッドの条件を満たさない"
-    },
-    "goodNotes": {
-      "1": "制約を満たす値を用意する"
-    }
+    "tags": ["ArgumentException", "引数", "例外"],
+    "badNotes": {"7": "空文字はこのメソッドの条件を満たさない"},
+    "goodNotes": {"1": "制約を満たす値を用意する"}
   },
   "argument-out-of-range": {
     "title": "ArgumentOutOfRangeException",
@@ -41,17 +25,9 @@
     "summary": "添字、長さ、個数などの値が有効範囲外のときによく発生します。",
     "why": "要求した範囲がコレクションの実際の範囲を超えています。",
     "tips": "例外メッセージに出る引数名と実際の値を最初に確認します。",
-    "tags": [
-      "ArgumentOutOfRangeException",
-      "範囲",
-      "引数"
-    ],
-    "badNotes": {
-      "2": "要素数 2 の List から 3 個取ろうとしている"
-    },
-    "goodNotes": {
-      "2": "実際の範囲内の個数を指定する"
-    }
+    "tags": ["ArgumentOutOfRangeException", "範囲", "引数"],
+    "badNotes": {"2": "要素数 2 の List から 3 個取ろうとしている"},
+    "goodNotes": {"2": "実際の範囲内の個数を指定する"}
   },
   "invalid-operation": {
     "title": "InvalidOperationException",
@@ -59,17 +35,9 @@
     "summary": "操作自体は存在しますが、現在の状態では成立しないときに発生します。",
     "why": "空の列には First が返せる要素が存在しません。",
     "tips": "LINQ では FirstOrDefault、SingleOrDefault などが適切な場合もあります。",
-    "tags": [
-      "InvalidOperationException",
-      "LINQ",
-      "状態"
-    ],
-    "badNotes": {
-      "2": "空の列に First() を使っている"
-    },
-    "goodNotes": {
-      "2": "空かどうかを考慮して取得する"
-    }
+    "tags": ["InvalidOperationException", "LINQ", "状態"],
+    "badNotes": {"2": "空の列に First() を使っている"},
+    "goodNotes": {"2": "空かどうかを考慮して取得する"}
   },
   "invalid-cast": {
     "title": "InvalidCastException",
@@ -77,17 +45,9 @@
     "summary": "明示的キャストはコンパイルできても、実行時の型が合わなければ失敗します。",
     "why": "object の中身は string であり、string オブジェクトを int として扱うことはできません。",
     "tips": "is パターンで型を確認してから扱うと安全です。",
-    "tags": [
-      "InvalidCastException",
-      "キャスト",
-      "型"
-    ],
-    "badNotes": {
-      "2": "中身は string なので int へ直接キャストできない"
-    },
-    "goodNotes": {
-      "2": "型を確認し、必要なら文字列から変換する"
-    }
+    "tags": ["InvalidCastException", "キャスト", "型"],
+    "badNotes": {"2": "中身は string なので int へ直接キャストできない"},
+    "goodNotes": {"2": "型を確認し、必要なら文字列から変換する"}
   },
   "divide-by-zero": {
     "title": "DivideByZeroException",
@@ -95,17 +55,9 @@
     "summary": "整数型や decimal の除算・剰余で除数が0になると発生します。",
     "why": "整数として0除算の結果を表せないためです。",
     "tips": "double の 0 除算は同じ例外にならず Infinity や NaN になる場合がある点に注意します。",
-    "tags": [
-      "DivideByZeroException",
-      "除算",
-      "0"
-    ],
-    "badNotes": {
-      "3": "除数 y が 0 のまま割っている"
-    },
-    "goodNotes": {
-      "3": "0 でないことを確認してから割る"
-    }
+    "tags": ["DivideByZeroException", "除算", "0"],
+    "badNotes": {"3": "除数 y が 0 のまま割っている"},
+    "goodNotes": {"3": "0 でないことを確認してから割る"}
   },
   "overflow-exception": {
     "title": "OverflowException",
@@ -113,17 +65,9 @@
     "summary": "数値変換や checked コンテキストで表現可能範囲を超えると発生します。",
     "why": "int で表現できる最大値より大きな結果を int に保持しようとしています。",
     "tips": "unchecked の整数演算では例外にならず値が回り込むことがあるため、論理エラーにも注意します。",
-    "tags": [
-      "OverflowException",
-      "checked",
-      "整数"
-    ],
-    "badNotes": {
-      "2": "int の最大値を超える計算になる"
-    },
-    "goodNotes": {
-      "1": "必要な範囲を持てる long を使う"
-    }
+    "tags": ["OverflowException", "checked", "整数"],
+    "badNotes": {"2": "int の最大値を超える計算になる"},
+    "goodNotes": {"1": "必要な範囲を持てる long を使う"}
   },
   "io-exception": {
     "title": "IOException",
@@ -131,17 +75,9 @@
     "summary": "ファイルが使用中、デバイスに問題があるなど、入出力に関する広い失敗を表します。",
     "why": "ファイル共有設定などによっては、同じファイルを同時に開けません。",
     "tips": "IOException は原因が広いので、例外メッセージと InnerException も確認します。",
-    "tags": [
-      "IOException",
-      "File",
-      "ストリーム"
-    ],
-    "badNotes": {
-      "2": "同じファイルを同時にもう一度開いている"
-    },
-    "goodNotes": {
-      "1": "using でファイルの寿命を明確にする"
-    }
+    "tags": ["IOException", "File", "ストリーム"],
+    "badNotes": {"2": "同じファイルを同時にもう一度開いている"},
+    "goodNotes": {"1": "using でファイルの寿命を明確にする"}
   },
   "directory-not-found": {
     "title": "DirectoryNotFoundException",
@@ -149,17 +85,9 @@
     "summary": "ファイルパスの途中に存在しないディレクトリがある場合などに発生します。",
     "why": "WriteAllText は親ディレクトリまでは自動作成しません。",
     "tips": "Directory.CreateDirectory は既に存在していても利用できます。",
-    "tags": [
-      "DirectoryNotFoundException",
-      "Directory",
-      "パス"
-    ],
-    "badNotes": {
-      "1": "存在しない親ディレクトリへ書き込んでいる"
-    },
-    "goodNotes": {
-      "1": "先に親ディレクトリを作成する"
-    }
+    "tags": ["DirectoryNotFoundException", "Directory", "パス"],
+    "badNotes": {"1": "存在しない親ディレクトリへ書き込んでいる"},
+    "goodNotes": {"1": "先に親ディレクトリを作成する"}
   },
   "unauthorized-access": {
     "title": "UnauthorizedAccessException",
@@ -167,17 +95,9 @@
     "summary": "OSの権限や読み取り専用状態などにより操作できないときに発生します。",
     "why": "実行中のユーザーに対象への書き込み権限がない場合があります。",
     "tips": "管理者権限で無理に解決する前に、アプリが書き込む場所として適切か確認します。",
-    "tags": [
-      "UnauthorizedAccessException",
-      "権限",
-      "ファイル"
-    ],
-    "badNotes": {
-      "1": "書き込み権限のない場所かもしれない"
-    },
-    "goodNotes": {
-      "1": "アプリ用の書き込み可能な場所を選ぶ"
-    }
+    "tags": ["UnauthorizedAccessException", "権限", "ファイル"],
+    "badNotes": {"1": "書き込み権限のない場所かもしれない"},
+    "goodNotes": {"1": "アプリ用の書き込み可能な場所を選ぶ"}
   },
   "object-disposed": {
     "title": "ObjectDisposedException",
@@ -185,17 +105,9 @@
     "summary": "ストリームなど、破棄後に利用できないオブジェクトへ操作すると発生します。",
     "why": "Dispose によってオブジェクトが保持していた資源を解放した後だからです。",
     "tips": "using の範囲外へ IDisposable オブジェクトを持ち出していないか確認します。",
-    "tags": [
-      "ObjectDisposedException",
-      "Dispose",
-      "using"
-    ],
-    "badNotes": {
-      "3": "Dispose 後の stream を使っている"
-    },
-    "goodNotes": {
-      "1": "using で有効な範囲を管理する"
-    }
+    "tags": ["ObjectDisposedException", "Dispose", "using"],
+    "badNotes": {"3": "Dispose 後の stream を使っている"},
+    "goodNotes": {"1": "using で有効な範囲を管理する"}
   },
   "not-supported": {
     "title": "NotSupportedException",
@@ -203,17 +115,9 @@
     "summary": "型として操作は定義されていても、具体的な実装がその操作を対応していない場合に発生します。",
     "why": "読み取り専用コレクションは ICollection<T> を実装していても追加操作を許可しません。",
     "tips": "CanRead、CanWrite、IsReadOnly など、能力を示すプロパティがある型では先に確認します。",
-    "tags": [
-      "NotSupportedException",
-      "コレクション",
-      "読み取り専用"
-    ],
-    "badNotes": {
-      "2": "読み取り専用コレクションへ Add している"
-    },
-    "goodNotes": {
-      "1": "変更可能な List を使う"
-    }
+    "tags": ["NotSupportedException", "コレクション", "読み取り専用"],
+    "badNotes": {"2": "読み取り専用コレクションへ Add している"},
+    "goodNotes": {"1": "変更可能な List を使う"}
   },
   "operation-canceled": {
     "title": "OperationCanceledException",
@@ -221,17 +125,9 @@
     "summary": "キャンセル可能な処理が中止要求を受けたことを表す例外です。",
     "why": "CancellationToken を受け取る処理は、キャンセル要求を例外として通知することがあります。",
     "tips": "キャンセルは異常終了とは限らないため、通常の失敗と分けて扱います。",
-    "tags": [
-      "OperationCanceledException",
-      "CancellationToken",
-      "async"
-    ],
-    "badNotes": {
-      "3": "キャンセル済み token を渡すと中止が通知される"
-    },
-    "goodNotes": {
-      "5": "キャンセルを通常の失敗と分けて扱う"
-    }
+    "tags": ["OperationCanceledException", "CancellationToken", "async"],
+    "badNotes": {"3": "キャンセル済み token を渡すと中止が通知される"},
+    "goodNotes": {"5": "キャンセルを通常の失敗と分けて扱う"}
   },
   "task-canceled": {
     "title": "TaskCanceledException",
@@ -239,17 +135,9 @@
     "summary": "キャンセルされた Task を await したときなどに現れる OperationCanceledException の派生例外です。",
     "why": "Task が正常完了ではなく Canceled 状態になったためです。",
     "tips": "多くの場合は TaskCanceledException だけでなく OperationCanceledException を捕まえる方が扱いやすいです。",
-    "tags": [
-      "TaskCanceledException",
-      "Task",
-      "キャンセル"
-    ],
-    "badNotes": {
-      "2": "完了前に Task がキャンセルされる"
-    },
-    "goodNotes": {
-      "5": "キャンセル例外を処理する"
-    }
+    "tags": ["TaskCanceledException", "Task", "キャンセル"],
+    "badNotes": {"2": "完了前に Task がキャンセルされる"},
+    "goodNotes": {"5": "キャンセル例外を処理する"}
   },
   "timeout-exception": {
     "title": "TimeoutException",
@@ -257,17 +145,9 @@
     "summary": "通信や待機処理などで設定された時間を超えたことを表します。",
     "why": "WaitAsync に指定した時間より処理の完了が遅かったためです。",
     "tips": "単に待ち時間を長くするだけでなく、処理が遅い原因や再試行方針も確認します。",
-    "tags": [
-      "TimeoutException",
-      "Task",
-      "タイムアウト"
-    ],
-    "badNotes": {
-      "1": "待ち時間が短すぎると TimeoutException になる"
-    },
-    "goodNotes": {
-      "5": "タイムアウト時の処理を用意する"
-    }
+    "tags": ["TimeoutException", "Task", "タイムアウト"],
+    "badNotes": {"1": "待ち時間が短すぎると TimeoutException になる"},
+    "goodNotes": {"5": "タイムアウト時の処理を用意する"}
   },
   "uri-format": {
     "title": "UriFormatException",
@@ -275,17 +155,9 @@
     "summary": "不正な形式の文字列から Uri を作成しようとしたときに発生します。",
     "why": "URIとして必要な構造を文字列が満たしていません。",
     "tips": "外部入力なら Uri.TryCreate を使うと例外を使わず検証できます。",
-    "tags": [
-      "UriFormatException",
-      "Uri",
-      "URL"
-    ],
-    "badNotes": {
-      "1": "不正な URI 文字列を直接 new Uri している"
-    },
-    "goodNotes": {
-      "1": "TryCreate で有効な URI か確認する"
-    }
+    "tags": ["UriFormatException", "Uri", "URL"],
+    "badNotes": {"1": "不正な URI 文字列を直接 new Uri している"},
+    "goodNotes": {"1": "TryCreate で有効な URI か確認する"}
   },
   "regex-timeout-exception": {
     "title": "RegexMatchTimeoutException と検索時間の上限",
@@ -294,5 +166,37 @@
     "why": "タイムアウトは[[regex-basic|パターン検索]]の実行時間を制限し、一つの入力が処理を無期限に占有するのを防ぎます。",
     "tips": "現在の入力を拒否し、サイズとパターンを調査して単純化するか、対応可能なら NonBacktracking を使います。同じ処理の無限再試行は原因を解決しません。",
     "tags": ["RegexMatchTimeoutException", "正規表現", "タイムアウト"]
+  },
+  "decoder-fallback": {
+    "title": "DecoderFallbackException と不正なバイト列",
+    "short": "厳格なデコーダーで不正なバイト列を検出する。",
+    "summary": "文字コードとして不正な入力を置換文字で隠さず、DecoderFallbackException として拒否する方法を扱います。",
+    "why": "外部バイト列を厳格に読む場合、壊れたデータを黙って別の文字へ置換すると元データの異常を見失うためです。",
+    "tips": "[[encoding-text-bytes|文字列とバイト列の変換]]で使用する Encoding と、不正入力を拒否するか置換するかを明示します。",
+    "tags": ["DecoderFallbackException", "Encoding", "UTF-8"]
+  },
+  "end-of-stream": {
+    "title": "EndOfStreamException と途中で切れたデータ",
+    "short": "必要なバイト数を読む前にストリームが終わった状態を扱う。",
+    "summary": "BinaryReader などが型を復元するために必要なバイト数へ到達する前に終端へ達すると EndOfStreamException が発生します。",
+    "why": "固定長レコードを途中までしか読めない状態は、完全な値として扱えないためです。",
+    "tips": "生の Stream.Read では [[stream-short-reads|短い読み取り]]も考慮し、完全なレコードが揃ったことを確認します。",
+    "tags": ["EndOfStreamException", "Stream", "BinaryReader"]
+  },
+  "http-request-exception": {
+    "title": "HttpRequestException と HTTP 通信失敗",
+    "short": "通信層の失敗を HTTP ステータス応答と区別する。",
+    "summary": "HttpRequestException は接続や名前解決などの失敗、または明示的に失敗扱いへ変換した HTTP 応答を表すために使われます。",
+    "why": "サーバーから 404 などの応答を受け取れた場合と、そもそも応答を受け取れなかった場合では対処が異なるためです。",
+    "tips": "[[operation-canceled|キャンセル]]やタイムアウトも通信失敗と一括りにせず、呼び出し側の意図と期限を含めて分類します。",
+    "tags": ["HttpRequestException", "HttpClient", "HTTP"]
+  },
+  "aggregate-exception": {
+    "title": "AggregateException と複数失敗の観測",
+    "short": "複数の Task で起きた失敗をまとめて確認する。",
+    "summary": "複数の処理をまとめた Task が失敗したとき、保存されているすべての例外と await が再スローする例外の違いを扱います。",
+    "why": "複数処理が同時に失敗し得るため、最初に観測した一件だけでなく必要に応じて全失敗を調べる必要があります。",
+    "tips": "[[task-whenall|Task.WhenAll]] の戻り Task を保持しておくと、失敗後に Exception.InnerExceptions を確認できます。",
+    "tags": ["AggregateException", "Task", "例外"]
   }
 }
