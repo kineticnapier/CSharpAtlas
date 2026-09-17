@@ -147,5 +147,45 @@
     "why": "ThenBy extends the Group ordering with Rank only inside equal groups, preserving the intended two-key contract.",
     "tips": "Use [[list-sort|OrderBy to begin an order]] and ThenBy or ThenByDescending to extend it with additional keys.",
     "tags": ["LINQ", "OrderBy", "ThenBy"]
+  },
+  "regex-escaping": {
+    "title": "Confusing string escaping with regex escaping",
+    "short": "Account for C# literal parsing and regex metacharacters as separate layers.",
+    "summary": "C# first interprets a regular or verbatim string literal, then the regex engine parses the resulting characters. User text can contain regex operators even when it is valid C# text.",
+    "why": "The [[string-literals|source-language interpretation]] happens before regex parsing; Regex.Escape quotes a runtime fragment for literal pattern matching.",
+    "tips": "Escape only the literal fragment, not a complete pattern whose operators you intend to keep. Use a finite matching timeout.",
+    "tags": ["regex", "Regex.Escape", "escaping"]
+  },
+  "culture-sensitive-numbers": {
+    "title": "Culture-dependent numeric parsing changes values",
+    "short": "Bind persisted numeric text to one documented separator policy.",
+    "summary": "A comma can be a grouping separator in one culture and a decimal separator in another. CurrentCulture therefore can turn the same text into a different value or reject it.",
+    "why": "Successful [[parse-number|numeric parsing]] alone does not prove the intended meaning; the culture and NumberStyles are part of the data contract.",
+    "tips": "Use the same explicit culture for persisted input and output, and reserve user culture for genuinely localized display and entry.",
+    "tags": ["CultureInfo", "decimal", "parsing"]
+  },
+  "timespan-component-totals": {
+    "title": "Confusing TimeSpan components with totals",
+    "short": "Use TotalHours or TotalMinutes for the complete elapsed quantity.",
+    "summary": "Hours and Minutes are components within the day and hour portions of a TimeSpan, so they wrap. TotalHours and TotalMinutes include the entire duration as fractional totals.",
+    "why": "The [[timespan-arithmetic|27.5-hour duration]] has Hours equal to 3 after one full day, but TotalHours remains 27.5.",
+    "tips": "Choose a component for formatted decomposition and a Total property for calculations or thresholds.",
+    "tags": ["TimeSpan", "TotalHours", "component"]
+  },
+  "nan-infinity": {
+    "title": "Treating NaN and Infinity as ordinary numbers",
+    "short": "Detect non-finite floating-point results before ordinary comparison logic.",
+    "summary": "NaN compares unequal to every value, including itself, and ordered comparisons with NaN are false. Infinity can also pass through calculations unless the domain rejects it.",
+    "why": "Floating-point division by zero can produce NaN or infinity, unlike the integer failure described by [[divide-by-zero|DivideByZeroException]].",
+    "tips": "Use IsNaN, IsInfinity, or IsFinite explicitly. Define whether non-finite values are rejected, propagated, or represented separately.",
+    "tags": ["NaN", "Infinity", "floating point"]
+  },
+  "date-interval-boundaries": {
+    "title": "Losing boundary data in date-range queries",
+    "short": "Use start-inclusive, end-exclusive intervals in one time basis.",
+    "summary": "A guessed last instant such as 23:59:59.999 misses values with finer precision. A half-open interval includes every representable instant from the start up to, but not including, the next boundary.",
+    "why": "Derive the next calendar date with [[dateonly-timeonly|DateOnly]] instead of guessing the day's final time-of-day.",
+    "tips": "The sample defines a UTC calendar day and compares UTC-based DateTimeOffset values. For a local calendar day, resolve both boundaries through the chosen time zone first.",
+    "tags": ["date range", "half-open interval", "UTC"]
   }
 }

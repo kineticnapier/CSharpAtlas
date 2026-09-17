@@ -269,5 +269,13 @@
     "goodHighlight": [
       1
     ]
+  },
+  {
+    "id": "regex-timeout-exception",
+    "type": "exception",
+    "bad": "string input = new string('a', 5_000) + \"!\";\nvar regex = new Regex(\n    @\"^(a+)+$\",\n    RegexOptions.None,\n    TimeSpan.FromMilliseconds(100));\nbool matched = regex.IsMatch(input); // may throw RegexMatchTimeoutException",
+    "good": "string input = new string('a', 5_000) + \"!\";\nvar regex = new Regex(\n    @\"\\Aa+\\z\",\n    RegexOptions.NonBacktracking | RegexOptions.CultureInvariant,\n    TimeSpan.FromMilliseconds(100));\n\ntry\n{\n    Console.WriteLine(regex.IsMatch(input));\n}\ncatch (RegexMatchTimeoutException)\n{\n    Console.WriteLine(\"Reject the input and revise the pattern or input limit.\");\n}",
+    "code": null,
+    "related": ["regex-basic", "regex-options-anchors"]
   }
 ]

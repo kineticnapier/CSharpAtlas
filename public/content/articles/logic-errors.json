@@ -149,5 +149,45 @@
     "good": "var rows = new[] { new Row(\"B\", 1), new Row(\"A\", 2), new Row(\"A\", 1) };\nvar sorted = rows.OrderBy(row => row.Group).ThenBy(row => row.Rank);\n\nsealed record Row(string Group, int Rank);",
     "code": null,
     "related": ["list-sort", "custom-ordering", "linq-deferred"]
+  },
+  {
+    "id": "regex-escaping",
+    "type": "logic",
+    "bad": "string literal = \"a+b\";\nvar regex = new Regex(\"^\" + literal + \"$\", RegexOptions.None, TimeSpan.FromMilliseconds(100));\nConsole.WriteLine(regex.IsMatch(\"a+b\")); // False: + was parsed as regex syntax",
+    "good": "string literal = \"a+b\";\nstring pattern = \"^\" + Regex.Escape(literal) + \"$\";\nvar regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));\nConsole.WriteLine(regex.IsMatch(\"a+b\")); // True",
+    "code": null,
+    "related": ["string-literals", "regex-basic", "regex-options-anchors"]
+  },
+  {
+    "id": "culture-sensitive-numbers",
+    "type": "logic",
+    "bad": "string persisted = \"1,234\";\ndecimal value = decimal.Parse(persisted); // meaning depends on CurrentCulture\nConsole.WriteLine(value);",
+    "good": "string persisted = \"1,234\";\nvar culture = CultureInfo.GetCultureInfo(\"en-US\");\nif (decimal.TryParse(persisted, NumberStyles.Number, culture, out decimal value))\n{\n    string roundTrip = value.ToString(\"N3\", culture);\n    Console.WriteLine(roundTrip);\n}",
+    "code": null,
+    "related": ["parse-number", "string-comparison", "decimal-calculations"]
+  },
+  {
+    "id": "timespan-component-totals",
+    "type": "logic",
+    "bad": "TimeSpan elapsed = TimeSpan.FromHours(27.5);\nConsole.WriteLine(elapsed.Hours);   // 3, the hour component\nConsole.WriteLine(elapsed.Minutes); // 30, the minute component",
+    "good": "TimeSpan elapsed = TimeSpan.FromHours(27.5);\nConsole.WriteLine(elapsed.TotalHours);   // 27.5\nConsole.WriteLine(elapsed.TotalMinutes); // 1650",
+    "code": null,
+    "related": ["timespan-arithmetic", "stopwatch"]
+  },
+  {
+    "id": "nan-infinity",
+    "type": "logic",
+    "bad": "double result = 0.0 / 0.0;\nif (result == double.NaN)\n    Console.WriteLine(\"NaN\"); // never reached\n\nConsole.WriteLine(result < 0 || result >= 0); // False",
+    "good": "double result = 0.0 / 0.0;\nif (double.IsNaN(result))\n    Console.WriteLine(\"NaN\");\n\nif (!double.IsFinite(result))\n    Console.WriteLine(\"Reject or handle the non-finite result.\");",
+    "code": null,
+    "related": ["numeric-types", "divide-by-zero", "floating-equality"]
+  },
+  {
+    "id": "date-interval-boundaries",
+    "type": "logic",
+    "bad": "DateTimeOffset[] timestamps =\n[\n    new DateTimeOffset(2026, 4, 1, 23, 59, 59, TimeSpan.Zero).AddTicks(9_999_999)\n];\nDateTimeOffset start = new(2026, 4, 1, 0, 0, 0, TimeSpan.Zero);\nDateTimeOffset guessedEnd = new(2026, 4, 1, 23, 59, 59, 999, TimeSpan.Zero);\nvar selected = timestamps.Where(value => value >= start && value <= guessedEnd);",
+    "good": "DateTimeOffset[] timestamps =\n[\n    new DateTimeOffset(2026, 4, 1, 23, 59, 59, TimeSpan.Zero).AddTicks(9_999_999)\n];\nDateOnly firstDate = new(2026, 4, 1);\nDateOnly nextDate = firstDate.AddDays(1);\nDateTimeOffset startUtc = new(firstDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);\nDateTimeOffset endUtc = new(nextDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);\nvar selected = timestamps.Where(value => value >= startUtc && value < endUtc);",
+    "code": null,
+    "related": ["datetimeoffset", "dateonly-timeonly", "timespan-arithmetic"]
   }
 ]

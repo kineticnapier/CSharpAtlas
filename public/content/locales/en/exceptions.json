@@ -222,5 +222,13 @@
     "goodNotes": {
       "1": "Use TryCreate to verify that the URI is valid"
     }
+  },
+  "regex-timeout-exception": {
+    "title": "RegexMatchTimeoutException and bounded matching time",
+    "short": "Bound regex work and fix patterns that backtrack excessively.",
+    "summary": "RegexMatchTimeoutException reports that matching exceeded a finite timeout. Nested ambiguous quantifiers can cause excessive backtracking on near-matching input.",
+    "why": "The timeout bounds the runtime of the [[regex-basic|pattern search]] so one input cannot monopolize execution indefinitely.",
+    "tips": "Reject the current input, inspect its size and the pattern, and simplify or use NonBacktracking where supported. Retrying the same work indefinitely does not solve the cause.",
+    "tags": ["RegexMatchTimeoutException", "regex", "timeout"]
   }
 }

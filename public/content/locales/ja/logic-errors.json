@@ -163,5 +163,45 @@
     "why": "ThenBy は Group が等しい範囲だけへ Rank を追加し、意図した2キーの契約を保ちます。",
     "tips": "[[list-sort|OrderBy で順序を開始]]し、ThenBy または ThenByDescending で追加キーを拡張します。",
     "tags": ["LINQ", "OrderBy", "ThenBy"]
+  },
+  "regex-escaping": {
+    "title": "文字列と正規表現のエスケープを混同する",
+    "short": "C# リテラルと正規表現メタ文字の解釈を別の層として扱います。",
+    "summary": "最初に C# が通常または逐語的文字列リテラルを解釈し、次に正規表現エンジンが結果の文字を解析します。利用者の文字列も正規表現演算子を含み得ます。",
+    "why": "正規表現解析より前に[[string-literals|ソース言語での解釈]]が行われます。Regex.Escape は実行時の断片をリテラル照合用に引用します。",
+    "tips": "意図して残す演算子を含むパターン全体ではなく、リテラル部分だけをエスケープします。有限の照合タイムアウトを使います。",
+    "tags": ["正規表現", "Regex.Escape", "エスケープ"]
+  },
+  "culture-sensitive-numbers": {
+    "title": "カルチャ依存の数値解析で値が変わる",
+    "short": "保存する数値文字列を文書化した区切り規則に固定します。",
+    "summary": "コンマはカルチャによって桁区切りにも小数点にもなります。そのため同じ文字列が CurrentCulture により別の値になったり失敗したりします。",
+    "why": "[[parse-number|数値解析]]が成功しただけでは意図した意味を証明しません。カルチャと NumberStyles もデータ契約の一部です。",
+    "tips": "保存時の入力と出力に同じ明示カルチャを使い、本当にローカライズする表示と入力だけに利用者のカルチャを使います。",
+    "tags": ["CultureInfo", "decimal", "解析"]
+  },
+  "timespan-component-totals": {
+    "title": "TimeSpan の成分と総量を取り違える",
+    "short": "経過量全体には TotalHours や TotalMinutes を使います。",
+    "summary": "Hours と Minutes は TimeSpan の日内・時間内の成分なので循環します。TotalHours と TotalMinutes は期間全体を小数の総量として含みます。",
+    "why": "[[timespan-arithmetic|27.5 時間の期間]]は丸 1 日の後なので Hours が 3 ですが、TotalHours は 27.5 のままです。",
+    "tips": "表示の分解には成分を、計算やしきい値には Total プロパティを選びます。",
+    "tags": ["TimeSpan", "TotalHours", "成分"]
+  },
+  "nan-infinity": {
+    "title": "NaN と Infinity を通常の数値として扱う",
+    "short": "通常の比較ロジックより前に有限でない浮動小数点結果を検出します。",
+    "summary": "NaN は自分自身を含むすべての値と等しくなく、NaN との大小比較は false です。ドメインが拒否しなければ Infinity も計算を伝播します。",
+    "why": "浮動小数点の 0 除算は、整数での[[divide-by-zero|DivideByZeroException]]と異なり NaN や無限大を生成できます。",
+    "tips": "IsNaN、IsInfinity、IsFinite を明示的に使います。有限でない値を拒否、伝播、別表現のどれで扱うか定義します。",
+    "tags": ["NaN", "Infinity", "浮動小数点"]
+  },
+  "date-interval-boundaries": {
+    "title": "日付の範囲検索で終端のデータを取りこぼす",
+    "short": "同じ時間基準で開始を含み終了を含まない区間を使います。",
+    "summary": "23:59:59.999 のように推測した最後の瞬間は、より細かい精度の値を取りこぼします。半開区間は開始から次の境界直前まで表現可能な全瞬間を含みます。",
+    "why": "一日の最後の時刻を推測せず、[[dateonly-timeonly|DateOnly]]で次の暦日を求めます。",
+    "tips": "例は UTC の暦日を定義し、UTC 基準の DateTimeOffset を比較します。ローカル暦日なら先に選択したタイムゾーンで両境界を解決します。",
+    "tags": ["日付範囲", "半開区間", "UTC"]
   }
 }

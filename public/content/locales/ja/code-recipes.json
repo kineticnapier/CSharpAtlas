@@ -430,5 +430,157 @@
     "why": "空の整数配列は指定時に -1、省略時に0を作り、5を含む元列は5のままです。",
     "tips": "省略時の代替値は [[default-values|default(T)]] です。1つの代替行は左外部結合を支え、後続の集約における空の扱いも変えられます。",
     "tags": ["LINQ", "DefaultIfEmpty", "代替値"]
+  },
+  "string-search-replace": {
+    "title": "文字列の検索と置換",
+    "short": "明示した比較規則でリテラルのトークンを探し、文字列を置換します。",
+    "summary": "IndexOf は見つからなければ -1 を返し、文字列は不変なので Replace は新しい文字列を返します。どちらもテキストの比較方法を明示できます。",
+    "why": "このトークンは識別子なので、カルチャ依存ではなく[[string-comparison|序数比較の方針]]を明示します。",
+    "tips": "スライス前に未検出の結果を確認します。要件が実際にパターンである場合だけ正規表現を使います。",
+    "tags": ["string", "IndexOf", "Replace"]
+  },
+  "string-trim-validation": {
+    "title": "空文字と空白を区別して入力を整える",
+    "short": "許可した境界を取り除く前に、内容がない入力を検証します。",
+    "summary": "IsNullOrWhiteSpace は null、空文字、空白だけの入力を扱います。その後 Trim は先頭と末尾の空白だけを除き、内部の内容を変えません。",
+    "why": "インスタンスの文字列メソッドを呼ぶ前に[[nullable|null の場合]]を扱う必要があります。",
+    "tips": "入力契約を決めます。Trim() は Unicode の空白を認識し、特定の境界文字だけを許す契約なら文字を指定した Trim が適します。",
+    "tags": ["string", "Trim", "検証"]
+  },
+  "stringbuilder": {
+    "title": "StringBuilder で繰り返し文字列を組み立てる",
+    "short": "各反復で新しい文字列を作らず、多数の断片を蓄積します。",
+    "summary": "StringBuilder は繰り返す Append のために可変の文字バッファを保ち、ToString で最終的な不変文字列を作ります。",
+    "why": "ループでは区切りと値を効率よく追加でき、短いメッセージ一つなら[[string-interpolation|通常の文字列補間]]の方が読みやすいままです。",
+    "tips": "数個の固定連結だけに StringBuilder を導入する必要はありません。実際の string が必要になる境界で ToString を呼びます。",
+    "tags": ["StringBuilder", "string", "パフォーマンス"]
+  },
+  "unicode-normalization": {
+    "title": "Unicode 正規化で表現の違いをそろえる",
+    "short": "比較前に正準等価なスカラー値列をそろえます。",
+    "summary": "正規化形式 C は正準等価な列を一貫した表現へ合成し、目的に合う比較方針で等価なテキストを認識できるようにします。",
+    "why": "同じ見た目の文字列でも、合成済みの一文字と基底文字＋結合文字のように異なる[[unicode-runes|Unicode スカラー値列]]を持てます。",
+    "tips": "正規化はアクセントを除去せず、無関係な見た目の似た文字を同一にしません。決めた境界で正規化し、その後に意図した比較規則を適用します。",
+    "tags": ["Unicode", "正規化", "FormC"]
+  },
+  "span-parse": {
+    "title": "文字列を切り出さずに Span から解析する",
+    "short": "範囲を限定したビューを Span 対応パーサーへ直接渡します。",
+    "summary": "AsSpan は元の文字列の一部を示す ReadOnlySpan<char> を作り、数値の TryParse オーバーロードは一時的な部分文字列を割り当てずにそのビューを読めます。",
+    "why": "トークンの Span は[[span-memory|元の文字列ストレージを共有する]]ため、有効期間はその所有元に依存します。",
+    "tips": "スライス境界を検証し、NumberStyles とカルチャを明示します。計測したホットパスでなければ割り当て削減より明瞭さを優先します。",
+    "tags": ["ReadOnlySpan", "TryParse", "割り当て"]
+  },
+  "base64": {
+    "title": "Base64 でバイナリを文字列として表す",
+    "short": "テキストで扱える表現を経由してバイト列を往復し、不正入力を拒否します。",
+    "summary": "Base64 は任意のバイト列を印字可能な文字列へ写像して戻します。FromBase64String は文字種、パディング、長さが不正なら FormatException を投げます。",
+    "why": "復号後も任意のバイナリはバイト列のままです。元の生成側がテキストを符号化した場合に限り、同じ[[encoding-text-bytes|文字エンコーディング]]で復元バイトをデコードします。",
+    "tips": "Base64 は暗号化でも改ざん検出でもなく、通常はサイズが約 3 分の 1 増えます。",
+    "tags": ["Base64", "バイト列", "FormatException"]
+  },
+  "regex-groups": {
+    "title": "正規表現の名前付きグループで値を取り出す",
+    "short": "有限時間の照合成功を確認してから名前付きフィールドを読みます。",
+    "summary": "名前付きキャプチャはフィールドを明確にします。Match.Success はパターン全体の一致、Group.Success は省略可能なグループが不参加だった場合と空文字に一致した場合を区別します。",
+    "why": "キャプチャしたフィールドを使う前に[[regex-basic|照合の成功]]を確認します。",
+    "tips": "照合と解析を分け、抽出した数値文字列は後で検証または TryParse します。必ず有限のタイムアウトを使います。",
+    "tags": ["正規表現", "グループ", "キャプチャ"]
+  },
+  "regex-replace": {
+    "title": "正規表現で変換ルールを使った置換を行う",
+    "short": "キャプチャまたは MatchEvaluator で繰り返す一致を変換します。",
+    "summary": "Regex.Replace は置換テキスト中のキャプチャ参照を使うか、計算した出力のため各一致で MatchEvaluator を呼べます。置換構文はパターン構文とは別です。",
+    "why": "評価関数は各 Match を受け取り、[[regex-groups|名前付きキャプチャグループ]]が公開する値を読めます。",
+    "tips": "リテラルの置換には string.Replace を使います。利用者由来の置換テキストでは、パターンのエスケープが置換構文までリテラル化するとは限りません。",
+    "tags": ["正規表現", "Replace", "MatchEvaluator"]
+  },
+  "date-parse-exact": {
+    "title": "日時を決められた形式で解析する",
+    "short": "明示したカルチャとスタイルで、文書化した日時形式だけを受け入れます。",
+    "summary": "TryParseExact は入力が指定形式、カルチャ、DateTimeStyles に適合したときだけ成功し、広いカルチャ依存解析の曖昧さを避けます。",
+    "why": "出力に使う[[date-format|書式トークン]]を入力契約にも一致させます。yyyy-MM-dd はカルチャ固有の短い日付形式とは異なります。",
+    "tips": "オフセットのない壁時計時刻は解析後も Unspecified です。瞬間として扱う前にゾーンかオフセットを明示します。",
+    "tags": ["DateTime", "TryParseExact", "カルチャ"]
+  },
+  "time-zone-conversion": {
+    "title": "TimeZoneInfo でタイムゾーンを変換する",
+    "short": "既知の瞬間を変換し、遷移付近のローカル時計時刻を検証します。",
+    "summary": "ConvertTime は曖昧でない瞬間を選択したゾーンへ写します。ローカル時計の入力は、時計を進める遷移で存在せず、戻す遷移で曖昧になり得るためアプリの方針が必要です。",
+    "why": "[[datetimeoffset|DateTimeOffset の入力]]がゾーン変換に使う曖昧でない瞬間を提供します。",
+    "tips": "タイムゾーン ID と導入済み規則データは環境で異なります。任意の ID が全環境で使えるとせず、意図したゾーンを設定して検証します。",
+    "tags": ["TimeZoneInfo", "夏時間", "DateTimeOffset"]
+  },
+  "timespan-arithmetic": {
+    "title": "TimeSpan で経過時間を計算する",
+    "short": "時間基準を明示して経過量を生成、加減算します。",
+    "summary": "TimeSpan は期間を表します。互換性のあるタイムスタンプ同士を引いて得られ、期間同士の加減算には暦の規則を含みません。",
+    "why": "基準が分かっている 2 個の[[datetimeoffset|DateTimeOffset 値]]は経過時間の減算に適する瞬間を表します。",
+    "tips": "1 か月やローカル暦日の長さは固定 TimeSpan ではありません。暦の型とゾーン規則で暦計算を行います。",
+    "tags": ["TimeSpan", "期間", "DateTimeOffset"]
+  },
+  "stopwatch": {
+    "title": "Stopwatch で処理時間を計測する",
+    "short": "単調な計時源で処理の経過時間を測ります。",
+    "summary": "Stopwatch は経過時間の計測用で、DateTime.Now の減算に影響し得る実時間時計の調整を避けます。",
+    "why": "Elapsed は[[timespan-arithmetic|TimeSpan の期間]]として返り、報告には TotalMilliseconds などを使えます。",
+    "tips": "ウォームアップ、スケジューリング、ランタイム最適化、ノイズは小さい標本に影響します。複数回測り、実験が裏付ける精度だけを示します。",
+    "tags": ["Stopwatch", "経過時間", "計測"]
+  },
+  "math-rounding": {
+    "title": "丸め・切り捨て・切り上げを選ぶ",
+    "short": "正負両方に対する境界規則を明示的に選びます。",
+    "summary": "Round は中間値方針を適用し、Floor は負の無限大、Ceiling は正の無限大、Truncate は 0 の方向へ進めます。",
+    "why": "キャストは浮動小数点や decimal を 0 方向に切り詰める[[numeric-conversions|数値変換]]であり、あらゆる丸め方針の代わりにはなりません。",
+    "tips": "ドメイン境界で MidpointRounding を明示します。正の例だけでは差が隠れるため、負数とちょうど中間の値をテストします。",
+    "tags": ["Math.Round", "MidpointRounding", "切り捨て"]
+  },
+  "math-clamp": {
+    "title": "Math.Clamp と Min・Max で数値を制限する",
+    "short": "有限値を検証済み区間へ正規化するか、方針に従って拒否します。",
+    "summary": "Math.Clamp は下限、上限、または範囲内の元値を返します。Min と Max で個別の境界を組み合わせても入力検証の代わりにはなりません。",
+    "why": "最小境界が最大境界を超えると Math.Clamp は [[argument-exception|ArgumentException]] を投げます。",
+    "tips": "ドメインが有限値を要求するなら NaN と無限大を拒否します。不正入力のクランプは誤りを隠せるため、正規化と検証を区別します。",
+    "tags": ["Math.Clamp", "範囲", "検証"]
+  },
+  "random-generation": {
+    "title": "Random で乱数の範囲と再現性を扱う",
+    "short": "上限が排他的であることを守り、再現が必要な例にはシードを使います。",
+    "summary": "Random.Next(min, max) は min を含み max を含みません。固定シードはテストや説明用に決定的な列を再現します。",
+    "why": "要求した範囲が宛先の[[numeric-types|数値型]]と API の境界に収まる必要があります。",
+    "tips": "Random は暗号学的に安全ではありません。秘密やトークンには RandomNumberGenerator を使い、ループ内で繰り返し再シードしないでください。",
+    "tags": ["Random", "シード", "範囲"]
+  },
+  "random-shuffle-sampling": {
+    "title": "配列をシャッフルして重複なしに抽出する",
+    "short": "所有する配列をシャッフルし、重複しない先頭部分を取ります。",
+    "summary": "Random.Shuffle は渡した Span や配列を変更します。コピーをシャッフルして先頭 k 個を取れば、元データを保ったまま非復元抽出できます。",
+    "why": "独立した[[random-generation|ランダムな添字の生成]]では同じ要素を複数回選べるため、一意な標本を保証しません。",
+    "tips": "Random.Shuffle は .NET 8 で利用できます。k が配列境界内か検証し、予測困難性が安全要件なら暗号学的な設計を使います。",
+    "tags": ["Random.Shuffle", "標本抽出", "配列"]
+  },
+  "guid": {
+    "title": "Guid で識別子を作成して解析する",
+    "short": "GUID を安定した文字列表現を持つ不透明な識別子として扱います。",
+    "summary": "Guid.NewGuid は識別子を作り、TryParseExact は外部テキストを選択した形式で検証し、同じ形式の ToString が安定した表現を返します。",
+    "why": "Guid は値の等価性とハッシュを持つため、解析した識別子を安定した[[dictionary-update-insert|Dictionary のキー]]にできます。",
+    "tips": "Guid は秘密でも意味のある時系列順でもありません。契約が固定なら寛容な解析に頼らず受け入れる形式を検証します。",
+    "tags": ["Guid", "識別子", "TryParseExact"]
+  },
+  "biginteger": {
+    "title": "BigInteger で大きな整数を計算する",
+    "short": "固定幅の範囲を超える正確な整数演算を行います。",
+    "summary": "BigInteger は Int32 や Int64 の境界で折り返さず必要に応じて大きくなりますが、大きな値ほどメモリと処理時間が増えます。",
+    "why": "階乗計算は[[integer-overflow|整数オーバーフロー]]を起こす固定幅の制限を避けます。",
+    "tips": "固定幅型へ戻す変換には境界があり OverflowException を投げられます。任意精度は資源が無制限という意味ではありません。",
+    "tags": ["BigInteger", "整数", "オーバーフロー"]
+  },
+  "decimal-calculations": {
+    "title": "decimal で十進の計算と丸めを明示する",
+    "short": "十進量を decimal のまま保ち、決めた境界で一度丸めます。",
+    "summary": "decimal は有限精度の 10 進スケール値を表します。decimal リテラルと中間値を使えば、2 進浮動小数点の近似を計算へ持ち込みません。",
+    "why": "2 進浮動小数点の中間値は、[[floating-equality|浮動小数点の等価性]]で説明される近似により decimal の処理を損なえます。",
+    "tips": "丸める時点と方法を定義し、ドメインが要求するなら丸め前の中間値を保持します。decimal の精度や範囲は無制限ではありません。",
+    "tags": ["decimal", "丸め", "精度"]
   }
 }

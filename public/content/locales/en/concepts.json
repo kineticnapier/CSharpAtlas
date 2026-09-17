@@ -630,5 +630,69 @@
     "why": "The int[] target determines the first result type, while the List<int> target selects a mutable list for the second expression.",
     "tips": "Spreading [[ienumerable|an IEnumerable source]] enumerates it during construction; it does not retain a lazy link to future source changes.",
     "tags": ["collection expression", "spread", "C# 12"]
+  },
+  "string-comparison": {
+    "title": "Culture and case policies in string comparison",
+    "short": "Choose comparison rules according to whether text is an identifier or human language.",
+    "summary": "Ordinal comparison examines code-unit values and is normally appropriate for identifiers, protocol tokens, and file-format fields. Culture-aware comparison applies linguistic rules for text shown to people.",
+    "why": "Case folding and ordering differ across policies. Even [[equality|string equality]] needs an explicit policy that matches the text's role.",
+    "tips": "Use StringComparer with dictionaries and sets so lookup follows the same policy. Do not silently reuse a display-sorting rule for security-sensitive identifiers.",
+    "tags": ["string", "StringComparison", "culture"]
+  },
+  "unicode-runes": {
+    "title": "UTF-16 chars and Unicode scalar values",
+    "short": "Distinguish code units, scalar values, and user-perceived characters.",
+    "summary": "A C# char is one UTF-16 code unit. A supplementary Unicode scalar uses a surrogate pair and is represented by Rune during scalar traversal, while one grapheme cluster can contain several scalars.",
+    "why": "The sample has five code units, four scalars, and three grapheme clusters. [[encoding-text-bytes|Byte encoding]] is another representation layer and does not generally preserve any of those counts.",
+    "tips": "Use EnumerateRunes for scalar processing and StringInfo for text-element boundaries; indexing a string by char can split a surrogate pair or grapheme.",
+    "tags": ["Unicode", "Rune", "UTF-16"]
+  },
+  "span-memory": {
+    "title": "Memory views with Span<T> and Memory<T>",
+    "short": "Work with slices without transferring or copying their storage.",
+    "summary": "Span<T> and Memory<T> are non-owning views over contiguous storage. Span is stack-constrained and cannot be kept across await or in ordinary heap fields, while Memory can be stored and later exposed as a Span.",
+    "why": "Changing the span changes the owning array because [[indices-ranges|slicing the view]] copies no elements. The owner must remain valid for every consumer.",
+    "tips": "A read-only view prevents mutation through that view but is not an immutable snapshot; another alias can still change the same storage.",
+    "tags": ["Span", "Memory", "slice"]
+  },
+  "encoding-text-bytes": {
+    "title": "Converting text and bytes with Encoding",
+    "short": "Make the producer and consumer agree on character encoding and BOM policy.",
+    "summary": "Encoding.GetBytes converts text to a byte sequence, and the matching Encoding.GetString decodes it. Character, UTF-16 code-unit, Unicode scalar, and encoded-byte counts are different measurements.",
+    "why": "UTF-8 uses a variable number of bytes per scalar, so [[unicode-runes|the scalar and code-unit structure]] cannot predict byte length by a simple multiplier.",
+    "tips": "Record or specify the producer's encoding before decoding. A BOM is a protocol choice, not something every byte sequence contains; strict fallbacks help detect malformed input.",
+    "tags": ["Encoding", "UTF-8", "bytes"]
+  },
+  "regex-options-anchors": {
+    "title": "Regular-expression anchors and newline options",
+    "short": "Choose whole-input or line boundaries independently from dot behavior.",
+    "summary": "\\A and \\z anchor the absolute beginning and end. ^ and $ are line-sensitive under Multiline, while Singleline independently makes dot match newline characters.",
+    "why": "A [[regex-basic|substring search]] can succeed without validating the rest of the input; absolute anchors express a whole-input contract.",
+    "tips": "Multiline does not make dot cross lines, and Singleline does not change ^ or $. Apply a finite timeout to matching work.",
+    "tags": ["regex", "anchor", "Multiline"]
+  },
+  "datetime-kind": {
+    "title": "DateTime.Kind and interpreting timestamps",
+    "short": "Distinguish UTC, local, and unassigned wall-clock interpretations.",
+    "summary": "DateTime.Kind records whether a value is Utc, Local, or Unspecified. SpecifyKind only changes that label; conversion methods can change clock fields to represent the same instant in another basis.",
+    "why": "Labeling an unknown clock reading as UTC invents an interpretation. [[datetimeoffset|Retaining an offset]] often states the observed instant more clearly.",
+    "tips": "Establish the source time basis before conversion or subtraction. Unspecified values need an explicit zone or offset policy before they represent an instant.",
+    "tags": ["DateTime", "Kind", "UTC"]
+  },
+  "datetimeoffset": {
+    "title": "Representing instants and offsets with DateTimeOffset",
+    "short": "Carry a clock reading together with its displacement from UTC.",
+    "summary": "DateTimeOffset identifies an instant by combining date-time fields with an offset. Different clock readings and offsets can therefore denote the same UTC instant.",
+    "why": "An offset such as +09:00 does not name the region or its past and future rules; [[time-zone-conversion|a named time zone]] is required for seasonal offset rules.",
+    "tips": "Persist the offset when it is part of the observation, and normalize to UTC for comparisons when that matches the domain. Do not infer a location from an offset alone.",
+    "tags": ["DateTimeOffset", "offset", "instant"]
+  },
+  "dateonly-timeonly": {
+    "title": "Separating dates and clock times with DateOnly and TimeOnly",
+    "short": "Model a calendar date or time of day without inventing an instant.",
+    "summary": "DateOnly has no clock or time zone, and TimeOnly has no date. Combining them produces a wall-clock DateTime but still needs an offset or zone interpretation to become an instant.",
+    "why": "The composed value is Unspecified because [[datetime-kind|its DateTime interpretation]] has not yet been chosen.",
+    "tips": "These types suit birthdays, business dates, and recurring local times. Resolve invalid or ambiguous local times when a zone is finally applied.",
+    "tags": ["DateOnly", "TimeOnly", "calendar"]
   }
 }

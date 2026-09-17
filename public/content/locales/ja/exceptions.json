@@ -286,5 +286,13 @@
     "goodNotes": {
       "1": "TryCreate で有効な URI か確認する"
     }
+  },
+  "regex-timeout-exception": {
+    "title": "RegexMatchTimeoutException と検索時間の上限",
+    "short": "正規表現の処理時間を制限し、過大なバックトラッキングを直します。",
+    "summary": "RegexMatchTimeoutException は有限のタイムアウトを照合が超えたことを示します。曖昧な量指定子の入れ子は、ほぼ一致する入力で過大なバックトラッキングを起こせます。",
+    "why": "タイムアウトは[[regex-basic|パターン検索]]の実行時間を制限し、一つの入力が処理を無期限に占有するのを防ぎます。",
+    "tips": "現在の入力を拒否し、サイズとパターンを調査して単純化するか、対応可能なら NonBacktracking を使います。同じ処理の無限再試行は原因を解決しません。",
+    "tags": ["RegexMatchTimeoutException", "正規表現", "タイムアウト"]
   }
 }

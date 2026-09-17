@@ -630,5 +630,69 @@
     "good": null,
     "code": "int[] middle = [2, 3];\nint[] values = [1, .. middle, 4];\nList<int> list = [.. values, 5];\n\nConsole.WriteLine(string.Join(\", \", values));\nConsole.WriteLine(list.Count);",
     "related": ["arrays-basics", "object-collection-initializers", "ienumerable"]
+  },
+  {
+    "id": "string-comparison",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string firstId = \"file\";\nstring secondId = \"FILE\";\nbool sameId = string.Equals(firstId, secondId, StringComparison.OrdinalIgnoreCase);\n\nvar culture = CultureInfo.GetCultureInfo(\"ja-JP\");\nint displayOrder = culture.CompareInfo.Compare(\n    \"あ\", \"ア\", CompareOptions.StringSort);",
+    "related": ["equality", "dictionary-comparers", "culture-sensitive-numbers"]
+  },
+  {
+    "id": "unicode-runes",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string text = \"A😀e\\u0301\";\nint codeUnits = text.Length;\nint scalars = text.EnumerateRunes().Count();\nint graphemes = StringInfo.ParseCombiningCharacters(text).Length;\n\nConsole.WriteLine($\"{codeUnits}, {scalars}, {graphemes}\"); // 5, 4, 3\nforeach (Rune rune in text.EnumerateRunes())\n    Console.WriteLine($\"U+{rune.Value:X}\");",
+    "related": ["encoding-text-bytes", "unicode-normalization", "indices-ranges"]
+  },
+  {
+    "id": "span-memory",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[] owner = [10, 20, 30, 40];\nSpan<int> slice = owner.AsSpan(1, 2);\nslice[0] = 99;\nConsole.WriteLine(owner[1]); // 99\n\nMemory<int> storedView = owner.AsMemory(2, 2);\nUseLater(storedView);\n\nstatic void UseLater(Memory<int> memory)\n{\n    Console.WriteLine(memory.Span[0]);\n}",
+    "related": ["arrays-basics", "indices-ranges", "ref-out-in"]
+  },
+  {
+    "id": "encoding-text-bytes",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);\nstring text = \"日本語😀\";\nbyte[] bytes = utf8.GetBytes(text);\nstring restored = utf8.GetString(bytes);\n\nConsole.WriteLine(text.Length);       // UTF-16 code units\nConsole.WriteLine(bytes.Length);      // encoded bytes\nConsole.WriteLine(utf8.Preamble.Length); // 0: no BOM emitted",
+    "related": ["unicode-runes", "base64", "file-read"]
+  },
+  {
+    "id": "regex-options-anchors",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string input = \"ABC\\nDEF\";\nvar timeout = TimeSpan.FromMilliseconds(100);\n\nbool wholeInput = Regex.IsMatch(input, @\"\\A[A-Z]+\\z\", RegexOptions.None, timeout);\nbool eachLine = Regex.IsMatch(input, @\"^[A-Z]+$\", RegexOptions.Multiline, timeout);\nbool dotCrossesNewline = Regex.IsMatch(input, @\"A.*F\", RegexOptions.Singleline, timeout);\n\nConsole.WriteLine($\"{wholeInput}, {eachLine}, {dotCrossesNewline}\");",
+    "related": ["regex-basic", "regex-groups", "regex-escaping"]
+  },
+  {
+    "id": "datetime-kind",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var clockReading = new DateTime(2026, 1, 15, 9, 0, 0, DateTimeKind.Unspecified);\nDateTime labeledUtc = DateTime.SpecifyKind(clockReading, DateTimeKind.Utc); // labels only\nDateTime convertedLocal = labeledUtc.ToLocalTime();                       // converts\n\nConsole.WriteLine(clockReading.Kind);\nConsole.WriteLine(labeledUtc.Kind);\nConsole.WriteLine(convertedLocal.Kind);",
+    "related": ["datetimeoffset", "time-zone-conversion", "date-parse-exact"]
+  },
+  {
+    "id": "datetimeoffset",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var observed = new DateTimeOffset(2026, 1, 15, 9, 0, 0, TimeSpan.FromHours(9));\nDateTimeOffset sameInstantUtc = observed.ToUniversalTime();\n\nConsole.WriteLine(observed.ToString(\"O\"));\nConsole.WriteLine(sameInstantUtc.ToString(\"O\"));\nConsole.WriteLine(observed.UtcDateTime == sameInstantUtc.UtcDateTime); // True",
+    "related": ["datetime-kind", "time-zone-conversion", "timespan-arithmetic"]
+  },
+  {
+    "id": "dateonly-timeonly",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "DateOnly date = new(2026, 4, 1);\nTimeOnly time = new(9, 30);\nDateTime wallClock = date.ToDateTime(time, DateTimeKind.Unspecified);\n\nConsole.WriteLine(date);\nConsole.WriteLine(time);\nConsole.WriteLine(wallClock.Kind); // Unspecified until a zone or offset is chosen",
+    "related": ["datetime-kind", "time-zone-conversion", "date-parse-exact"]
   }
 ]

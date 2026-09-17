@@ -358,5 +358,157 @@
     "why": "The empty integer array produces -1 when supplied and zero when no explicit value is given; a source containing 5 keeps 5.",
     "tips": "The implicit fallback follows [[default-values|default(T)]]. One fallback row supports left joins and can deliberately change how downstream aggregation treats emptiness.",
     "tags": ["LINQ", "DefaultIfEmpty", "fallback"]
+  },
+  "string-search-replace": {
+    "title": "Searching and replacing string content",
+    "short": "Find literal tokens and replace text under an explicit comparison rule.",
+    "summary": "IndexOf returns -1 when a literal is absent, and Replace returns a new string because strings are immutable. Both operations can state how text is compared.",
+    "why": "The token is an identifier, so [[string-comparison|an ordinal comparison policy]] is explicit rather than culture-dependent.",
+    "tips": "Check the not-found result before slicing. Use regular expressions only when the search requirement is actually pattern-based.",
+    "tags": ["string", "IndexOf", "Replace"]
+  },
+  "string-trim-validation": {
+    "title": "Distinguishing empty and whitespace text when normalizing input",
+    "short": "Validate missing content before trimming the permitted boundaries.",
+    "summary": "IsNullOrWhiteSpace handles null, empty, and all-whitespace input. Trim then removes whitespace only from the beginning and end, leaving interior content unchanged.",
+    "why": "The [[nullable|null case]] must be handled before calling an instance string method.",
+    "tips": "Define the input contract: Trim() recognizes Unicode whitespace, while Trim with selected characters is appropriate when only specific boundary characters are allowed.",
+    "tags": ["string", "Trim", "validation"]
+  },
+  "stringbuilder": {
+    "title": "Building text incrementally with StringBuilder",
+    "short": "Accumulate many fragments without creating a new string at each step.",
+    "summary": "StringBuilder keeps a mutable character buffer for repeated appends, and ToString creates the final immutable string.",
+    "why": "A loop can append separators and values efficiently, while [[string-interpolation|ordinary interpolation]] remains clearer for one small formatted message.",
+    "tips": "Do not introduce StringBuilder for a handful of fixed concatenations. Call ToString at the boundary where an actual string is required.",
+    "tags": ["StringBuilder", "string", "performance"]
+  },
+  "unicode-normalization": {
+    "title": "Normalizing equivalent Unicode representations",
+    "short": "Align canonically equivalent scalar sequences before comparison.",
+    "summary": "Normalization Form C composes canonically equivalent sequences into a consistent representation, allowing a suitable comparison policy to recognize equivalent text.",
+    "why": "The same visible text can contain different [[unicode-runes|Unicode scalar sequences]], such as one precomposed scalar or a base scalar followed by a combining mark.",
+    "tips": "Normalization does not remove accents and does not make unrelated lookalike characters equal. Normalize at a documented boundary and then apply the intended comparison rule.",
+    "tags": ["Unicode", "normalization", "FormC"]
+  },
+  "span-parse": {
+    "title": "Parsing text spans without substring allocation",
+    "short": "Pass a bounded view directly to a span-aware parser.",
+    "summary": "AsSpan creates a ReadOnlySpan<char> over part of the original string, and numeric TryParse overloads can consume that view without allocating a temporary substring.",
+    "why": "The token [[span-memory|shares the original text storage]], so its valid lifetime is tied to that source.",
+    "tips": "Validate slice boundaries and state NumberStyles and culture. Prefer clarity over allocation avoidance unless parsing is a measured hot path.",
+    "tags": ["ReadOnlySpan", "TryParse", "allocation"]
+  },
+  "base64": {
+    "title": "Representing binary data as Base64 text",
+    "short": "Round-trip bytes through a text-safe representation and reject malformed input.",
+    "summary": "Base64 maps arbitrary bytes to printable text and back. FromBase64String throws FormatException for invalid alphabet, padding, or length.",
+    "why": "After decoding, arbitrary binary remains bytes. Only if the original producer encoded text should the recovered bytes be decoded with that same [[encoding-text-bytes|text encoding]].",
+    "tips": "Base64 is encoding, not encryption or integrity protection, and usually increases size by roughly one third.",
+    "tags": ["Base64", "bytes", "FormatException"]
+  },
+  "regex-groups": {
+    "title": "Extracting fields with named regular-expression groups",
+    "short": "Read structured fields by name after confirming a bounded match succeeded.",
+    "summary": "Named captures make fields explicit. Match.Success says the entire pattern matched, while Group.Success distinguishes an optional group that did not participate from one that captured an empty value.",
+    "why": "Check [[regex-basic|match success]] before consuming any captured fields.",
+    "tips": "Keep parsing separate from matching: validate or TryParse captured numeric text after extraction, and always use a finite timeout.",
+    "tags": ["regex", "group", "capture"]
+  },
+  "regex-replace": {
+    "title": "Replacing text with regular-expression transformations",
+    "short": "Transform repeated matches with captures or a MatchEvaluator.",
+    "summary": "Regex.Replace can substitute capture references in replacement text or invoke a MatchEvaluator for computed output. Replacement syntax is distinct from pattern syntax.",
+    "why": "The evaluator receives each Match and can read the values exposed by [[regex-groups|named capture groups]].",
+    "tips": "Use a literal string Replace for literal work. When replacement text comes from users, do not assume pattern escaping also makes replacement syntax literal.",
+    "tags": ["regex", "Replace", "MatchEvaluator"]
+  },
+  "date-parse-exact": {
+    "title": "Parsing dates with an exact format",
+    "short": "Accept one documented date-time shape with explicit culture and styles.",
+    "summary": "TryParseExact succeeds only when input conforms to the supplied format, culture, and DateTimeStyles, avoiding the ambiguity of broad culture-dependent parsing.",
+    "why": "The [[date-format|format tokens]] used for output must match the intended input contract; yyyy-MM-dd differs from culture-specific short-date patterns.",
+    "tips": "A parsed wall-clock value with no offset remains Unspecified. Choose a zone or offset explicitly before treating it as an instant.",
+    "tags": ["DateTime", "TryParseExact", "culture"]
+  },
+  "time-zone-conversion": {
+    "title": "Converting time zones with TimeZoneInfo",
+    "short": "Convert a known instant and validate local wall-clock times at transitions.",
+    "summary": "ConvertTime maps an unambiguous instant into a selected zone. A local wall-clock input can be invalid during a forward jump or ambiguous during a backward transition and needs an application policy.",
+    "why": "A [[datetimeoffset|DateTimeOffset input]] supplies the unambiguous instant used for zone conversion.",
+    "tips": "Time-zone identifiers and installed rule data vary by environment; configure and validate the intended zone instead of claiming one arbitrary ID is universally portable.",
+    "tags": ["TimeZoneInfo", "DST", "DateTimeOffset"]
+  },
+  "timespan-arithmetic": {
+    "title": "Calculating durations with TimeSpan",
+    "short": "Construct, combine, and subtract elapsed quantities in a stated time basis.",
+    "summary": "TimeSpan represents a duration. Compatible timestamps can be subtracted to obtain one, and durations can be added or subtracted without implying calendar rules.",
+    "why": "Two [[datetimeoffset|DateTimeOffset values]] identify instants suitable for elapsed-time subtraction after their basis is understood.",
+    "tips": "A month or local calendar day is not a fixed TimeSpan. Apply calendar arithmetic to the calendar type and zone rules instead.",
+    "tags": ["TimeSpan", "duration", "DateTimeOffset"]
+  },
+  "stopwatch": {
+    "title": "Measuring execution time with Stopwatch",
+    "short": "Measure elapsed work with a monotonic timing source.",
+    "summary": "Stopwatch is designed for elapsed measurement and avoids civil-clock adjustments that can affect DateTime.Now subtraction.",
+    "why": "Elapsed is returned as a [[timespan-arithmetic|TimeSpan duration]], with TotalMilliseconds available for reporting.",
+    "tips": "Warm-up, scheduling, runtime optimization, and noise affect small samples. Repeat measurements and report only precision the experiment supports.",
+    "tags": ["Stopwatch", "elapsed", "measurement"]
+  },
+  "math-rounding": {
+    "title": "Choosing rounding, floor, ceiling, and truncation",
+    "short": "Select a boundary rule explicitly for both positive and negative values.",
+    "summary": "Round applies a midpoint policy, Floor moves toward negative infinity, Ceiling toward positive infinity, and Truncate toward zero.",
+    "why": "A cast performs a [[numeric-conversions|numeric conversion]] that truncates floating or decimal values toward zero; it is not a substitute for every rounding policy.",
+    "tips": "State MidpointRounding at domain boundaries. Test negative values and exact midpoints because intuitive positive-only examples hide important differences.",
+    "tags": ["Math.Round", "MidpointRounding", "floor"]
+  },
+  "math-clamp": {
+    "title": "Bounding values with Math.Clamp, Min, and Max",
+    "short": "Normalize finite values to a validated interval or reject them by policy.",
+    "summary": "Math.Clamp returns the lower bound, upper bound, or original in-range value. Min and Max combine individual bounds but do not replace validation.",
+    "why": "Math.Clamp throws [[argument-exception|ArgumentException]] when the minimum bound exceeds the maximum bound.",
+    "tips": "Reject NaN or infinity when the domain requires finite values. Clamping invalid user input can conceal an error, so distinguish normalization from validation.",
+    "tags": ["Math.Clamp", "range", "validation"]
+  },
+  "random-generation": {
+    "title": "Controlling random ranges and reproducibility",
+    "short": "Respect exclusive upper bounds and seed examples that must replay.",
+    "summary": "Random.Next(min, max) includes min and excludes max. A fixed seed reproduces a deterministic sequence for tests and demonstrations.",
+    "why": "The requested range must fit the destination [[numeric-types|numeric type]] and its API bounds.",
+    "tips": "Random is not cryptographically secure. Use RandomNumberGenerator for secrets, tokens, or adversarial settings, and do not reseed repeatedly inside a loop.",
+    "tags": ["Random", "seed", "range"]
+  },
+  "random-shuffle-sampling": {
+    "title": "Shuffling arrays and sampling without replacement",
+    "short": "Shuffle an owned array and take a unique prefix.",
+    "summary": "Random.Shuffle mutates the supplied span or array. Shuffling a copy and taking its first k elements samples without replacement while preserving the source.",
+    "why": "Independent [[random-generation|random index draws]] can select the same element more than once, so they do not guarantee a unique sample.",
+    "tips": "Random.Shuffle is available in .NET 8. Validate that k is within the array bounds and use a cryptographic design when unpredictability is a security requirement.",
+    "tags": ["Random.Shuffle", "sampling", "array"]
+  },
+  "guid": {
+    "title": "Creating and parsing identifiers with Guid",
+    "short": "Treat GUIDs as opaque identifiers with a stable textual format.",
+    "summary": "Guid.NewGuid creates an identifier, TryParseExact validates external text against a chosen format, and ToString with the same format gives a stable representation.",
+    "why": "A parsed identifier can be a stable [[dictionary-update-insert|dictionary key]] because Guid has value equality and hashing.",
+    "tips": "A Guid is neither a secret nor a meaningful chronological ordering. Validate the accepted format rather than relying on permissive parsing when the contract is fixed.",
+    "tags": ["Guid", "identifier", "TryParseExact"]
+  },
+  "biginteger": {
+    "title": "Calculating large integers with BigInteger",
+    "short": "Perform exact integer arithmetic beyond fixed-width ranges.",
+    "summary": "BigInteger grows as needed instead of wrapping at Int32 or Int64 boundaries, but larger values consume increasing memory and processing time.",
+    "why": "The factorial avoids the fixed-width limit that causes [[integer-overflow|integer overflow]].",
+    "tips": "Conversions back to fixed-width types still have boundaries and can throw OverflowException. BigInteger is arbitrary precision, not unlimited resources.",
+    "tags": ["BigInteger", "integer", "overflow"]
+  },
+  "decimal-calculations": {
+    "title": "Making decimal arithmetic and rounding explicit",
+    "short": "Keep decimal quantities decimal and round once at a defined boundary.",
+    "summary": "decimal represents base-10-scaled values with finite precision. Decimal literals and intermediates avoid introducing binary floating-point approximations into the calculation.",
+    "why": "A binary floating-point intermediate can undermine a decimal workflow through the approximation behavior described by [[floating-equality|floating-point equality]].",
+    "tips": "Define when and how to round, retain unrounded intermediates when the domain requires it, and do not claim decimal has unlimited precision or range.",
+    "tags": ["decimal", "rounding", "precision"]
   }
 }

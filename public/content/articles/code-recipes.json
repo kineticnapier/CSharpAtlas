@@ -419,5 +419,157 @@
     "good": null,
     "code": "int[] values = [];\nint[] supplied = values.DefaultIfEmpty(-1).ToArray();\nint implicitDefault = values.DefaultIfEmpty().Single();\n\nConsole.WriteLine(supplied[0]);        // -1\nConsole.WriteLine(implicitDefault);    // 0\nConsole.WriteLine(new[] { 5 }.DefaultIfEmpty(-1).Single()); // 5",
     "related": ["linq-groupjoin", "linq-sum-average", "default-values"]
+  },
+  {
+    "id": "string-search-replace",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string source = \"mode=TEST; id=42\";\nint start = source.IndexOf(\"id=\", StringComparison.Ordinal);\nif (start >= 0)\n{\n    string idText = source[(start + 3)..];\n    Console.WriteLine(idText);\n}\n\nstring normalized = source.Replace(\"TEST\", \"test\", StringComparison.OrdinalIgnoreCase);\nConsole.WriteLine(source);     // unchanged\nConsole.WriteLine(normalized);",
+    "related": ["string-comparison", "regex-basic", "indices-ranges"]
+  },
+  {
+    "id": "string-trim-validation",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "static string NormalizeName(string? input)\n{\n    if (string.IsNullOrWhiteSpace(input))\n        throw new ArgumentException(\"A name is required.\", nameof(input));\n\n    return input.Trim();\n}\n\nConsole.WriteLine(NormalizeName(\"  Ada  \"));",
+    "related": ["nullable", "argument-exception", "string-split-join"]
+  },
+  {
+    "id": "stringbuilder",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var builder = new StringBuilder();\nfor (int i = 1; i <= 3; i++)\n{\n    if (builder.Length > 0) builder.Append(\", \");\n    builder.Append(\"item-\").Append(i);\n}\n\nstring result = builder.ToString();\nstring message = $\"Built {result}\";\nConsole.WriteLine(message);",
+    "related": ["string-interpolation", "string-split-join"]
+  },
+  {
+    "id": "unicode-normalization",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string composed = \"café\";\nstring decomposed = \"cafe\\u0301\";\n\nstring left = composed.Normalize(NormalizationForm.FormC);\nstring right = decomposed.Normalize(NormalizationForm.FormC);\nbool equal = string.Equals(left, right, StringComparison.Ordinal);\nConsole.WriteLine(equal); // True",
+    "related": ["unicode-runes", "string-comparison"]
+  },
+  {
+    "id": "span-parse",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string line = \"month=09\";\nReadOnlySpan<char> token = line.AsSpan(6, 2);\n\nif (int.TryParse(token, NumberStyles.None, CultureInfo.InvariantCulture, out int month)\n    && month is >= 1 and <= 12)\n{\n    Console.WriteLine(month);\n}",
+    "related": ["span-memory", "parse-number", "culture-sensitive-numbers"]
+  },
+  {
+    "id": "base64",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "byte[] payload = [0x00, 0xFF, 0x10, 0x80];\nstring encoded = Convert.ToBase64String(payload);\nbyte[] recovered = Convert.FromBase64String(encoded);\nConsole.WriteLine(Convert.ToHexString(recovered));\n\ntry\n{\n    Convert.FromBase64String(\"not base64!\");\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Invalid Base64 text.\");\n}",
+    "related": ["encoding-text-bytes", "format-exception"]
+  },
+  {
+    "id": "regex-groups",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var regex = new Regex(\n    @\"\\A(?<amount>\\d+)(?:\\s*(?<unit>kg|g))?(?:\\[(?<note>[^]]*)\\])?\\z\",\n    RegexOptions.CultureInvariant,\n    TimeSpan.FromMilliseconds(100));\n\nMatch match = regex.Match(\"250[]\");\nif (match.Success)\n{\n    Group unit = match.Groups[\"unit\"];\n    Group note = match.Groups[\"note\"];\n    Console.WriteLine(unit.Success ? unit.Value : \"(absent)\");\n    Console.WriteLine(note.Success && note.Value.Length == 0 ? \"(empty)\" : note.Value);\n}",
+    "related": ["regex-basic", "parse-number"]
+  },
+  {
+    "id": "regex-replace",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var regex = new Regex(\n    @\"(?<name>[A-Za-z]+):(?<value>\\d+)\",\n    RegexOptions.CultureInvariant,\n    TimeSpan.FromMilliseconds(100));\n\nstring input = \"pen:2 book:5\";\nstring output = regex.Replace(input, match =>\n    $\"{match.Groups[\"name\"].Value}={match.Groups[\"value\"].Value}\");\nConsole.WriteLine(output);",
+    "related": ["regex-groups", "lambda", "string-search-replace"]
+  },
+  {
+    "id": "date-parse-exact",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string input = \"2026-04-01 09:30\";\nconst string format = \"yyyy-MM-dd HH:mm\";\n\nif (DateTime.TryParseExact(\n    input, format, CultureInfo.InvariantCulture,\n    DateTimeStyles.None, out DateTime wallClock))\n{\n    Console.WriteLine(wallClock);\n    Console.WriteLine(wallClock.Kind); // Unspecified\n}",
+    "related": ["date-format", "format-exception", "datetime-kind"]
+  },
+  {
+    "id": "time-zone-conversion",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "TimeZoneInfo zone = TimeZoneInfo.Local; // chosen by application configuration\nDateTimeOffset instant = DateTimeOffset.Parse(\n    \"2026-04-01T00:30:00+00:00\", CultureInfo.InvariantCulture);\nDateTimeOffset inZone = TimeZoneInfo.ConvertTime(instant, zone);\nConsole.WriteLine(inZone);\n\nDateTime candidate = new(2026, 11, 1, 1, 30, 0, DateTimeKind.Unspecified);\nif (zone.IsInvalidTime(candidate))\n    Console.WriteLine(\"This wall-clock time does not exist in the selected zone.\");\nelse if (zone.IsAmbiguousTime(candidate))\n    Console.WriteLine(\"Choose which offset is intended.\");",
+    "related": ["datetimeoffset", "datetime-kind", "dateonly-timeonly"]
+  },
+  {
+    "id": "timespan-arithmetic",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "TimeSpan timeout = TimeSpan.FromSeconds(30);\nTimeSpan extended = timeout + TimeSpan.FromSeconds(15);\n\nDateTimeOffset started = DateTimeOffset.Parse(\n    \"2026-04-01T00:00:00+00:00\", CultureInfo.InvariantCulture);\nDateTimeOffset finished = started.AddMinutes(12);\nTimeSpan elapsed = finished - started;\n\nConsole.WriteLine(extended.TotalSeconds); // 45\nConsole.WriteLine(elapsed.TotalMinutes);  // 12",
+    "related": ["datetimeoffset", "timespan-component-totals", "stopwatch"]
+  },
+  {
+    "id": "stopwatch",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var samples = new List<TimeSpan>();\nfor (int i = 0; i < 3; i++)\n{\n    var stopwatch = Stopwatch.StartNew();\n    Thread.SpinWait(10_000);\n    stopwatch.Stop();\n    samples.Add(stopwatch.Elapsed);\n}\n\nforeach (TimeSpan elapsed in samples)\n    Console.WriteLine(elapsed.TotalMilliseconds);",
+    "related": ["timespan-arithmetic", "task-delay"]
+  },
+  {
+    "id": "math-rounding",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "decimal positive = 2.5m;\ndecimal negative = -2.5m;\n\nConsole.WriteLine(Math.Round(positive, MidpointRounding.ToEven));      // 2\nConsole.WriteLine(Math.Round(positive, MidpointRounding.AwayFromZero)); // 3\nConsole.WriteLine(Math.Floor(negative));    // -3\nConsole.WriteLine(Math.Ceiling(negative));  // -2\nConsole.WriteLine(Math.Truncate(negative)); // -2",
+    "related": ["numeric-conversions", "decimal-calculations", "floating-equality"]
+  },
+  {
+    "id": "math-clamp",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "double value = 125;\ndouble minimum = 0;\ndouble maximum = 100;\n\nif (!double.IsFinite(value) || !double.IsFinite(minimum) || !double.IsFinite(maximum))\n    throw new ArgumentOutOfRangeException(nameof(value), \"Finite values are required.\");\n\ndouble bounded = Math.Clamp(value, minimum, maximum);\nConsole.WriteLine(bounded); // 100\n// Math.Clamp(value, 10, 0) throws ArgumentException.",
+    "related": ["numeric-types", "argument-exception", "nan-infinity"]
+  },
+  {
+    "id": "random-generation",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var random = new Random(12345);\nint die = random.Next(1, 7);       // 1 through 6; 7 is exclusive\ndouble fraction = random.NextDouble(); // 0.0 <= value < 1.0\n\nvar replay = new Random(12345);\nConsole.WriteLine(die == replay.Next(1, 7)); // True",
+    "related": ["numeric-types", "arrays-basics"]
+  },
+  {
+    "id": "random-shuffle-sampling",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string[] source = [\"A\", \"B\", \"C\", \"D\", \"E\"];\nstring[] pool = source.ToArray(); // owned copy\nRandom.Shared.Shuffle(pool);      // mutates pool\nstring[] sample = pool[..3];\n\nConsole.WriteLine(string.Join(\", \", sample));\nConsole.WriteLine(string.Join(\", \", source)); // original order is unchanged",
+    "related": ["random-generation", "arrays-basics", "linq-pagination"]
+  },
+  {
+    "id": "guid",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "Guid created = Guid.NewGuid();\nstring persisted = created.ToString(\"D\");\n\nif (Guid.TryParseExact(persisted, \"D\", out Guid parsed))\n{\n    var values = new Dictionary<Guid, string> { [parsed] = \"stored\" };\n    Console.WriteLine(values[parsed]);\n}",
+    "related": ["parse-number", "format-exception", "dictionary-update-insert"]
+  },
+  {
+    "id": "biginteger",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "BigInteger factorial = BigInteger.One;\nfor (int value = 2; value <= 50; value++)\n    factorial *= value;\n\nConsole.WriteLine(factorial);\ntry\n{\n    long fixedWidth = checked((long)factorial);\n}\ncatch (OverflowException)\n{\n    Console.WriteLine(\"The value does not fit in Int64.\");\n}",
+    "related": ["numeric-types", "integer-overflow", "overflow-exception"]
+  },
+  {
+    "id": "decimal-calculations",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "decimal unitPrice = 19.95m;\nint quantity = 3;\ndecimal taxRate = 0.10m;\n\ndecimal subtotal = unitPrice * quantity;\ndecimal total = subtotal * (1m + taxRate);\ndecimal charged = Math.Round(total, 2, MidpointRounding.ToEven);\nConsole.WriteLine(charged);",
+    "related": ["numeric-types", "math-rounding", "floating-equality"]
   }
 ]
