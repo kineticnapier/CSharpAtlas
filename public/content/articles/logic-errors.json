@@ -5,16 +5,9 @@
     "bad": "double x = 0.1 + 0.2;\nConsole.WriteLine(x == 0.3);",
     "good": "double x = 0.1 + 0.2;\ndouble tolerance = 1e-10;\nConsole.WriteLine(Math.Abs(x - 0.3) < tolerance);",
     "code": null,
-    "related": [
-      "equality",
-      "divide-by-zero"
-    ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      3
-    ]
+    "related": ["equality", "divide-by-zero"],
+    "badHighlight": [2],
+    "goodHighlight": [3]
   },
   {
     "id": "integer-overflow",
@@ -22,15 +15,9 @@
     "bad": "int x = int.MaxValue;\nint y = x + 1;\nConsole.WriteLine(y);",
     "good": "int x = int.MaxValue;\nint y = checked(x + 1);",
     "code": null,
-    "related": [
-      "overflow-exception"
-    ],
-    "badHighlight": [
-      2
-    ],
-    "goodHighlight": [
-      2
-    ]
+    "related": ["overflow-exception"],
+    "badHighlight": [2],
+    "goodHighlight": [2]
   },
   {
     "id": "reference-equality",
@@ -38,17 +25,9 @@
     "bad": "class Point { public int X { get; init; } }\nvar a = new Point { X = 1 };\nvar b = new Point { X = 1 };\nConsole.WriteLine(a == b); // False",
     "good": "record Point(int X);\nvar a = new Point(1);\nvar b = new Point(1);\nConsole.WriteLine(a == b); // True",
     "code": null,
-    "related": [
-      "equality",
-      "records",
-      "value-reference-types"
-    ],
-    "badHighlight": [
-      4
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "related": ["equality", "records", "value-reference-types"],
+    "badHighlight": [4],
+    "goodHighlight": [1]
   },
   {
     "id": "deferred-enumeration",
@@ -56,17 +35,9 @@
     "bad": "var query = GetItems().Where(IsValid);\nConsole.WriteLine(query.Count());\nforeach (var item in query)\n    Console.WriteLine(item);",
     "good": "var items = GetItems().Where(IsValid).ToList();\nConsole.WriteLine(items.Count);\nforeach (var item in items)\n    Console.WriteLine(item);",
     "code": null,
-    "related": [
-      "linq-deferred",
-      "ienumerable"
-    ],
-    "badHighlight": [
-      2,
-      3
-    ],
-    "goodHighlight": [
-      1
-    ]
+    "related": ["linq-deferred", "ienumerable"],
+    "badHighlight": [2, 3],
+    "goodHighlight": [1]
   },
   {
     "id": "empty-statement-loop",
@@ -189,5 +160,85 @@
     "good": "DateTimeOffset[] timestamps =\n[\n    new DateTimeOffset(2026, 4, 1, 23, 59, 59, TimeSpan.Zero).AddTicks(9_999_999)\n];\nDateOnly firstDate = new(2026, 4, 1);\nDateOnly nextDate = firstDate.AddDays(1);\nDateTimeOffset startUtc = new(firstDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);\nDateTimeOffset endUtc = new(nextDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);\nvar selected = timestamps.Where(value => value >= startUtc && value < endUtc);",
     "code": null,
     "related": ["datetimeoffset", "dateonly-timeonly", "timespan-arithmetic"]
+  },
+  {
+    "id": "stream-short-reads",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "using Stream stream = new MemoryStream([1, 2, 3]);\nbyte[] buffer = new byte[8];\n\nint offset = 0;\nwhile (offset < buffer.Length)\n{\n    int read = stream.Read(buffer, offset, buffer.Length - offset);\n    if (read == 0) break; // end of stream\n    offset += read;\n}\n\nConsole.WriteLine($\"Read {offset} bytes, not {buffer.Length}.\");",
+    "related": ["stream-basics", "end-of-stream", "binary-reader-writer"]
+  },
+  {
+    "id": "stream-position",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "using var stream = new MemoryStream();\nstream.Write([1, 2, 3]);\n\nConsole.WriteLine(stream.Position); // 3: at the end\nConsole.WriteLine(stream.ReadByte()); // -1\n\nstream.Position = 0;\nConsole.WriteLine(stream.ReadByte()); // 1",
+    "related": ["memory-stream", "stream-basics", "not-supported"]
+  },
+  {
+    "id": "encoding-mismatch",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "string original = \"日本語\";\nbyte[] utf8 = Encoding.UTF8.GetBytes(original);\n\nstring wrong = Encoding.Unicode.GetString(utf8);\nstring correct = Encoding.UTF8.GetString(utf8);\n\nConsole.WriteLine(wrong);\nConsole.WriteLine(correct);",
+    "related": ["encoding-text-bytes", "decoder-fallback", "unicode-runes"]
+  },
+  {
+    "id": "json-reference-cycles",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "var root = new Node(\"root\");\nroot.Next = root;\n\ntry\n{\n    JsonSerializer.Serialize(root); // cycle -> JsonException by default\n}\ncatch (JsonException ex)\n{\n    Console.WriteLine(ex.Message);\n}\n\nsealed class Node(string name)\n{\n    public string Name { get; } = name;\n    public Node? Next { get; set; }\n}",
+    "related": ["json-write", "json-options-contracts", "value-reference-types"]
+  },
+  {
+    "id": "exception-rethrow",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "try\n{\n    Run();\n}\ncatch (InvalidOperationException)\n{\n    Console.WriteLine(\"logging\");\n    throw; // preserves the original throw location\n}\n\nstatic void Run() => throw new InvalidOperationException(\"boom\");",
+    "related": ["try-catch", "custom-exceptions", "aggregate-exception"]
+  },
+  {
+    "id": "async-void-errors",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "// Prefer Task-returning methods so callers can await failures.\nstatic async Task SaveAsync()\n{\n    await Task.Delay(10);\n    throw new InvalidOperationException(\"save failed\");\n}\n\ntry\n{\n    await SaveAsync();\n}\ncatch (InvalidOperationException ex)\n{\n    Console.WriteLine(ex.Message);\n}",
+    "related": ["async-await", "events", "cs4014"]
+  },
+  {
+    "id": "sync-over-async",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "static async Task<int> ComputeAsync()\n{\n    await Task.Delay(10);\n    return 42;\n}\n\nint value = await ComputeAsync(); // keep the call chain asynchronous\nConsole.WriteLine(value);",
+    "related": ["async-await", "task", "task-run-cpu"]
+  },
+  {
+    "id": "cancel-without-awaiting",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "using var cts = new CancellationTokenSource();\nTask worker = WorkerAsync(cts.Token);\n\ncts.Cancel();\ntry\n{\n    await worker; // cancellation request is not shutdown completion\n}\ncatch (OperationCanceledException) { }\n\nstatic async Task WorkerAsync(CancellationToken token)\n{\n    await Task.Delay(100, token);\n}",
+    "related": ["cancellation-token", "object-disposed", "operation-canceled"]
+  },
+  {
+    "id": "concurrent-collection-factories",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "var cache = new ConcurrentDictionary<string, Lazy<int>>();\n\nLazy<int> value = cache.GetOrAdd(\n    \"answer\",\n    _ => new Lazy<int>(() =>\n    {\n        Console.WriteLine(\"expensive creation\");\n        return 42;\n    }, LazyThreadSafetyMode.ExecutionAndPublication));\n\nConsole.WriteLine(value.Value);",
+    "related": ["concurrent-dictionary", "lazy-initialization", "interlocked"]
+  },
+  {
+    "id": "deadlock-lock-order",
+    "type": "logic",
+    "bad": null,
+    "good": null,
+    "code": "object first = new();\nobject second = new();\n\n// Use the same global order everywhere.\nlock (first)\n{\n    lock (second)\n    {\n        Console.WriteLine(\"both locks held\");\n    }\n}",
+    "related": ["lock-shared-state", "semaphore-async"]
   }
 ]
