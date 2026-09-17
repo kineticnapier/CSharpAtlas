@@ -249,7 +249,7 @@
     "type": "code",
     "bad": null,
     "good": null,
-    "code": "var scores = new Dictionary<string, int>();\nscores.Add(\"Ada\", 90);             // duplicate: throws\nbool added = scores.TryAdd(\"Ada\", 95); // duplicate: false\nscores[\"Ada\"] = 95;                  // insert or replace\nbool removed = scores.Remove(\"Ada\", out int oldScore);\n\nConsole.WriteLine($\"{added}, {removed}, {oldScore}\");",
+    "code": "var scores = new Dictionary<string, int>();\nscores.Add(\"Ada\", 90); // initial insertion: succeeds\ntry\n{\n    scores.Add(\"Ada\", 95); // duplicate: throws\n}\ncatch (ArgumentException)\n{\n    Console.WriteLine(\"duplicate rejected\");\n}\n\nbool added = scores.TryAdd(\"Ada\", 95); // duplicate: false\nscores[\"Ada\"] = 95;                    // insert or replace\nbool removed = scores.Remove(\"Ada\", out int oldScore);\n\nConsole.WriteLine($\"{added}, {removed}, {oldScore}\");",
     "related": ["dict-safe", "key-not-found", "dictionary-duplicate-keys"]
   },
   {

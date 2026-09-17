@@ -338,7 +338,7 @@
   "linq-cast-oftype": {
     "title": "Producing typed sequences with Cast and OfType",
     "short": "Choose strict conversion or type-based filtering for mixed elements.",
-    "summary": "Cast<T> attempts to cast every element and preserves a compatible null. OfType<T> emits only elements assignable to T and filters null for non-nullable runtime types.",
+    "summary": "Cast<T> attempts to cast every element, and Cast<string?> preserves compatible nulls. OfType<T> filters null for every T, including nullable and reference targets, and emits only non-null elements assignable to T.",
     "why": "OfType<int> keeps 1 and 3. The compatible Cast example accepts strings and null, but adding an int would fail when enumeration reaches it.",
     "tips": "Because Cast is deferred, an incompatible element raises [[invalid-cast|InvalidCastException]] during enumeration rather than when the query is created.",
     "tags": ["LINQ", "Cast", "OfType"]

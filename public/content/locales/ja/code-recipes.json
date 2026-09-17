@@ -410,7 +410,7 @@
   "linq-cast-oftype": {
     "title": "Cast と OfType で型付きの列へ変換する",
     "short": "異種要素へ厳密なキャストか型による絞り込みを選ぶ。",
-    "summary": "Cast<T> はすべての要素をキャストし、互換な null は保持します。OfType<T> は T へ代入可能な要素だけを出力し、非 nullable の実行時型では null を除きます。",
+    "summary": "Cast<T> はすべての要素をキャストし、Cast<string?> は互換な null を保持します。OfType<T> は T が nullable や参照型でも null を除外し、T へ代入可能な null 以外の要素だけを出力します。",
     "why": "OfType<int> は1と3を残します。Cast の例は string と null を受け入れますが、int を加えると列挙がそこへ到達した時点で失敗します。",
     "tips": "Cast は遅延実行なので、互換性のない要素による [[invalid-cast|InvalidCastException]] はクエリ作成時ではなく列挙時に発生します。",
     "tags": ["LINQ", "Cast", "OfType"]
