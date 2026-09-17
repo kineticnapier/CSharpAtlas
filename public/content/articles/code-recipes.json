@@ -1112,5 +1112,137 @@
       "form-url-encoded-content",
       "stream-basics"
     ]
+  },
+  {
+    "id": "async-enumerable",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Runtime.CompilerServices;\n\nusing var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));\n\nawait foreach (int value in CountAsync(cts.Token))\n    Console.WriteLine(value);\n\nstatic async IAsyncEnumerable<int> CountAsync(\n    [EnumeratorCancellation] CancellationToken token = default)\n{\n    for (int i = 1; i <= 3; i++)\n    {\n        await Task.Delay(100, token);\n        yield return i;\n    }\n}",
+    "related": [
+      "async-await",
+      "cancellation-token",
+      "ienumerable"
+    ]
+  },
+  {
+    "id": "async-disposable",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string path = Path.GetTempFileName();\ntry\n{\n    await using var stream = new FileStream(\n        path, FileMode.Create, FileAccess.Write, FileShare.None,\n        bufferSize: 4096, useAsync: true);\n\n    await stream.WriteAsync(new byte[] { 1, 2, 3 });\n}\nfinally\n{\n    File.Delete(path);\n}",
+    "related": [
+      "idisposable",
+      "file-async",
+      "finally-cleanup"
+    ]
+  },
+  {
+    "id": "linked-cancellation-tokens",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "CancellationToken callerToken = CancellationToken.None;\nusing var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));\nusing var linked = CancellationTokenSource.CreateLinkedTokenSource(\n    callerToken, timeout.Token);\n\ntry\n{\n    await Task.Delay(TimeSpan.FromSeconds(1), linked.Token);\n}\ncatch (OperationCanceledException) when (linked.IsCancellationRequested)\n{\n    Console.WriteLine(\"Canceled by caller or timeout.\");\n}",
+    "related": [
+      "cancellation-token",
+      "operation-canceled",
+      "task-delay"
+    ]
+  },
+  {
+    "id": "cancellation-registration",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var cts = new CancellationTokenSource();\nCancellationToken token = cts.Token;\n\nusing CancellationTokenRegistration registration = token.Register(\n    static state => Console.WriteLine($\"Cancel callback: {state}\"),\n    \"cleanup requested\");\n\ncts.Cancel();\nConsole.WriteLine(token.IsCancellationRequested);",
+    "related": [
+      "cancellation-token",
+      "idisposable",
+      "linked-cancellation-tokens"
+    ]
+  },
+  {
+    "id": "task-completion-source",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var completion = new TaskCompletionSource<int>(\n    TaskCreationOptions.RunContinuationsAsynchronously);\n\nTask<int> resultTask = completion.Task;\ncompletion.TrySetResult(42);\n\nint result = await resultTask;\nConsole.WriteLine(result);",
+    "related": [
+      "task",
+      "async-await",
+      "task-whenall"
+    ]
+  },
+  {
+    "id": "value-task",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "ValueTask<int> lengthTask = GetLengthAsync(\"CSharpAtlas\");\nint length = await lengthTask;\nConsole.WriteLine(length);\n\nstatic ValueTask<int> GetLengthAsync(string text)\n{\n    if (text.Length < 100)\n        return ValueTask.FromResult(text.Length);\n\n    return new ValueTask<int>(Task.Run(() => text.Length));\n}",
+    "related": [
+      "task",
+      "async-await",
+      "task-run-cpu"
+    ]
+  },
+  {
+    "id": "channel-producer-consumer",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Threading.Channels;\n\nChannel<int> channel = Channel.CreateBounded<int>(capacity: 2);\n\nTask producer = Task.Run(async () =>\n{\n    for (int i = 1; i <= 3; i++)\n        await channel.Writer.WriteAsync(i);\n\n    channel.Writer.Complete();\n});\n\nawait foreach (int item in channel.Reader.ReadAllAsync())\n    Console.WriteLine(item);\n\nawait producer;",
+    "related": [
+      "async-enumerable",
+      "task",
+      "semaphore-async"
+    ]
+  },
+  {
+    "id": "parallel-for-each-async",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));\n\nawait Parallel.ForEachAsync(\n    Enumerable.Range(1, 4),\n    cts.Token,\n    async (item, token) =>\n    {\n        await Task.Delay(100, token);\n        Console.WriteLine(item);\n    });",
+    "related": [
+      "async-await",
+      "cancellation-token",
+      "task-run-cpu"
+    ]
+  },
+  {
+    "id": "periodic-timer",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(200));\nusing var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));\n\nint ticks = 0;\nwhile (ticks < 3 && await timer.WaitForNextTickAsync(cts.Token))\n{\n    ticks++;\n    Console.WriteLine($\"tick {ticks}\");\n}",
+    "related": [
+      "task-delay",
+      "cancellation-token",
+      "idisposable"
+    ]
+  },
+  {
+    "id": "reader-writer-lock-slim",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var gate = new ReaderWriterLockSlim();\nint value = 0;\n\ngate.EnterWriteLock();\ntry\n{\n    value++;\n}\nfinally\n{\n    gate.ExitWriteLock();\n}\n\ngate.EnterReadLock();\ntry\n{\n    Console.WriteLine(value);\n}\nfinally\n{\n    gate.ExitReadLock();\n}",
+    "related": [
+      "lock-shared-state",
+      "finally-cleanup",
+      "idisposable"
+    ]
+  },
+  {
+    "id": "debug-assert",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Diagnostics;\n\nstatic int Average(int total, int count)\n{\n    Debug.Assert(count > 0, \"count must be positive\");\n    return total / count;\n}\n\nConsole.WriteLine(Average(10, 2));",
+    "related": [
+      "argument-out-of-range",
+      "divide-by-zero",
+      "custom-exceptions"
+    ]
   }
 ]

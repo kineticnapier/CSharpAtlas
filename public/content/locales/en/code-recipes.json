@@ -1138,5 +1138,137 @@
       "multipart",
       "file upload"
     ]
+  },
+  "async-enumerable": {
+    "title": "Streaming asynchronous values with IAsyncEnumerable<T>",
+    "short": "Consume values one at a time with await foreach as they arrive asynchronously.",
+    "summary": "IAsyncEnumerable<T> produces a sequence asynchronously. It combines [[async-await|async/await]] style waiting with sequence processing so work can start before every value exists.",
+    "why": "Advancing the sequence can await I/O instead of blocking a thread while the next item is unavailable.",
+    "tips": "For cooperative cancellation, propagate a CancellationToken through enumeration and into the awaited operations in the producer.",
+    "tags": [
+      "IAsyncEnumerable",
+      "await foreach",
+      "async"
+    ]
+  },
+  "async-disposable": {
+    "title": "Disposing asynchronous resources with await using",
+    "short": "Use await using when cleanup itself may need asynchronous work.",
+    "summary": "await using is the asynchronous counterpart of [[idisposable|using]]. It awaits DisposeAsync when the scope exits.",
+    "why": "Resources that flush buffers or finish asynchronous I/O during cleanup can release them without synchronously blocking the caller.",
+    "tips": "Combine await using with finally when additional cleanup outside the resource lifetime is required, and keep disposal order explicit.",
+    "tags": [
+      "IAsyncDisposable",
+      "await using",
+      "cleanup"
+    ]
+  },
+  "linked-cancellation-tokens": {
+    "title": "Combining multiple cancellation conditions",
+    "short": "Link caller cancellation and an internal timeout into one token source.",
+    "summary": "When an operation should stop for either caller cancellation or an internal timeout, CreateLinkedTokenSource combines both with the normal [[cancellation-token|CancellationToken]] model.",
+    "why": "The linked CancellationTokenSource becomes canceled when any of its source tokens is canceled.",
+    "tips": "Dispose the linked source with using so registrations against longer-lived source tokens do not remain unnecessarily.",
+    "tags": [
+      "CancellationTokenSource",
+      "cancellation",
+      "timeout"
+    ]
+  },
+  "cancellation-registration": {
+    "title": "Registering callbacks for cancellation",
+    "short": "Use CancellationToken.Register when another component must be notified on cancellation.",
+    "summary": "CancellationToken.Register attaches a callback to the same cooperative cancellation signal used by [[cancellation-token|CancellationToken]] checks and cancellable waits.",
+    "why": "The callback runs when cancellation is requested, which can bridge cancellation into an API that needs explicit notification.",
+    "tips": "Dispose the returned CancellationTokenRegistration when it is no longer needed, especially when the source token is long-lived.",
+    "tags": [
+      "CancellationToken",
+      "Register",
+      "callback"
+    ]
+  },
+  "task-completion-source": {
+    "title": "Bridging external completion into Task with TaskCompletionSource",
+    "short": "Expose callback or event completion as an awaitable Task.",
+    "summary": "TaskCompletionSource<T> lets one side control completion while callers observe an ordinary [[task|Task<T>]] and await it.",
+    "why": "It separates the producer of a completion signal from consumers that want the Task-based asynchronous model.",
+    "tips": "For library code, RunContinuationsAsynchronously can reduce surprises from continuations running inline on the thread that completes the source.",
+    "tags": [
+      "TaskCompletionSource",
+      "Task",
+      "async"
+    ]
+  },
+  "value-task": {
+    "title": "Using ValueTask<T> only when it is justified",
+    "short": "Consider ValueTask<T> for very hot APIs that complete synchronously most of the time.",
+    "summary": "ValueTask<T> can avoid some allocations when results are often immediately available, but ordinary [[task|Task<T>]] is simpler and should remain the default.",
+    "why": "Because ValueTask<T> is a value type, some successful synchronous paths do not require allocating a new Task object.",
+    "tips": "Do not casually store or await the same ValueTask multiple times. Use it only with a measured reason and understand the consumption rules.",
+    "tags": [
+      "ValueTask",
+      "Task",
+      "performance"
+    ]
+  },
+  "channel-producer-consumer": {
+    "title": "Connecting producers and consumers with Channel<T>",
+    "short": "Use an asynchronous queue to decouple producers from consumers safely.",
+    "summary": "System.Threading.Channels provides queues designed for asynchronous producer/consumer flows. Reader.ReadAllAsync exposes items as an [[async-enumerable|IAsyncEnumerable<T>]].",
+    "why": "A bounded channel can asynchronously apply backpressure when capacity is full instead of requiring a manually locked shared List.",
+    "tips": "Complete the writer when production is finished so consumers can observe the end of the stream.",
+    "tags": [
+      "Channel",
+      "producer consumer",
+      "async"
+    ]
+  },
+  "parallel-for-each-async": {
+    "title": "Running asynchronous per-item work with Parallel.ForEachAsync",
+    "short": "Process multiple items concurrently while propagating cancellation.",
+    "summary": "Parallel.ForEachAsync can run asynchronous work for several elements concurrently and supplies a [[cancellation-token|CancellationToken]] to each iteration.",
+    "why": "A plain foreach with await is sequential, while this API manages concurrent iterations for workloads that benefit from overlap.",
+    "tips": "Concurrency is not automatically faster. Account for shared state, service rate limits, and the actual cost of each operation.",
+    "tags": [
+      "Parallel.ForEachAsync",
+      "concurrency",
+      "async"
+    ]
+  },
+  "periodic-timer": {
+    "title": "Running periodic asynchronous work with PeriodicTimer",
+    "short": "Await timer ticks instead of blocking a thread for recurring work.",
+    "summary": "PeriodicTimer provides an awaitable next-tick operation. It expresses periodic work more directly than a hand-written [[task-delay|Task.Delay]] loop.",
+    "why": "WaitForNextTickAsync supports asynchronous waiting and cancellation without dedicating a blocked thread to the timer.",
+    "tips": "Understand what happens when the work takes longer than the period; this is not a hard real-time scheduler.",
+    "tags": [
+      "PeriodicTimer",
+      "timer",
+      "async"
+    ]
+  },
+  "reader-writer-lock-slim": {
+    "title": "Separating read and write locking with ReaderWriterLockSlim",
+    "short": "Allow concurrent readers while keeping writers exclusive, with explicit try/finally cleanup.",
+    "summary": "ReaderWriterLockSlim can allow multiple readers while excluding writers. Prefer simpler [[lock-shared-state|lock]] for ordinary shared state unless the extra complexity has a clear benefit.",
+    "why": "Read-heavy workloads may permit reader concurrency, but lock management is more complex than a normal monitor lock.",
+    "tips": "Pair every successful Enter call with Exit in finally, and do not hold this lock across await.",
+    "tags": [
+      "ReaderWriterLockSlim",
+      "lock",
+      "concurrency"
+    ]
+  },
+  "debug-assert": {
+    "title": "Checking development-time invariants with Debug.Assert",
+    "short": "Document and detect conditions that should already be true inside the program.",
+    "summary": "Debug.Assert is a diagnostic tool for internal invariants. It is not a replacement for validating external input or throwing [[argument-out-of-range|ArgumentOutOfRangeException]].",
+    "why": "Assertions are useful for detecting violations of assumptions that indicate a programming defect rather than an expected user error.",
+    "tips": "Use normal checks and exceptions for invalid input that callers can produce; do not rely on Debug.Assert for runtime safety.",
+    "tags": [
+      "Debug.Assert",
+      "diagnostics",
+      "invariant"
+    ]
   }
 }

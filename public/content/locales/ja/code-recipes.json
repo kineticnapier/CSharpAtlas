@@ -1138,5 +1138,137 @@
       "multipart",
       "file upload"
     ]
+  },
+  "async-enumerable": {
+    "title": "IAsyncEnumerable<T> を await foreach で逐次処理する",
+    "short": "非同期に届く複数の値を await foreach で1件ずつ受け取る。",
+    "summary": "IAsyncEnumerable<T> は値の列を非同期に生成できます。[[async-await|async/await]] と通常の IEnumerable の中間のように、全件が揃う前から処理を始められます。",
+    "why": "MoveNext 相当の待機を非同期化できるため、I/O を伴うストリーミング処理でスレッドをブロックせずに次の値を待てます。",
+    "tips": "キャンセル可能にするなら CancellationToken を列挙処理へ伝播させ、生成側でも待機 API に渡します。",
+    "tags": [
+      "IAsyncEnumerable",
+      "await foreach",
+      "async"
+    ]
+  },
+  "async-disposable": {
+    "title": "await using で非同期リソースを破棄する",
+    "short": "IAsyncDisposable を実装するリソースを await using で確実に後始末する。",
+    "summary": "非同期の後始末を必要とするリソースでは await using を使います。これは [[idisposable|using]] の非同期版で、スコープ終了時に DisposeAsync を待機します。",
+    "why": "バッファのフラッシュや非同期 I/O の終了処理を同期的に待つ代わりに、破棄処理そのものを await できます。",
+    "tips": "await using の外側で別の後始末が必要なら finally と組み合わせ、破棄順序を明確にします。",
+    "tags": [
+      "IAsyncDisposable",
+      "await using",
+      "cleanup"
+    ]
+  },
+  "linked-cancellation-tokens": {
+    "title": "複数のキャンセル条件を1つにまとめる",
+    "short": "CreateLinkedTokenSource で呼び出し元キャンセルとタイムアウトを合成する。",
+    "summary": "呼び出し元の [[cancellation-token|CancellationToken]] と内部タイムアウトのどちらでも止めたい場合、linked token source で1つのトークンにまとめられます。",
+    "why": "リンクされた CancellationTokenSource は元のどれかがキャンセルされると自身もキャンセル状態になります。",
+    "tips": "linked source も IDisposable なので using で破棄し、不要になった登録を残さないようにします。",
+    "tags": [
+      "CancellationTokenSource",
+      "cancellation",
+      "timeout"
+    ]
+  },
+  "cancellation-registration": {
+    "title": "キャンセル時のコールバックを登録する",
+    "short": "CancellationToken.Register でキャンセル通知に処理を結び付ける。",
+    "summary": "ポーリングだけでなく CancellationToken.Register でキャンセル時の処理を登録できます。通常の [[cancellation-token|CancellationToken]] と同じ協調キャンセルの仕組みです。",
+    "why": "Register はキャンセル要求を受けたタイミングでコールバックを呼び出すため、待機中の外部状態へ通知したい場合に使えます。",
+    "tips": "登録は CancellationTokenRegistration として破棄できるので、長寿命トークンへ不要なコールバックを残さないようにします。",
+    "tags": [
+      "CancellationToken",
+      "Register",
+      "callback"
+    ]
+  },
+  "task-completion-source": {
+    "title": "TaskCompletionSource で外部イベントを Task に変換する",
+    "short": "自分で Task の完了・失敗・キャンセルを通知する。",
+    "summary": "TaskCompletionSource<T> はコールバック型 API などの完了通知を [[task|Task]] として公開したいときに使います。呼び出し側は通常どおり await できます。",
+    "why": "Task の状態を外部イベントから明示的に遷移させる橋渡し役になり、待つ側と完了させる側を分離できます。",
+    "tips": "ライブラリコードでは RunContinuationsAsynchronously を使うと、完了通知を行ったスレッド上で継続処理が直接走るリスクを減らせます。",
+    "tags": [
+      "TaskCompletionSource",
+      "Task",
+      "async"
+    ]
+  },
+  "value-task": {
+    "title": "ValueTask<T> を必要な場面だけ使う",
+    "short": "同期完了が非常に多い非同期 API で ValueTask<T> を検討する。",
+    "summary": "ValueTask<T> は結果が同期的に得られることが多い高頻度 API で割り当てを減らせる場合がありますが、通常は [[task|Task<T>]] の方が単純です。",
+    "why": "ValueTask<T> 自体が値型なので、常に新しい Task オブジェクトを必要としないケースがあります。",
+    "tips": "同じ ValueTask を複数回 await するなど Task と同じ感覚で保存・再利用しないでください。性能上の根拠がある場合に限定します。",
+    "tags": [
+      "ValueTask",
+      "Task",
+      "performance"
+    ]
+  },
+  "channel-producer-consumer": {
+    "title": "Channel<T> で producer / consumer をつなぐ",
+    "short": "非同期で安全なキューを使い、生成側と消費側を分離する。",
+    "summary": "System.Threading.Channels の Channel<T> は非同期 producer / consumer 用のキューです。Reader.ReadAllAsync は [[async-enumerable|IAsyncEnumerable<T>]] として読み取れます。",
+    "why": "bounded channel では容量上限に達した producer を非同期に待機させられ、共有 List を自前ロックするより契約を明確にできます。",
+    "tips": "producer が終了したら Writer.Complete を呼び、consumer が終端を検出できるようにします。",
+    "tags": [
+      "Channel",
+      "producer consumer",
+      "async"
+    ]
+  },
+  "parallel-for-each-async": {
+    "title": "Parallel.ForEachAsync で複数の非同期処理を並行実行する",
+    "short": "複数要素への非同期処理を並行化し、キャンセルも伝播させる。",
+    "summary": "Parallel.ForEachAsync は要素ごとの非同期処理を並行実行します。各処理へ [[cancellation-token|CancellationToken]] が渡されるので待機 API に伝播できます。",
+    "why": "単純な foreach + await は逐次処理ですが、この API は並行度を管理しながら複数要素を進められます。",
+    "tips": "並行化すれば必ず速くなるわけではありません。共有状態・外部サービスの制限・処理コストを確認して使います。",
+    "tags": [
+      "Parallel.ForEachAsync",
+      "concurrency",
+      "async"
+    ]
+  },
+  "periodic-timer": {
+    "title": "PeriodicTimer で一定間隔の非同期処理を行う",
+    "short": "次の時刻を非同期に待ち、キャンセル可能な周期処理を作る。",
+    "summary": "PeriodicTimer は次の tick を await できるタイマーです。[[task-delay|Task.Delay]] を自前ループするより周期処理の意図を表しやすくなります。",
+    "why": "WaitForNextTickAsync が非同期待機を提供し、CancellationToken と組み合わせて終了条件を明示できます。",
+    "tips": "処理時間が周期より長い場合の挙動を理解し、厳密なリアルタイムスケジューラとしては扱わないでください。",
+    "tags": [
+      "PeriodicTimer",
+      "timer",
+      "async"
+    ]
+  },
+  "reader-writer-lock-slim": {
+    "title": "ReaderWriterLockSlim で読み取りと書き込みを分ける",
+    "short": "読み取り共有・書き込み排他のロックを try/finally で扱う。",
+    "summary": "ReaderWriterLockSlim は複数 reader を許しつつ writer を排他にできます。単純な共有状態ならまず [[lock-shared-state|lock]] を検討し、必要性がある場合に使います。",
+    "why": "読み取りの多いワークロードでは reader 同士を同時実行できますが、ロック管理は通常の lock より複雑です。",
+    "tips": "Enter 系を呼んだら必ず try/finally で対応する Exit を呼びます。ロックを保持したまま await しないでください。",
+    "tags": [
+      "ReaderWriterLockSlim",
+      "lock",
+      "concurrency"
+    ]
+  },
+  "debug-assert": {
+    "title": "Debug.Assert で開発中の前提条件を検査する",
+    "short": "プログラム内部で常に成り立つはずの条件をデバッグ時に確認する。",
+    "summary": "Debug.Assert は開発中の不変条件を確認するための診断手段です。外部入力の検証や [[argument-out-of-range|ArgumentOutOfRangeException]] の代わりにはなりません。",
+    "why": "assert は「ここに来た時点で成立しているはず」という内部前提の破れを開発時に見つける用途に向いています。",
+    "tips": "利用者が起こし得る入力エラーには通常の条件分岐と例外を使い、Debug.Assert に依存して安全性を保たないでください。",
+    "tags": [
+      "Debug.Assert",
+      "diagnostics",
+      "invariant"
+    ]
   }
 }
