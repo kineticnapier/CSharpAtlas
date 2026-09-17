@@ -5,17 +5,9 @@
     "summary": "double は多くの小数を2進数で正確に表せないため、計算後にごく小さな誤差が残ることがあります。",
     "why": "0.1 や 0.2 は double の内部表現では有限桁で正確に表せず、丸め誤差を含みます。",
     "tips": "許容誤差は用途の値の大きさや必要精度に応じて決めます。一般的な比較の仕組みは [[equality]] も参照してください。金額などでは decimal が適する場合があります。",
-    "tags": [
-      "double",
-      "浮動小数点",
-      "比較"
-    ],
-    "badNotes": {
-      "2": "double を == で直接比較している"
-    },
-    "goodNotes": {
-      "3": "差が許容誤差内かで比較する"
-    }
+    "tags": ["double", "浮動小数点", "比較"],
+    "badNotes": {"2": "double を == で直接比較している"},
+    "goodNotes": {"3": "差が許容誤差内かで比較する"}
   },
   "integer-overflow": {
     "title": "整数オーバーフロー",
@@ -23,17 +15,9 @@
     "summary": "通常の unchecked な整数演算では、型の範囲を超えた結果が回り込む場合があります。[[overflow-exception|checked]] を使うと範囲超過を例外として検出できます。",
     "why": "int は有限ビット幅なので、表現可能範囲を超えると下位ビットだけが残る演算になる場合があります。",
     "tips": "値が大きくなる計算では long を使うだけで十分か、checked で [[overflow-exception|OverflowException]] を発生させるべきかを考えます。",
-    "tags": [
-      "int",
-      "overflow",
-      "checked"
-    ],
-    "badNotes": {
-      "2": "int の範囲を超えると値が回り込む"
-    },
-    "goodNotes": {
-      "2": "checked でオーバーフローを検出する"
-    }
+    "tags": ["int", "overflow", "checked"],
+    "badNotes": {"2": "int の範囲を超えると値が回り込む"},
+    "goodNotes": {"2": "checked でオーバーフローを検出する"}
   },
   "reference-equality": {
     "title": "参照の同一性と値の等価性を混同する",
@@ -41,17 +25,9 @@
     "summary": "[[value-reference-types|参照型]]である class の既定の等価性では、内容ではなく同じインスタンスかどうかが比較される場合があります。",
     "why": "通常の class は、等価性を独自実装しなければ別々に生成したインスタンスを同じ値とはみなしません。",
     "tips": "値として比較したい型では [[records|record]] や [[equality|Equals / GetHashCode]] の実装を検討します。",
-    "tags": [
-      "class",
-      "参照",
-      "=="
-    ],
-    "badNotes": {
-      "4": "通常の class では別インスタンスとして比較される"
-    },
-    "goodNotes": {
-      "1": "値ベースで比較したいなら record を使える"
-    }
+    "tags": ["class", "参照", "=="],
+    "badNotes": {"4": "通常の class では別インスタンスとして比較される"},
+    "goodNotes": {"1": "値ベースで比較したいなら record を使える"}
   },
   "deferred-enumeration": {
     "title": "LINQ を何度も列挙して処理が繰り返される",
@@ -59,18 +35,9 @@
     "summary": "[[linq-deferred|遅延実行]]されるLINQの列は、列挙するたびに元の処理を再実行することがあります。",
     "why": "Count() と foreach がそれぞれ query を最初から列挙するため、GetItems や IsValid が繰り返し実行されます。",
     "tips": "再列挙が問題になる場合だけ ToList などで具体化します。[[ienumerable|IEnumerable]] を常に具体化すればよいわけではありません。",
-    "tags": [
-      "LINQ",
-      "IEnumerable",
-      "遅延実行"
-    ],
-    "badNotes": {
-      "2": "Count() で query を1回列挙する",
-      "3": "foreach でもう一度列挙する"
-    },
-    "goodNotes": {
-      "1": "ToList で結果を一度だけ具体化する"
-    }
+    "tags": ["LINQ", "IEnumerable", "遅延実行"],
+    "badNotes": {"2": "Count() で query を1回列挙する", "3": "foreach でもう一度列挙する"},
+    "goodNotes": {"1": "ToList で結果を一度だけ具体化する"}
   },
   "empty-statement-loop": {
     "title": "ループ直後のセミコロンで本体が空になる",
@@ -79,12 +46,8 @@
     "why": "有限の条件により i は進みますが、ブロックは別の [[scope|スコープ]] であり、ループが終了した後に実行されます。",
     "tips": "セミコロンを削除して意図した本体を波括弧で囲み、観測される反復回数と値を確認します。",
     "tags": ["while", "セミコロン", "空文"],
-    "badNotes": {
-      "2": "このセミコロンだけがループ本体になる"
-    },
-    "goodNotes": {
-      "2": "セミコロンを除くと後続ブロックがループ本体になる"
-    }
+    "badNotes": {"2": "このセミコロンだけがループ本体になる"},
+    "goodNotes": {"2": "セミコロンを除くと後続ブロックがループ本体になる"}
   },
   "negative-remainder": {
     "title": "負の剰余で循環インデックスがずれる",
@@ -93,14 +56,8 @@
     "why": "offset が -1、length が3なら offset % length は -1 であり、配列の添字には使えません。",
     "tips": "[[divide-by-zero|0 除算]] を避けるため循環長を正と確認し、(value % length + length) % length で正規化します。",
     "tags": ["剰余", "modulo", "循環インデックス"],
-    "badNotes": {
-      "3": "剰余は2ではなく -1 になる",
-      "4": "負の配列添字は失敗する"
-    },
-    "goodNotes": {
-      "4": "% を使う前に0以下の循環長を拒否する",
-      "5": "2回目の剰余で正規化した添字を範囲内に保つ"
-    }
+    "badNotes": {"3": "剰余は2ではなく -1 になる", "4": "負の配列添字は失敗する"},
+    "goodNotes": {"4": "% を使う前に0以下の循環長を拒否する", "5": "2回目の剰余で正規化した添字を範囲内に保つ"}
   },
   "mutable-struct-copy": {
     "title": "struct のコピーだけを更新してしまう",
@@ -203,5 +160,85 @@
     "why": "一日の最後の時刻を推測せず、[[dateonly-timeonly|DateOnly]]で次の暦日を求めます。",
     "tips": "例は UTC の暦日を定義し、UTC 基準の DateTimeOffset を比較します。ローカル暦日なら先に選択したタイムゾーンで両境界を解決します。",
     "tags": ["日付範囲", "半開区間", "UTC"]
+  },
+  "stream-short-reads": {
+    "title": "Stream.Read が要求サイズを必ず埋めると思い込む",
+    "short": "Read が返したバイト数を無視すると、途中までしか読めていないデータを完全なデータとして扱ってしまう。",
+    "summary": "Stream.Read は要求した個数より少ないバイトを返しても正常です。必要量を満たすまで繰り返すか、正確な長さが必要なら ReadExactly 系を使います。",
+    "why": "ストリームはファイルだけでなく通信や圧縮など様々な供給源を表し、1回の読み取りで要求量が揃う契約ではないためです。",
+    "tips": "0 が返れば終端です。固定長レコードを読む場合は [[end-of-stream|EndOfStreamException]] と合わせて完全性を考えます。",
+    "tags": ["Stream", "Read", "I/O"]
+  },
+  "stream-position": {
+    "title": "書き込み後の末尾位置からそのまま読み始める",
+    "short": "書き込み後の Position は末尾にあるため、そのまま読むと終端になる。",
+    "summary": "シーク可能な Stream では読み書きが同じ Position を共有します。書き込み後に先頭から読み直すなら明示的に位置を戻します。",
+    "why": "MemoryStream.Write は Position を進めるので、直後の ReadByte は末尾から読み始めます。",
+    "tips": "すべての Stream がシーク可能とは限りません。[[stream-basics|CanSeek]] を確認し、必要な場合だけ Position を変更します。",
+    "tags": ["Stream", "Position", "seek"]
+  },
+  "encoding-mismatch": {
+    "title": "文字コードの不一致で文字列が壊れる",
+    "short": "書き込み側と読み取り側で異なる Encoding を使うと文字列が壊れる。",
+    "summary": "同じバイト列でも、どの文字コードとして解釈するかで得られる文字列は変わります。送信側と受信側で文字コードを契約として一致させます。",
+    "why": "UTF-8 で作ったバイト列を UTF-16 として解釈しても、元の文字境界や符号位置は復元できません。",
+    "tips": "[[encoding-text-bytes|文字列とバイト列の変換]]では Encoding を暗黙にせず、必要なら不正入力を厳格に拒否します。",
+    "tags": ["Encoding", "UTF-8", "文字化け"]
+  },
+  "json-reference-cycles": {
+    "title": "循環参照で JSON シリアライズが失敗する",
+    "short": "オブジェクトグラフが自身へ戻ると、既定の JSON シリアライズでは失敗する。",
+    "summary": "親子が互いを参照するような循環グラフは、既定設定の System.Text.Json では JsonException になります。",
+    "why": "通常の木構造 JSON にそのまま展開すると同じオブジェクトを無限に辿れるためです。",
+    "tips": "DTO で循環を除く、戻り参照を無視する、参照保持を明示するなど、公開する [[json-options-contracts|JSON 契約]]を先に決めます。",
+    "tags": ["JSON", "循環参照", "JsonException"]
+  },
+  "exception-rethrow": {
+    "title": "再スローで元の例外発生位置を失う",
+    "short": "catch 内で throw ex と書くと、元のスタック情報を損なう。",
+    "summary": "同じ例外をその場で再スローするなら bare throw を使うことで元の発生位置を保持できます。後で投げ直す必要がある場合は ExceptionDispatchInfo を使います。",
+    "why": "新しい throw 式として例外を投げると、診断で重要な元の呼び出し経路が分かりにくくなるためです。",
+    "tips": "[[try-catch|catch]] でログだけ残して処理できない例外を再スローするなら、例外オブジェクトを指定しない throw を使います。",
+    "tags": ["exception", "stack trace", "throw"]
+  },
+  "async-void-errors": {
+    "title": "async void の失敗を呼び出し元で待てない",
+    "short": "通常の async void は完了も例外も Task として呼び出し元へ返せない。",
+    "summary": "非同期メソッドは原則として Task / Task<T> を返し、呼び出し元が await して完了と失敗を観測できるようにします。async void はイベントハンドラーなど必要な署名に限定します。",
+    "why": "void には非同期処理の状態を表す戻り値がないため、呼び出し元は処理終了を待ったり例外を通常の await で捕捉したりできません。",
+    "tips": "[[events|イベントハンドラー]]の署名が void を要求する境界以外では Task を返します。",
+    "tags": ["async", "void", "Task"]
+  },
+  "sync-over-async": {
+    "title": "非同期処理を同期的に待って停止や枯渇を起こす",
+    "short": "Task.Result や Wait で async 処理を塞ぐと、環境によってデッドロックやスレッド枯渇を招く。",
+    "summary": "可能な限り呼び出しチェーン全体を async にし、Task の完了を await します。同期ブロックが必ずデッドロックするわけではありませんが、特定の同期コンテキストや高負荷で問題になります。",
+    "why": "継続処理が必要とするスレッドやコンテキストを、完了待ちの側が占有してしまう場合があるためです。",
+    "tips": "[[async-await|async / await]] を上位の呼び出し元まで伝播させ、非同期 I/O を Task.Run で包んで解決しようとしないようにします。",
+    "tags": ["async", "deadlock", "Task"]
+  },
+  "cancel-without-awaiting": {
+    "title": "キャンセル要求だけで終了したと思い込む",
+    "short": "Cancel は停止を要求するだけで、対象 Task の終了を保証しない。",
+    "summary": "CancellationTokenSource.Cancel の後も処理はキャンセルを観測して終了するまで動き続け得ます。リソースを破棄する前に対象 Task の終了を await します。",
+    "why": "[[cancellation-token|CancellationToken]] は協調的な仕組みであり、強制終了命令ではないためです。",
+    "tips": "Cancel → await → 必要な例外処理 → リソース破棄、という所有権に沿った順序にします。",
+    "tags": ["cancellation", "Task", "shutdown"]
+  },
+  "concurrent-collection-factories": {
+    "title": "ConcurrentDictionary の生成関数が一度だけ実行されると思い込む",
+    "short": "GetOrAdd の valueFactory は競合時に複数回呼ばれる可能性がある。",
+    "summary": "ConcurrentDictionary は格納される値を1つに調整しますが、競合中に各呼び出し側が候補値を生成することはあります。",
+    "why": "ユーザー提供の生成関数を内部ロックの外で実行できるようにすることで、辞書全体の安全性と再入性を保っているためです。",
+    "tips": "生成処理に不可逆な副作用を置かず、一度だけの初期化が必要なら [[lazy-initialization|Lazy<T>]] を値として格納する方法を検討します。",
+    "tags": ["ConcurrentDictionary", "GetOrAdd", "Lazy"]
+  },
+  "deadlock-lock-order": {
+    "title": "逆順のロック取得でデッドロックする",
+    "short": "2つの処理が互いに相手のロック解放を待つ循環を作る。",
+    "summary": "複数のロックが必要な場合、すべてのコードで同じグローバル順序に従って取得すると循環待ちを避けやすくなります。",
+    "why": "Aを保持してBを待つ処理と、Bを保持してAを待つ処理が同時に成立すると、どちらも進めません。",
+    "tips": "[[lock-shared-state|lock]] の対象を private に保ち、クリティカルセクションを短くし、複数ロックは安定した順番で取得します。",
+    "tags": ["lock", "deadlock", "concurrency"]
   }
 }
