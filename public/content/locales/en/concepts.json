@@ -142,5 +142,237 @@
     "why": "After value is string text succeeds, the compiler knows that text is a string inside that branch.",
     "tips": "This is safer than directly casting an uncertain object. See [[invalid-cast|InvalidCastException]] for casts that fail at runtime.",
     "tags": ["pattern matching", "is", "type test"]
+  },
+  "program-entry": {
+    "title": "Program entry points and top-level statements",
+    "short": "Start a console program with Main or concise top-level statements.",
+    "summary": "An executable starts at a suitable static Main method, or the compiler generates that entry point from one file of top-level statements. Both forms can receive command-line arguments.",
+    "why": "Top-level statements remove ceremony for small programs without changing the fact that execution has one entry point.",
+    "tips": "The implicit args variable and other top-level locals follow normal [[scope]] rules; they are not members that other types can access.",
+    "tags": ["Main", "top-level statements", "args"]
+  },
+  "variables-assignment": {
+    "title": "Variable declarations and assignment",
+    "short": "Declare typed storage, assign its first value, and update it later.",
+    "summary": "A declaration introduces a variable and its type; assignment stores a value compatible with that type. A local must be definitely assigned before it is read.",
+    "why": "Separating the ideas explains why declaring int score; is valid even though reading score immediately is not.",
+    "tips": "Use an inferred declaration with [[var-keyword|var]] when the initializer makes the static type clear; var still requires an initializer.",
+    "tags": ["variable", "assignment", "definite assignment"]
+  },
+  "numeric-types": {
+    "title": "Numeric type ranges and precision",
+    "short": "Choose storage according to magnitude, precision, and arithmetic semantics.",
+    "summary": "Integer types represent exact whole numbers within fixed ranges, double uses binary floating point for a wide approximate range, and decimal represents base-10 fractions with finite precision.",
+    "why": "The appropriate type depends on the domain: counts, scientific measurements, and financial amounts do not have identical requirements.",
+    "tips": "When a fixed-width integer exceeds its range it can wrap in unchecked arithmetic or throw in a checked context; see [[integer-overflow]].",
+    "tags": ["int", "double", "decimal"]
+  },
+  "numeric-conversions": {
+    "title": "Numeric conversions and information loss",
+    "short": "Distinguish safe widening from explicit narrowing, truncation, and rounding.",
+    "summary": "Widening int to long is implicit because every int fits. Narrowing or converting floating point to an integer needs an explicit operation and may lose range, precision, or a fractional part.",
+    "why": "A cast from double to int truncates toward zero, while Convert.ToInt32 rounds to the nearest integer using midpoint-to-even behavior.",
+    "tips": "Omitting a required explicit conversion produces [[cs0266|CS0266]]. Adding a cast can compile successfully while still discarding data, so verify the intended semantics.",
+    "tags": ["conversion", "cast", "rounding"]
+  },
+  "boolean-operators": {
+    "title": "Boolean operators and compound conditions",
+    "short": "Build predicates with negation, conjunction, and disjunction.",
+    "summary": "The ! operator negates a bool, && requires both operands, and || requires either operand. The latter two short-circuit when the result is already known.",
+    "why": "Short-circuiting allows a guard on the left to make evaluation on the right safe and can avoid unnecessary work.",
+    "tips": "A [[nullable|null guard]] such as name is not null && name.Length > 0 prevents the member access when name is null.",
+    "tags": ["bool", "&&", "short-circuit"]
+  },
+  "if-else": {
+    "title": "Conditional branches with if and else",
+    "short": "Choose the first matching path from a sequence of conditions.",
+    "summary": "An if / else if / else chain executes at most one branch, testing conditions from top to bottom. Braces make each controlled block and the associated else unambiguous.",
+    "why": "Ordering matters because a broader earlier condition can make a later, more specific branch unreachable in practice.",
+    "tips": "A variable declared inside a branch has block [[scope]] and cannot be read after that block; declare a result outside when every branch assigns it.",
+    "tags": ["if", "else", "branch"]
+  },
+  "switch-statement": {
+    "title": "Multiway branching with switch statements",
+    "short": "Route one value to discrete case sections and a fallback.",
+    "summary": "A switch statement compares one input against case labels and executes the matching section. A deliberate default handles values not listed explicitly.",
+    "why": "It keeps multiway routing centered on the input rather than repeating the same comparison across a long if chain.",
+    "tips": "A [[break-continue|break]] ends the current switch section and continues after the switch; it does not mean the same thing as continue in a loop.",
+    "tags": ["switch", "case", "default"]
+  },
+  "while-do-loops": {
+    "title": "Repeating work with while and do",
+    "short": "Use a precondition or postcondition loop and make progress toward stopping.",
+    "summary": "while checks its condition before the first iteration, so it may run zero times. do checks afterward, so its body runs at least once.",
+    "why": "Condition-controlled loops fit work whose repetition count is not known in advance, but their state must eventually make the condition false.",
+    "tips": "Use [[for-loop|indexed traversal]] when initialization, condition, and update naturally belong together; use while when the controlling event is less index-oriented.",
+    "tags": ["while", "do", "loop"]
+  },
+  "break-continue": {
+    "title": "Loop control with break and continue",
+    "short": "Exit a loop or skip the rest of its current iteration.",
+    "summary": "break exits the nearest enclosing loop or switch. continue targets the nearest loop and starts its next iteration after the loop's normal update step where applicable.",
+    "why": "These statements change local control flow, not every enclosing construct, so nested loops must be traced one level at a time.",
+    "tips": "In a [[while-do-loops|while loop]], do not let continue bypass the update that makes the condition advance, or the loop may never terminate.",
+    "tags": ["break", "continue", "loop"]
+  },
+  "methods-parameters-returns": {
+    "title": "Method parameters and return values",
+    "short": "Define reusable behavior with inputs and an explicit result.",
+    "summary": "Parameters are names in a method declaration; arguments are the values supplied by a call. return sends a result back to the caller.",
+    "why": "Ordinary value parameters receive a copy of the argument value, so reassigning the parameter does not reassign the caller's variable.",
+    "tips": "Use explicit [[ref-out-in|by-reference parameters]] only when the method must share the caller's storage; returning a value is usually clearer for one result.",
+    "tags": ["method", "parameter", "return"]
+  },
+  "optional-named-arguments": {
+    "title": "Optional and named arguments",
+    "short": "Supply defaults at declaration time and bind calls by parameter name.",
+    "summary": "An optional parameter has a compile-time default. A named argument binds to a parameter by name and can make reordered or non-obvious calls clearer.",
+    "why": "The caller's compiled code supplies the default, so changing a public default may not affect already compiled callers until they are rebuilt.",
+    "tips": "[[methods-parameters-returns|Parameter names]] belong to the declaration, while argument values belong to each call; renaming a public parameter can break named callers.",
+    "tags": ["optional parameter", "named argument", "default"]
+  },
+  "params-arrays": {
+    "title": "Variable argument counts with params",
+    "short": "Let one parameter accept zero or more values of the same element type.",
+    "summary": "A params parameter is an array inside the method. Callers can list individual values, pass no values, or supply an explicit compatible array.",
+    "why": "The convenient individual-argument form normally creates an array for the call, while an explicitly supplied array can be used directly.",
+    "tips": "Treat the received value using normal [[arrays-basics|array]] rules, including fixed Length; params does not create a growable collection.",
+    "tags": ["params", "array", "argument"]
+  },
+  "ref-out-in": {
+    "title": "Passing parameters with ref, out, and in",
+    "short": "Choose writable, output-only, or readonly by-reference access to caller storage.",
+    "summary": "ref shares initialized writable storage, out requires the method to assign before returning, and in exposes a readonly reference to an initialized argument.",
+    "why": "The modifiers make aliasing and assignment obligations explicit at both the declaration and, for ref and out, the call site.",
+    "tips": "Passing a [[value-reference-types|reference type]] normally still copies its reference value. That is different from passing the variable itself by ref.",
+    "tags": ["ref", "out", "in"]
+  },
+  "tuples-deconstruction": {
+    "title": "Tuples and deconstruction",
+    "short": "Return a few related values and unpack the components you need.",
+    "summary": "A ValueTuple can give names to multiple result components. Deconstruction assigns them to separate variables, and _ discards an unwanted component.",
+    "why": "Named tuple elements improve readability without requiring a new type for every small, local result shape.",
+    "tips": "For a domain concept with behavior or a stable public contract, prefer a named type such as [[records|record]] over a lightweight tuple.",
+    "tags": ["tuple", "deconstruction", "discard"]
+  },
+  "enums-flags": {
+    "title": "Enumerations and flag combinations",
+    "short": "Name discrete states and combine independent bit values.",
+    "summary": "An enum gives names to integral values. With power-of-two members and FlagsAttribute, independent choices can be combined, but casts can still create unnamed values.",
+    "why": "Named values communicate intent better than unexplained integers, while validation remains necessary when values come from external input.",
+    "tips": "Combining with | and testing with & are [[bitwise-operations|bit-mask operations]]; define None as zero and each independent flag as one bit.",
+    "tags": ["enum", "Flags", "bit mask"]
+  },
+  "nullable-value-types": {
+    "title": "Nullable value types",
+    "short": "Represent the absence of a value alongside a value type.",
+    "summary": "T? for a non-nullable value type is Nullable<T>. It stores either no value or one T value and can be checked with HasValue, a pattern, or ?? fallback.",
+    "why": "A missing measurement or date is different from a numeric zero or default date, so the absence deserves its own state.",
+    "tips": "This runtime storage differs from [[nullable|nullable reference annotations]], which primarily let analysis describe whether a reference may be null.",
+    "tags": ["Nullable", "value type", "null"]
+  },
+  "default-values": {
+    "title": "Default values and initialization",
+    "short": "Understand default(T), zero-initialized storage, and local assignment rules.",
+    "summary": "default(T) produces a type's default value. Fields and new array elements are zero-initialized, including null for references, but locals follow definite-assignment analysis.",
+    "why": "Runtime-created object storage is initialized predictably, while the compiler prevents a local read when no assignment path is proven.",
+    "tips": "An unassigned local cannot simply be read as its default; it produces [[cs0165|CS0165]]. Initialize it or assign it on every path first.",
+    "tags": ["default", "initialization", "field"]
+  },
+  "arrays-basics": {
+    "title": "Creating arrays and updating elements",
+    "short": "Store a fixed number of same-typed elements and access them by index.",
+    "summary": "An array has a fixed Length chosen at creation. Its elements can be read, updated, or traversed with foreach, but the array itself cannot gain another slot.",
+    "why": "Fixed size enables direct indexed storage, while element mutability is separate from whether the number of elements can change.",
+    "tips": "Use a resizable collection such as [[list-basic|List<T>]] when the number of elements must grow or shrink.",
+    "tags": ["array", "index", "foreach"]
+  },
+  "multidimensional-jagged-arrays": {
+    "title": "Multidimensional and jagged arrays",
+    "short": "Choose a rectangular grid or rows whose lengths can differ.",
+    "summary": "T[,] is one rectangular array with dimensions queried by GetLength. T[][] is an array whose elements hold separate row arrays, so each row can have another length.",
+    "why": "Rectangular data and uneven data have different shapes, allocation patterns, and traversal bounds.",
+    "tips": "For a jagged array, each element of the outer [[arrays-basics|array]] is itself a row array and can even be null unless you initialize it.",
+    "tags": ["multidimensional array", "jagged array", "GetLength"]
+  },
+  "indices-ranges": {
+    "title": "Slicing with indices and ranges",
+    "short": "Address from the end and select intervals with an exclusive endpoint.",
+    "summary": "^1 names the last element, while start..end includes start and excludes end. Applying a range to an array creates a new array copy; slicing a Span<T> creates a view.",
+    "why": "The exclusive end makes slice length easy to derive, but valid bounds still run from zero through the collection length.",
+    "tips": "The [[arrays-basics|array]] returned by values[1..3] owns copied elements; changes to it do not change the source. A span slice instead views existing storage.",
+    "tags": ["Index", "Range", "slice"]
+  },
+  "string-literals": {
+    "title": "String literals and escaping",
+    "short": "Choose ordinary, verbatim, or raw syntax for the text being represented.",
+    "summary": "Ordinary literals interpret backslash escapes, verbatim literals preserve backslashes and double embedded quotes, and raw literals reduce escaping for quotes and multiline text.",
+    "why": "Choosing syntax that matches the data makes paths, structured text, and multiline content easier to verify visually.",
+    "tips": "A $ prefix adds [[string-interpolation|interpolation]] to ordinary or verbatim literals; raw interpolated strings use their number of $ characters to determine brace syntax.",
+    "tags": ["string", "verbatim string", "raw string"]
+  },
+  "operator-precedence": {
+    "title": "Operator precedence and parentheses",
+    "short": "Read which operations bind first and make intended grouping visible.",
+    "summary": "Precedence determines grouping between different operators, while associativity resolves operators at the same level. Parentheses override and document that grouping.",
+    "why": "A correct but visually surprising expression is easy to misread during maintenance, especially when arithmetic and conditions mix.",
+    "tips": "Use parentheses to make grouping in a compound [[boolean-operators|boolean condition]] explicit even when precedence would already produce the same result.",
+    "tags": ["operator", "precedence", "parentheses"]
+  },
+  "switch-expressions": {
+    "title": "Selecting a value with switch expressions",
+    "short": "Map one input to one result using patterns, guards, and a fallback arm.",
+    "summary": "A switch expression evaluates the first matching arm and produces its expression value. Patterns test the input, when adds a guard, and _ can provide a fallback.",
+    "why": "It makes value-producing selection concise and requires every executed path to yield a compatible result.",
+    "tips": "Each arm uses [[pattern-matching|pattern matching]] rather than ordinary case equality alone, so type, property, relational, and other patterns can participate.",
+    "tags": ["switch expression", "pattern", "when"]
+  },
+  "property-patterns": {
+    "title": "Inspecting state with property patterns",
+    "short": "Match object members and nested shapes without repeated access or casts.",
+    "summary": "A property pattern checks named members and can traverse nested properties. It fails when a required receiver in that path is null instead of dereferencing it.",
+    "why": "The test and extraction stay close together, making a structural condition easier to read than repeated member checks.",
+    "tips": "The names inside the pattern refer to [[properties|properties or fields]] on the matched type; they are not new positional slots.",
+    "tags": ["property pattern", "pattern matching", "null"]
+  },
+  "relational-logical-patterns": {
+    "title": "Relational and logical patterns",
+    "short": "Describe ranges, alternatives, and exclusions inside a pattern.",
+    "summary": "Relational patterns compare with <, <=, >, or >=. The and, or, and not combinators compose patterns and can express numeric intervals and alternatives.",
+    "why": "Pattern composition keeps the value being classified implicit while describing the accepted shape directly.",
+    "tips": "Pattern combinators are not the same tokens as [[boolean-operators|boolean expression operators]]: use and/or/not inside patterns and &&/||/! between bool expressions.",
+    "tags": ["relational pattern", "and pattern", "or pattern"]
+  },
+  "positional-patterns": {
+    "title": "Positional patterns and Deconstruct",
+    "short": "Test ordered components exposed by a Deconstruct contract.",
+    "summary": "A positional pattern calls an applicable Deconstruct method, then matches its output components in order. Records can generate that contract automatically.",
+    "why": "It supports concise shape tests and variable extraction when component order is a natural part of the type's meaning.",
+    "tips": "The ordered components follow the same contract used by [[tuples-deconstruction|deconstruction]], so changing their order changes both forms' meaning.",
+    "tags": ["positional pattern", "Deconstruct", "record"]
+  },
+  "list-patterns": {
+    "title": "Matching sequence shapes with list patterns",
+    "short": "Test element order and length on supported indexable values.",
+    "summary": "List patterns match elements by position and normally imply a length. A .. slice pattern absorbs zero or more elements and can capture that middle portion.",
+    "why": "They express structural cases such as empty, singleton, or fixed endpoints without a separate sequence of length and index checks.",
+    "tips": "The slice resembles [[indices-ranges|range slicing]], but inside a list pattern it participates in matching; support depends on suitable Length or Count and indexing members.",
+    "tags": ["list pattern", "slice pattern", "sequence"]
+  },
+  "conditional-operator": {
+    "title": "Choosing an expression result with the conditional operator",
+    "short": "Select one of two expression values from a boolean condition.",
+    "summary": "condition ? whenTrue : whenFalse evaluates only the selected branch and produces one result whose branches must have a compatible or target-convertible type.",
+    "why": "It is useful when a concise decision belongs inside a larger expression, including an assignment or return.",
+    "tips": "Unlike statement-based [[if-else|if / else]] control flow, the conditional operator must produce a value; prefer if when branches contain substantial actions.",
+    "tags": ["conditional operator", "?:", "expression"]
+  },
+  "bitwise-operations": {
+    "title": "Bitwise operations and shifts",
+    "short": "Build, combine, mask, and extract fixed-width integer bits.",
+    "summary": "&, |, ^, and ~ operate on individual bits, while << and >> shift a fixed-width integer representation. Casts may be needed when storing results in smaller types.",
+    "why": "Bit fields compactly represent independent binary choices or packed numeric fields, but signedness and width affect the result.",
+    "tips": "[[enums-flags|Flag enums]] give names to bit masks; assign each independent flag a distinct power of two before combining with | and testing with &.",
+    "tags": ["bitwise", "shift", "mask"]
   }
 }

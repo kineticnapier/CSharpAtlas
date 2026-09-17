@@ -67,5 +67,25 @@
     "goodHighlight": [
       1
     ]
+  },
+  {
+    "id": "empty-statement-loop",
+    "type": "logic",
+    "bad": "int i = 0;\nwhile (i++ < 3);\n{\n    Console.WriteLine(i); // 4\n}",
+    "good": "int i = 0;\nwhile (i++ < 3)\n{\n    Console.WriteLine(i); // 1, 2, 3\n}",
+    "code": null,
+    "related": ["while-do-loops", "for-loop", "scope"],
+    "badHighlight": [2],
+    "goodHighlight": [2]
+  },
+  {
+    "id": "negative-remainder",
+    "type": "logic",
+    "bad": "string[] items = { \"A\", \"B\", \"C\" };\nint offset = -1;\nint index = offset % items.Length;\nConsole.WriteLine(items[index]);",
+    "good": "string[] items = { \"A\", \"B\", \"C\" };\nint offset = -1;\nint length = items.Length;\nif (length <= 0) throw new ArgumentOutOfRangeException(nameof(length));\nint index = (offset % length + length) % length;\nConsole.WriteLine(items[index]); // C",
+    "code": null,
+    "related": ["numeric-types", "arrays-basics", "divide-by-zero"],
+    "badHighlight": [3, 4],
+    "goodHighlight": [4, 5]
   }
 ]

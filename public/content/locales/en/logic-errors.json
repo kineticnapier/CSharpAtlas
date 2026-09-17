@@ -55,5 +55,35 @@
     "goodNotes": {
       "1": "ToList materializes the result once"
     }
+  },
+  "empty-statement-loop": {
+    "title": "A stray semicolon creates an empty loop",
+    "short": "The loop repeats an empty statement and the following block runs only once.",
+    "summary": "A semicolon immediately after while is a complete empty statement, so it becomes the loop body and disconnects the block that visually follows it.",
+    "why": "The bounded condition still advances i, but the block has separate [[scope]] and executes after the loop has already finished.",
+    "tips": "Remove the semicolon and use braces for the intended body, then verify the number and values of the observed iterations.",
+    "tags": ["while", "semicolon", "empty statement"],
+    "badNotes": {
+      "2": "This semicolon is the entire loop body"
+    },
+    "goodNotes": {
+      "2": "Without the semicolon, the following block belongs to the loop"
+    }
+  },
+  "negative-remainder": {
+    "title": "Negative remainders break circular indexing",
+    "short": "A negative dividend can produce a negative remainder and therefore an invalid index.",
+    "summary": "C# % computes a remainder whose sign follows the dividend; it is not a mathematical modulo operation that always returns a nonnegative result.",
+    "why": "With offset -1 and length 3, offset % length is -1, which cannot index the array.",
+    "tips": "Require a positive wrap length so the calculation does not encounter [[divide-by-zero|division by zero]], then normalize with (value % length + length) % length.",
+    "tags": ["remainder", "modulo", "circular index"],
+    "badNotes": {
+      "3": "The remainder is -1, not 2",
+      "4": "A negative array index fails"
+    },
+    "goodNotes": {
+      "4": "Reject a nonpositive wrap length before using %",
+      "5": "The second remainder keeps the normalized index within bounds"
+    }
   }
 }
