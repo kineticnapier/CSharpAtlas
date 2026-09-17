@@ -90,5 +90,15 @@
     ],
     "badHighlight": [1],
     "goodHighlight": [1]
+  },
+  {
+    "id": "cs0108",
+    "type": "compiler-warning",
+    "bad": "class BasePrinter\n{\n    public void Print() => Console.WriteLine(\"base\");\n}\n\nclass ReportPrinter : BasePrinter\n{\n    public void Print() => Console.WriteLine(\"report\");\n}",
+    "good": "class BasePrinter\n{\n    public void Print() => Console.WriteLine(\"base\");\n}\n\nclass ReportPrinter : BasePrinter\n{\n    public new void Print() => Console.WriteLine(\"report\");\n}",
+    "code": null,
+    "related": ["inheritance-polymorphism", "static-members"],
+    "badHighlight": [8],
+    "goodHighlight": [8]
   }
 ]

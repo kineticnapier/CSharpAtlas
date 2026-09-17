@@ -214,5 +214,13 @@
       "catch",
       "例外"
     ]
+  },
+  "event-data-pattern": {
+    "title": "EventHandler<T> で通知データを渡す",
+    "short": "通知元オブジェクトと型付きイベントデータを一緒に公開する。",
+    "summary": "EventHandler<TEventArgs> は sender とイベントデータの組を標準化します。発行元だけがイベントを発生させ、購読側は直接呼び出さずにハンドラーを追加・削除します。",
+    "why": "Download は sender に自身を、データに ProgressEventArgs を渡します。名前付き変数へ保持したハンドラーなら、+= で追加した同じデリゲートを -= で確実に削除できます。",
+    "tips": "[[events|イベント]] の境界は購読を許し、通知の発行は Download だけに保ちます。長寿命の購読は不要時に解除するか IDisposable の寿命へ結び付けます。",
+    "tags": ["EventHandler", "イベントデータ", "購読解除"]
   }
 }

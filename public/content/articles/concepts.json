@@ -374,5 +374,229 @@
     "good": null,
     "code": "const byte Read = 1 << 0;  // 0000_0001\nconst byte Write = 1 << 1; // 0000_0010\n\nbyte permissions = (byte)(Read | Write);\nbool canWrite = (permissions & Write) != 0;\nbyte withoutRead = (byte)(permissions & ~Read);\n\nConsole.WriteLine($\"{canWrite}, {withoutRead}\");",
     "related": ["enums-flags", "numeric-types", "integer-overflow"]
+  },
+  {
+    "id": "class-constructors",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var account = new Account(\"Ada\", 10m);\nConsole.WriteLine(account.Owner);\n\nclass Account\n{\n    private decimal balance;\n    public string Owner { get; }\n\n    public Account(string owner, decimal openingBalance)\n    {\n        if (string.IsNullOrWhiteSpace(owner))\n            throw new ArgumentException(\"Owner is required.\", nameof(owner));\n        if (openingBalance < 0)\n            throw new ArgumentOutOfRangeException(nameof(openingBalance));\n\n        Owner = owner;\n        balance = openingBalance;\n    }\n}",
+    "related": ["properties", "value-reference-types", "cs8618"]
+  },
+  {
+    "id": "constructor-chaining",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var account = new PremiumAccount(\"Ada\");\n\nclass Account\n{\n    private readonly string baseField = Trace.Mark(\"Account field\");\n    public string Owner { get; }\n    protected Account(string owner)\n    {\n        Owner = owner;\n        Console.WriteLine(\"Account constructor\");\n    }\n}\n\nclass PremiumAccount : Account\n{\n    private readonly string derivedField = Trace.Mark(\"PremiumAccount field\");\n    public int Level { get; }\n\n    public PremiumAccount(string owner) : this(owner, 1) { }\n    public PremiumAccount(string owner, int level) : base(owner)\n    {\n        Level = level;\n        Console.WriteLine(\"PremiumAccount constructor\");\n    }\n}\n\nstatic class Trace\n{\n    public static string Mark(string text)\n    {\n        Console.WriteLine(text);\n        return text;\n    }\n}",
+    "related": ["class-constructors", "inheritance-polymorphism", "const-readonly"]
+  },
+  {
+    "id": "access-modifiers",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "public interface IClock\n{\n    DateTime Now { get; }\n}\n\npublic sealed class SystemClock : IClock\n{\n    public DateTime Now => ReadNow();\n    private static DateTime ReadNow() => DateTime.Now;\n}\n\ninternal sealed class FakeClock : IClock\n{\n    public DateTime Now { get; init; }\n}",
+    "related": ["class-constructors", "interfaces", "cs0051"]
+  },
+  {
+    "id": "static-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var first = new Ticket();\nvar second = new Ticket();\nConsole.WriteLine($\"{first.Id}, {second.Id}, {Ticket.CreatedCount}\");\n\nclass Ticket\n{\n    private static int nextId;\n    public static int CreatedCount { get; private set; }\n    public int Id { get; }\n\n    public Ticket()\n    {\n        Id = ++nextId;\n        CreatedCount++;\n    }\n}",
+    "related": ["cs0120", "class-constructors"]
+  },
+  {
+    "id": "inheritance-polymorphism",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Animal animal = new Dog();\nConsole.WriteLine(animal.Speak()); // Woof\n\nclass Animal\n{\n    public virtual string Speak() => \"...\";\n}\n\nclass Dog : Animal\n{\n    public override string Speak() => \"Woof\";\n}",
+    "related": ["abstract-sealed-classes", "interfaces", "cs0108"]
+  },
+  {
+    "id": "abstract-sealed-classes",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Shape shape = new Circle(2);\nConsole.WriteLine(shape.Area());\n\nabstract class Shape\n{\n    public abstract double Area();\n    public virtual string Label() => GetType().Name;\n}\n\nsealed class Circle(double radius) : Shape\n{\n    public override double Area() => Math.PI * radius * radius;\n    public sealed override string Label() => \"circle\";\n}",
+    "related": ["inheritance-polymorphism", "interfaces"]
+  },
+  {
+    "id": "struct-design",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Temperature room = new(21.5);\nTemperature copy = room;\nConsole.WriteLine($\"{copy.Celsius:F1} °C\");\nConsole.WriteLine(default(Temperature).Celsius); // 0\n\nreadonly struct Temperature\n{\n    public double Celsius { get; }\n    public Temperature(double celsius) => Celsius = celsius;\n}",
+    "related": ["value-reference-types", "default-values", "readonly-struct-members"]
+  },
+  {
+    "id": "record-structs",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Point first = new(3, 4);\nPoint second = first with { X = 5 };\nConsole.WriteLine(first == new Point(3, 4)); // True\nConsole.WriteLine($\"{first} / {second}\");\n\npublic readonly record struct Point(int X, int Y);",
+    "related": ["records", "struct-design", "custom-equality-hashing"]
+  },
+  {
+    "id": "init-required-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var user = new User\n{\n    Name = \"Ada\",\n    Email = \"ada@example.test\"\n};\nuser.Validate();\n\nclass User\n{\n    public required string Name { get; init; }\n    public required string Email { get; init; }\n\n    public void Validate()\n    {\n        ArgumentException.ThrowIfNullOrWhiteSpace(Name);\n        ArgumentException.ThrowIfNullOrWhiteSpace(Email);\n    }\n}",
+    "related": ["properties", "class-constructors", "cs8618"]
+  },
+  {
+    "id": "object-collection-initializers",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var project = new Project(42)\n{\n    Name = \"Atlas\",\n    Tags = { \"csharp\", \"docs\" }\n};\n\nclass Project\n{\n    public int Id { get; }\n    public string Name { get; set; } = string.Empty;\n    public List<string> Tags { get; } = new();\n    public Project(int id) => Id = id;\n}",
+    "related": ["properties", "class-constructors"]
+  },
+  {
+    "id": "indexers",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var row = new ScoreRow(3);\nrow[1] = 90;\nConsole.WriteLine(row[1]);\n\nclass ScoreRow\n{\n    private readonly int[] scores;\n    public ScoreRow(int length) => scores = new int[length];\n\n    public int this[int index]\n    {\n        get => scores[Check(index)];\n        set => scores[Check(index)] = value;\n    }\n\n    private int Check(int index)\n        => index >= 0 && index < scores.Length\n            ? index\n            : throw new ArgumentOutOfRangeException(nameof(index));\n}",
+    "related": ["properties", "cs0021", "argument-out-of-range"]
+  },
+  {
+    "id": "extension-methods",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "using TextTools;\n\nConsole.WriteLine(\"atlas\".Surround(\"[\", \"]\"));\n\nnamespace TextTools\n{\n    public static class StringExtensions\n    {\n        public static string Surround(this string value, string left, string right)\n            => left + value + right;\n    }\n}",
+    "related": ["using-directive", "cs1061", "interfaces"]
+  },
+  {
+    "id": "generic-constraints",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "ResetAndRun<Job>();\nDescribe(new Job());\nConsole.WriteLine(EchoValue(42));\nConsole.WriteLine(EchoReference(\"Atlas\"));\n\nstatic void ResetAndRun<T>() where T : WorkItem, IResettable, new()\n{\n    T item = new();\n    item.Reset();\n}\n\nstatic void Describe<T>(T item) where T : WorkItem => Console.WriteLine(item.Name);\nstatic T EchoValue<T>(T value) where T : struct => value;\nstatic T EchoReference<T>(T value) where T : class => value;\n\ninterface IResettable { void Reset(); }\nabstract class WorkItem { public abstract string Name { get; } }\nsealed class Job : WorkItem, IResettable\n{\n    public override string Name => \"job\";\n    public void Reset() => Console.WriteLine(\"reset\");\n}",
+    "related": ["generics", "interfaces", "nullable"]
+  },
+  {
+    "id": "generic-variance",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "IEnumerable<string> names = new[] { \"Ada\", \"Grace\" };\nIEnumerable<object> objects = names; // covariance\n\nAction<object> showObject = value => Console.WriteLine(value);\nAction<string> showString = showObject; // contravariance\nshowString(\"Atlas\");",
+    "related": ["generics", "interfaces", "delegates"]
+  },
+  {
+    "id": "explicit-interface-implementation",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var report = new Report();\nConsole.WriteLine(((IPlainText)report).Render());\nConsole.WriteLine(((IHtml)report).Render());\n\ninterface IPlainText { string Render(); }\ninterface IHtml { string Render(); }\n\nclass Report : IPlainText, IHtml\n{\n    string IPlainText.Render() => \"plain\";\n    string IHtml.Render() => \"<p>html</p>\";\n}",
+    "related": ["interfaces", "access-modifiers", "inheritance-polymorphism"]
+  },
+  {
+    "id": "default-interface-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "IGreeter greeter = new FriendlyGreeter();\nConsole.WriteLine(greeter.Greet(\"Ada\"));\n\ninterface IGreeter\n{\n    string Greet(string name) => $\"Hello, {name}\";\n}\n\nclass FriendlyGreeter : IGreeter\n{\n    public string Greet(string name) => $\"Welcome, {name}!\";\n}",
+    "related": ["interfaces", "explicit-interface-implementation", "inheritance-polymorphism"]
+  },
+  {
+    "id": "local-functions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Console.WriteLine(FormatTotal(new[] { 2, 3, 5 }));\n\nstatic string FormatTotal(int[] values)\n{\n    int total = Sum(values);\n    return $\"Total: {total}\";\n\n    static int Sum(int[] source)\n    {\n        int result = 0;\n        foreach (int value in source) result += value;\n        return result;\n    }\n}",
+    "related": ["methods-parameters-returns", "scope", "closures"]
+  },
+  {
+    "id": "closures",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Func<int> next = CreateCounter();\nConsole.WriteLine(next()); // 1\nConsole.WriteLine(next()); // 2\n\nstatic Func<int> CreateCounter()\n{\n    int count = 0;\n    return () => ++count;\n}",
+    "related": ["lambda", "delegates", "closure-loop-capture"]
+  },
+  {
+    "id": "multicast-delegates",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Func<int> first = () => { Console.WriteLine(\"first\"); return 1; };\nFunc<int> second = () => { Console.WriteLine(\"second\"); return 2; };\nFunc<int> combined = first + second;\n\nint result = combined();\nConsole.WriteLine(result); // 2",
+    "related": ["delegates", "events", "try-catch"]
+  },
+  {
+    "id": "custom-attributes-reflection",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "using System.Reflection;\n\nPropertyInfo property = typeof(Product).GetProperty(nameof(Product.Name))!;\nvar label = property.GetCustomAttribute<LabelAttribute>();\nConsole.WriteLine(label?.Text);\n\n[AttributeUsage(AttributeTargets.Property)]\nsealed class LabelAttribute(string text) : Attribute\n{\n    public string Text { get; } = text;\n}\n\nclass Product\n{\n    [Label(\"Display name\")]\n    public string Name { get; init; } = string.Empty;\n}",
+    "related": ["class-constructors", "properties"]
+  },
+  {
+    "id": "custom-equality-hashing",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var set = new HashSet<ProductCode> { new(\"abc\") };\nConsole.WriteLine(set.Contains(new ProductCode(\"ABC\"))); // True\n\nsealed class ProductCode : IEquatable<ProductCode>\n{\n    public string Value { get; }\n    public ProductCode(string value) => Value = value;\n\n    public bool Equals(ProductCode? other)\n        => other is not null && StringComparer.OrdinalIgnoreCase.Equals(Value, other.Value);\n    public override bool Equals(object? obj) => Equals(obj as ProductCode);\n    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);\n}",
+    "related": ["equality", "hashset-basic"]
+  },
+  {
+    "id": "custom-ordering",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var jobs = new List<Job> { new(2, \"build\"), new(1, \"test\"), new(1, \"analyze\") };\njobs.Sort();\njobs.Sort(Comparer<Job>.Create((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal)));\n\nsealed record Job(int Priority, string Name) : IComparable<Job>\n{\n    public int CompareTo(Job? other)\n    {\n        if (other is null) return 1;\n        int byPriority = Priority.CompareTo(other.Priority);\n        return byPriority != 0 ? byPriority : string.Compare(Name, other.Name, StringComparison.Ordinal);\n    }\n}",
+    "related": ["list-sort", "equality"]
+  },
+  {
+    "id": "operator-overloading",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Distance total = new(120) + new Distance(30);\nConsole.WriteLine(total == new Distance(150));\n\nreadonly struct Distance\n{\n    public int Meters { get; }\n    public Distance(int meters) => Meters = meters;\n\n    public static Distance operator +(Distance left, Distance right) => new(left.Meters + right.Meters);\n    public static bool operator ==(Distance left, Distance right) => left.Meters == right.Meters;\n    public static bool operator !=(Distance left, Distance right) => !(left == right);\n    public override bool Equals(object? obj) => obj is Distance other && this == other;\n    public override int GetHashCode() => Meters;\n}",
+    "related": ["struct-design", "numeric-types", "equality"]
+  },
+  {
+    "id": "user-defined-conversions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Digit digit = (Digit)7;\nint value = digit;\n\nreadonly struct Digit\n{\n    private readonly int value;\n    private Digit(int value) => this.value = value;\n\n    public static explicit operator Digit(int value)\n        => value is >= 0 and <= 9 ? new Digit(value) : throw new OverflowException();\n    public static implicit operator int(Digit digit) => digit.value;\n}",
+    "related": ["numeric-conversions", "struct-design", "cs0029"]
+  },
+  {
+    "id": "partial-types",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var order = new Order();\norder.Submit();\n\n// Order.Core.cs\npartial class Order\n{\n    partial void OnSubmitted();\n    public void Submit()\n    {\n        Console.WriteLine(\"submitted\");\n        OnSubmitted();\n    }\n}\n\n// Order.Logging.cs\npartial class Order\n{\n    partial void OnSubmitted() => Console.WriteLine(\"logged\");\n}",
+    "related": ["class-constructors", "access-modifiers", "methods-parameters-returns"]
+  },
+  {
+    "id": "dynamic-binding",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var inferred = \"Atlas\";          // statically string\nobject asObject = \"Atlas\";     // statically object\ndynamic lateBound = \"Atlas\";  // member lookup at run time\n\nConsole.WriteLine(inferred.Length);\nConsole.WriteLine(((string)asObject).Length);\nConsole.WriteLine(lateBound.Length);",
+    "related": ["var-keyword", "boxing-unboxing", "cs1061"]
+  },
+  {
+    "id": "anonymous-types",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var products = new[]\n{\n    new Product(\"Book\", 20m),\n    new Product(\"Pen\", 3m)\n};\n\nvar labels = products.Select(p => new { p.Name, WithTax = p.Price * 1.1m });\nforeach (var label in labels)\n    Console.WriteLine($\"{label.Name}: {label.WithTax:C}\");\n\nrecord Product(string Name, decimal Price);",
+    "related": ["var-keyword", "linq-select", "tuples-deconstruction"]
+  },
+  {
+    "id": "readonly-struct-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var counter = new Counter { Value = 1 };\nTryIncrement(in counter);\nConsole.WriteLine(counter.Value); // 1\n\nstatic void TryIncrement(in Counter value)\n{\n    value.Increment(); // mutates a defensive copy\n}\n\nstruct Counter\n{\n    public int Value;\n    public void Increment() => Value++;\n    public readonly int Read() => Value;\n}\n\nreadonly struct Point(int x, int y)\n{\n    public int X { get; } = x;\n    public int Y { get; } = y;\n}",
+    "related": ["struct-design", "ref-out-in", "mutable-struct-copy"]
   }
 ]

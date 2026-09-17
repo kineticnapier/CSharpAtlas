@@ -280,5 +280,21 @@
       "1": "Give one fully qualified type a local alias",
       "3": "The alias makes the intended type unambiguous"
     }
+  },
+  "cs0051": {
+    "title": "CS0051: Parameter type accessibility mismatch",
+    "short": "A method is more visible than one of the types in its parameter list.",
+    "summary": "CS0051 reports inconsistent accessibility when callers can see a method but cannot name a parameter type required by that method's signature.",
+    "why": "Api.Send is public while Request is internal, so code outside the assembly could discover Send but could not form its required argument type.",
+    "tips": "Align the [[access-modifiers|accessibility boundary]] deliberately: make the contract type public, or reduce the method's visibility when the operation is internal.",
+    "tags": ["CS0051", "accessibility", "parameter"],
+    "badNotes": {
+      "1": "Request is visible only within its assembly",
+      "5": "A public signature exposes the less-accessible Request type"
+    },
+    "goodNotes": {
+      "1": "Request is now as visible as the public method",
+      "5": "Every caller that sees Send can name its parameter type"
+    }
   }
 }

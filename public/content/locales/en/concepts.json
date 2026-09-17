@@ -374,5 +374,229 @@
     "why": "Bit fields compactly represent independent binary choices or packed numeric fields, but signedness and width affect the result.",
     "tips": "[[enums-flags|Flag enums]] give names to bit masks; assign each independent flag a distinct power of two before combining with | and testing with &.",
     "tags": ["bitwise", "shift", "mask"]
+  },
+  "class-constructors": {
+    "title": "Class creation and constructors",
+    "short": "Create an instance while establishing the state it needs to remain valid.",
+    "summary": "new allocates an object and runs a matching constructor. The constructor receives required inputs, initializes instance fields and properties, and can reject state that would violate the class invariant.",
+    "why": "Each Account instance owns its own balance and Owner state; constructing one completely prevents later methods from starting with a partly initialized object.",
+    "tips": "Expose constructed state through controlled [[properties|properties]] rather than public mutable fields, and validate arguments before assigning them.",
+    "tags": ["class", "constructor", "invariant"]
+  },
+  "constructor-chaining": {
+    "title": "Constructor chaining and initialization order",
+    "short": "Delegate initialization with this and base constructor calls.",
+    "summary": "A constructor initializer selects one other constructor: this(...) delegates within the same class and base(...) selects a base constructor. Instance fields initialize from the most-derived class toward the base, then constructor bodies run from base toward derived.",
+    "why": "The one-argument overload delegates to the two-argument overload, so fields initialize once. The trace shows PremiumAccount field, Account field, Account constructor, then PremiumAccount constructor.",
+    "tips": "Choose one [[class-constructors|constructor]] that ultimately establishes the invariant instead of duplicating initialization across overloads.",
+    "tags": ["constructor", "this", "base"]
+  },
+  "access-modifiers": {
+    "title": "Access modifiers and API visibility",
+    "short": "Expose a usable contract while keeping implementation details behind a boundary.",
+    "summary": "public is available to callers, internal stays within the assembly, protected is available to derived types, and private stays within its declaring type.",
+    "why": "A smaller visible surface reduces coupling. SystemClock publishes only the operations callers need while its helper remains replaceable implementation detail.",
+    "tips": "A public [[interfaces|interface]] can define the contract while private or internal members and types implement it without becoming part of the public API.",
+    "tags": ["public", "private", "API"]
+  },
+  "static-members": {
+    "title": "Static members and shared state",
+    "short": "Distinguish one member per type from state stored in every instance.",
+    "summary": "A static member belongs to the type and is initialized once for its runtime type, whereas an instance member needs a particular object. Mutable static fields therefore live across all instances and often need synchronization.",
+    "why": "CreatedCount and nextId are shared, but Id belongs to each Ticket. Changing shared state affects later construction throughout the process.",
+    "tips": "Using only a type name cannot identify which object's instance member to read, which leads to [[cs0120|CS0120]]. Prefer immutable static data when sharing is unnecessary.",
+    "tags": ["static", "instance", "shared state"]
+  },
+  "inheritance-polymorphism": {
+    "title": "Inheritance and virtual dispatch",
+    "short": "Override behavior and invoke the most-derived implementation through a base reference.",
+    "summary": "A virtual base member defines an override point. An override participates in dynamic dispatch, so the runtime object controls which implementation runs even when the variable's static type is the base class.",
+    "why": "animal is declared as Animal but refers to a Dog, so Speak dispatches to Dog.Speak without converting or copying away the derived behavior.",
+    "tips": "Inheritance reuses an implementation relationship; implementing an [[interfaces|interface]] supplies a contract without inheriting that class's state.",
+    "tags": ["inheritance", "virtual", "override"]
+  },
+  "abstract-sealed-classes": {
+    "title": "Designing inheritance with abstract and sealed",
+    "short": "Require derived behavior and deliberately close extension points.",
+    "summary": "An abstract class cannot be instantiated and can declare abstract members that derived concrete classes must implement. sealed can prevent further derivation or prevent another override of a virtual member.",
+    "why": "Shape leaves Area incomplete, Circle supplies it, and the sealed Circle and sealed Label override state where extension is no longer supported.",
+    "tips": "Document which [[inheritance-polymorphism|virtual extension points]] derived types may override; sealing is useful when further substitution would break the intended contract.",
+    "tags": ["abstract", "sealed", "inheritance"]
+  },
+  "struct-design": {
+    "title": "Designing structs for small values",
+    "short": "Model a small value whose copying and default state have clear meaning.",
+    "summary": "A struct is a value type. Small immutable structs fit values with value-like identity, while large or mutable structs can make copies expensive or surprising. Its all-zero default state must be considered.",
+    "why": "Temperature is immutable and default(Temperature) naturally represents zero Celsius, so a copied value remains independent and meaningful.",
+    "tips": "Assigning a struct copies its value under [[value-reference-types|value-type semantics]]; keep the representation small and avoid setters that make copied state diverge unexpectedly.",
+    "tags": ["struct", "value type", "immutable"]
+  },
+  "record-structs": {
+    "title": "Value data with record structs",
+    "short": "Combine value-type storage with generated data-oriented members.",
+    "summary": "record struct generates value equality, printing, deconstruction, and with support while remaining a value type. readonly record struct also prevents its generated properties from being mutated after construction.",
+    "why": "Point copies its two values on assignment, and equality compares its components rather than object identity.",
+    "tips": "It shares data-centric conveniences with [[records|record classes]], but a record struct has value-type copying and storage semantics rather than reference semantics.",
+    "tags": ["record struct", "value type", "equality"]
+  },
+  "init-required-members": {
+    "title": "Initialization contracts with init and required",
+    "short": "Require members to be supplied and prevent ordinary writes after initialization.",
+    "summary": "An init accessor accepts assignment during object initialization but not afterward. required makes construction sites initialize the member unless a constructor is known to satisfy the requirement.",
+    "why": "These keywords shape when assignments are legal; they do not by themselves validate text or prevent a caller from explicitly assigning null.",
+    "tips": "Required presence and the non-null initialization analysis behind [[cs8618|CS8618]] are related but distinct contracts, so validate domain rules separately.",
+    "tags": ["init", "required", "initialization"]
+  },
+  "object-collection-initializers": {
+    "title": "Object and collection initializers",
+    "short": "Apply member assignments and Add calls immediately after construction.",
+    "summary": "An object initializer first calls a constructor, then invokes the listed property setters. A collection initializer invokes an accessible Add method; a nested member initializer uses the already-created member instead of replacing it.",
+    "why": "Project(42) establishes Id first, Name's setter runs next, and Tags = { ... } calls Add on the existing Tags list.",
+    "tips": "The [[class-constructors|constructor call]] always precedes initializer assignments, so constructor invariants cannot depend on members supplied only by an initializer.",
+    "tags": ["object initializer", "collection initializer", "Add"]
+  },
+  "indexers": {
+    "title": "Custom element access with indexers",
+    "short": "Offer bracket syntax while retaining validation and accessor control.",
+    "summary": "An indexer declares this[...] with get and optionally set accessors. It lets a custom type expose element-like access without exposing its internal array or accepting invalid indexes silently.",
+    "why": "ScoreRow checks every index before reading or writing, preserving the same boundary for both access paths.",
+    "tips": "An indexer accessor behaves like a parameterized [[properties|property accessor]]; use meaningful key or index types and throw ArgumentOutOfRangeException for invalid positions.",
+    "tags": ["indexer", "this", "accessor"]
+  },
+  "extension-methods": {
+    "title": "Extension methods and static resolution",
+    "short": "Call a visible static helper with instance-method syntax.",
+    "summary": "A conventional extension method is a static method in a static class whose first parameter uses this. Candidate lookup is compile-time and an applicable instance member takes precedence over extensions.",
+    "why": "Surround is still a static call; the receiver supplies the first argument and no member is added to string at runtime.",
+    "tips": "The extension's namespace must be visible at the call site through a [[using-directive|using directive]] or enclosing namespace, otherwise lookup cannot find it.",
+    "tags": ["extension method", "static", "namespace"]
+  },
+  "generic-constraints": {
+    "title": "Guaranteeing generic operations with constraints",
+    "short": "Declare which capabilities a type argument must provide.",
+    "summary": "where clauses can require an interface, base class, parameterless constructor, value type, or reference type. Those guarantees make corresponding operations on T valid in the generic body.",
+    "why": "IResettable permits the Reset call and new() permits construction of T; without them, those operations are not known to be safe for every possible type argument.",
+    "tips": "A [[generics|type parameter]] is a placeholder, while its constraints define the members and construction or storage guarantees code may use.",
+    "tags": ["generic", "constraint", "where"]
+  },
+  "generic-variance": {
+    "title": "Covariance and contravariance",
+    "short": "Use safe reference conversions for producers and consumers.",
+    "summary": "Covariance allows a producer of a more-derived reference type to be viewed as producing a base type. Contravariance allows a consumer of a base type to stand in for a consumer of a derived type.",
+    "why": "IEnumerable<string> only produces strings, which are objects. Action<object> can consume every string, so it can be assigned where Action<string> is expected.",
+    "tips": "This broader-input conversion is defined by a contravariant [[delegates|delegate]] parameter. Mutable types such as List<T> remain invariant because they both consume and produce T.",
+    "tags": ["covariance", "contravariance", "variance"]
+  },
+  "explicit-interface-implementation": {
+    "title": "Explicit interface implementation",
+    "short": "Implement colliding or intentionally hidden members for a specific contract.",
+    "summary": "An explicit implementation names the interface member and has no separate public access modifier. Callers reach it by viewing the object through that interface.",
+    "why": "Report can supply distinct Render implementations for IPlainText and IHtml even though their member signatures collide.",
+    "tips": "The member belongs to an [[interfaces|interface contract]], so cast or assign the object to that interface to call it; the concrete Report variable does not expose Render.",
+    "tags": ["interface", "explicit implementation", "contract"]
+  },
+  "default-interface-members": {
+    "title": "Default interface implementations",
+    "short": "Provide fallback behavior while preserving interface dispatch.",
+    "summary": "An interface member can include a default implementation. A class may provide its own matching public member, and calls through the interface dispatch to the class implementation when present.",
+    "why": "FriendlyGreeter replaces the fallback greeting; a class that omits Greet can still satisfy this interface member through its default body.",
+    "tips": "Like [[explicit-interface-implementation|explicit interface members]], a default member is not necessarily callable through a concrete variable when the class declares no such member; use an interface-typed reference.",
+    "tags": ["interface", "default implementation", "dispatch"]
+  },
+  "local-functions": {
+    "title": "Organizing method logic with local functions",
+    "short": "Factor a method into helpers visible only inside its containing member.",
+    "summary": "A local function can be declared within a method and called from that method's body. Marking it static proves that it does not capture locals, parameters, or the containing instance.",
+    "why": "Sum is an implementation detail of FormatTotal, so it stays close to its single caller without enlarging the class API.",
+    "tips": "The helper's restricted [[scope|visibility]] communicates that no other method should depend on it; omit static only when capturing surrounding state is intentional.",
+    "tags": ["local function", "static", "scope"]
+  },
+  "closures": {
+    "title": "Closures and captured variable lifetimes",
+    "short": "Retain access to a variable after its declaring call returns.",
+    "summary": "A closure captures variables, not one-time values. The captured storage remains reachable as long as the returned delegate can use it, so repeated calls can observe and update shared state.",
+    "why": "CreateCounter returns before next is invoked, yet the callback retains count and increments the same variable on each call.",
+    "tips": "The [[lambda|lambda expression]] references count from the surrounding method, causing that variable to be captured; capture state deliberately because it extends lifetime.",
+    "tags": ["closure", "capture", "lambda"]
+  },
+  "multicast-delegates": {
+    "title": "Multicast delegate invocation rules",
+    "short": "Combine callbacks and understand ordered execution and results.",
+    "summary": "A combined delegate stores an invocation list and calls entries in order. For a non-void delegate, the combined call returns only the final callback's value.",
+    "why": "Both callbacks run, then result receives 2 from second. If one callback throws, the delegate call propagates that exception and later callbacks are not invoked automatically.",
+    "tips": "Inspect or reason about the [[delegates|delegate]] invocation list when order, return values, or per-handler exception isolation matters.",
+    "tags": ["multicast delegate", "invocation list", "exception"]
+  },
+  "custom-attributes-reflection": {
+    "title": "Defining attributes and reading them with reflection",
+    "short": "Attach declarative metadata and inspect it explicitly at runtime.",
+    "summary": "An Attribute-derived type describes metadata allowed on selected declarations. Reflection can retrieve the attribute from a Type, member, parameter, or other supported declaration.",
+    "why": "LabelAttribute records text on Product.Name, but merely applying it executes no labeling behavior; code must inspect and interpret the metadata.",
+    "tips": "GetProperty locates the [[properties|property declaration]], and GetCustomAttribute reads metadata attached there rather than reading the property's current value.",
+    "tags": ["attribute", "reflection", "metadata"]
+  },
+  "custom-equality-hashing": {
+    "title": "Equality and hash-code contracts for custom types",
+    "short": "Give a stable value object consistent equality and hashing.",
+    "summary": "IEquatable<T> supplies strongly typed equality, Equals(object) preserves the object contract, and GetHashCode must return the same hash for values considered equal.",
+    "why": "ProductCode compares without case and uses the same comparer for hashing, so HashSet can locate an equal code in its expected bucket.",
+    "tips": "Start by defining the [[equality|meaning of equality]], then hash exactly the same stable components; never mutate equality-relevant state while an object is in a hashed collection.",
+    "tags": ["IEquatable", "GetHashCode", "HashSet"]
+  },
+  "custom-ordering": {
+    "title": "Ordering with IComparable<T> and IComparer<T>",
+    "short": "Define intrinsic ordering and optional external sort policies.",
+    "summary": "IComparable<T> defines a type's natural order; IComparer<T> represents a separate ordering. A comparison returns a negative number, zero, or a positive number rather than only -1, 0, or 1.",
+    "why": "Job compares priority first and name as a stable tie-breaker, while the external comparer can sort the same objects by name alone.",
+    "tips": "[[list-sort|List.Sort]] consumes either the intrinsic comparison or a supplied comparer. Keep comparison transitive and decide explicitly whether zero means equality for the use case.",
+    "tags": ["IComparable", "IComparer", "sorting"]
+  },
+  "operator-overloading": {
+    "title": "User-defined operators",
+    "short": "Give a value-like type a natural, predictable operator vocabulary.",
+    "summary": "A type can declare static operator members when the operation has an unsurprising domain meaning. Some operators must be declared in pairs, including == with != and < with >.",
+    "why": "Adding two distances produces another distance, and equality compares meters consistently with Equals and GetHashCode.",
+    "tips": "A small [[struct-design|value-like struct]] is a suitable operator example. Avoid clever meanings, preserve algebraic expectations, and implement required pairs consistently.",
+    "tags": ["operator", "overload", "value object"]
+  },
+  "user-defined-conversions": {
+    "title": "User-defined type conversions",
+    "short": "Reserve implicit conversion for safe results and require a cast for risky input.",
+    "summary": "A type can define implicit and explicit conversion operators. Implicit conversions should always succeed without surprising loss, while explicit conversions signal validation, narrowing, or possible failure.",
+    "why": "Every Digit can become its underlying int safely, but not every int is a Digit, so int-to-Digit validates and requires a cast.",
+    "tips": "Apply the same safety expectations as [[numeric-conversions|built-in numeric conversions]]; avoid bidirectional implicit conversions that make overload resolution or meaning unclear.",
+    "tags": ["conversion", "implicit", "explicit"]
+  },
+  "partial-types": {
+    "title": "Splitting type declarations with partial",
+    "short": "Organize one type across multiple source files.",
+    "summary": "All declarations marked partial with the same identity contribute members to one compiled type. They do not create separate objects or runtime layers.",
+    "why": "Order.Core.cs and Order.Logging.cs can be maintained separately, yet new Order creates one object containing members from both parts.",
+    "tips": "All parts contribute to the same compiled [[class-constructors|type]]. Partial method declarations provide compile-time hooks between parts and must obey their signature and accessibility rules.",
+    "tags": ["partial", "type declaration", "partial method"]
+  },
+  "dynamic-binding": {
+    "title": "Dynamic values and runtime binding",
+    "short": "Defer member lookup to runtime only where that tradeoff is intentional.",
+    "summary": "var infers a fixed static type, object stores any value but exposes only object members statically, and dynamic defers operations such as member lookup until execution.",
+    "why": "The compiler verifies inferred.Length, requires a cast to access the string through asObject, and allows lateBound.Length even though another runtime value could cause a binder error.",
+    "tips": "[[var-keyword|Inferred typing]] still preserves static checking. Keep dynamic at interop boundaries and convert into known types quickly so failures remain local.",
+    "tags": ["dynamic", "object", "runtime binding"]
+  },
+  "anonymous-types": {
+    "title": "Anonymous types for temporary data shapes",
+    "short": "Create local read-only named projections without declaring a nominal type.",
+    "summary": "new { ... } asks the compiler to generate an anonymous reference type with inferred read-only properties. var is required because source code cannot name that generated type directly.",
+    "why": "The query keeps only Name and a calculated WithTax value, creating a convenient shape for local formatting or further query stages.",
+    "tips": "Anonymous types are useful for temporary [[linq-select|query projections]], but use a named record, class, tuple, or interface when a method boundary needs a stable public contract.",
+    "tags": ["anonymous type", "projection", "var"]
+  },
+  "readonly-struct-members": {
+    "title": "Readonly structs and defensive copies",
+    "short": "Express non-mutating value members and recognize copies from readonly storage.",
+    "summary": "A readonly struct cannot mutate instance state. On a non-readonly struct, a readonly member promises not to mutate this; invoking a mutating member through readonly storage may first make a defensive copy.",
+    "why": "The in parameter is readonly storage, so Increment operates on a temporary Counter and the caller's counter remains unchanged.",
+    "tips": "Readonly access through an [[ref-out-in|in parameter]] does not make a mutable struct immutable. Prefer immutable structs and mark non-mutating members readonly to avoid unnecessary copies.",
+    "tags": ["readonly struct", "defensive copy", "in"]
   }
 }

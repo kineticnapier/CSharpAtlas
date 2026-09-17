@@ -87,5 +87,35 @@
     "related": ["numeric-types", "arrays-basics", "divide-by-zero"],
     "badHighlight": [3, 4],
     "goodHighlight": [4, 5]
+  },
+  {
+    "id": "mutable-struct-copy",
+    "type": "logic",
+    "bad": "var items = new List<Counter> { new() };\nCounter item = items[0];\nitem.Value++;\nConsole.WriteLine(items[0].Value); // 0\n\nstruct Counter { public int Value; }",
+    "good": "var items = new List<Counter> { new() };\nCounter item = items[0];\nitem.Value++;\nitems[0] = item;\nConsole.WriteLine(items[0].Value); // 1\n\nstruct Counter { public int Value; }",
+    "code": null,
+    "related": ["value-reference-types", "struct-design", "list-basic"],
+    "badHighlight": [2, 3],
+    "goodHighlight": [2, 3, 4]
+  },
+  {
+    "id": "record-shallow-copy",
+    "type": "logic",
+    "bad": "var original = new Order(new List<string> { \"book\" });\nvar copy = original with { };\ncopy.Items.Add(\"pen\");\nConsole.WriteLine(original.Items.Count); // 2\n\nrecord Order(List<string> Items);",
+    "good": "var original = new Order(new List<string> { \"book\" });\nvar copy = original with { Items = [.. original.Items] };\ncopy.Items.Add(\"pen\");\nConsole.WriteLine(original.Items.Count); // 1\n\nrecord Order(List<string> Items);",
+    "code": null,
+    "related": ["records", "value-reference-types"],
+    "badHighlight": [2, 3],
+    "goodHighlight": [2, 3]
+  },
+  {
+    "id": "closure-loop-capture",
+    "type": "logic",
+    "bad": "var callbacks = new List<Action>();\nfor (int i = 0; i < 3; i++)\n    callbacks.Add(() => Console.WriteLine(i));\n\nforeach (Action callback in callbacks) callback(); // 3, 3, 3",
+    "good": "var callbacks = new List<Action>();\nfor (int i = 0; i < 3; i++)\n{\n    int current = i;\n    callbacks.Add(() => Console.WriteLine(current));\n}\n\nforeach (Action callback in callbacks) callback(); // 0, 1, 2",
+    "code": null,
+    "related": ["closures", "lambda", "for-loop"],
+    "badHighlight": [2, 3],
+    "goodHighlight": [4, 5]
   }
 ]

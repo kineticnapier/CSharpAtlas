@@ -85,5 +85,35 @@
       "4": "Reject a nonpositive wrap length before using %",
       "5": "The second remainder keeps the normalized index within bounds"
     }
+  },
+  "mutable-struct-copy": {
+    "title": "Updating only a copy of a struct",
+    "short": "A local value-type copy changes while the element stored in a collection does not.",
+    "summary": "Reading a struct from List<T> returns its value. Mutating that local value cannot reach back into the list unless the changed struct is assigned to the element again.",
+    "why": "item receives a copy of items[0], so incrementing item.Value changes only the local variable. The corrected code explicitly replaces the stored element.",
+    "tips": "This follows [[value-reference-types|value-type copying]], not a List<T> defect. Prefer immutable structs or make the read-modify-write replacement visible.",
+    "tags": ["struct", "copy", "List"],
+    "badNotes": {"2": "Reading the value-type element makes a local copy", "3": "Only the copy is incremented"},
+    "goodNotes": {"2": "Read the element value into a local", "3": "Change the local copy", "4": "Write the complete changed value back into the list"}
+  },
+  "record-shallow-copy": {
+    "title": "Record with expressions share nested collections",
+    "short": "A record copy is new, but referenced mutable children remain shared by default.",
+    "summary": "A with expression performs the record's generated shallow copy and then applies listed member changes. Reference-typed components are copied as references rather than recursively cloned.",
+    "why": "An empty with expression gives copy a new Order object whose Items still points to the original List<string>, so mutation is visible through both records.",
+    "tips": "Understand the generated [[records|with-copy operation]] before choosing independence. Copy nested collections explicitly, as shown, or store immutable children.",
+    "tags": ["record", "with", "shallow copy"],
+    "badNotes": {"2": "The generated record copy reuses the Items reference", "3": "This mutates the list shared with original"},
+    "goodNotes": {"2": "Replace Items with a new list containing the same elements", "3": "Only the copied order's list is mutated"}
+  },
+  "closure-loop-capture": {
+    "title": "Capturing a loop variable gives callbacks the same value",
+    "short": "Deferred callbacks observe one for-loop variable after the loop has advanced.",
+    "summary": "A closure captures a variable rather than freezing its value. A for loop has one i variable, so callbacks invoked later all read its final value after the loop ends.",
+    "why": "Each bad callback closes over the same i, which has become 3 by invocation time. A local declared inside the body creates separate per-iteration storage.",
+    "tips": "A [[closures|captured variable]] is observed when the callback runs. Copy the current value into a new local when each deferred action needs its own snapshot.",
+    "tags": ["closure", "for loop", "callback"],
+    "badNotes": {"2": "All iterations use the same i variable", "3": "The lambda captures i rather than its current value"},
+    "goodNotes": {"4": "Each iteration creates a distinct current variable", "5": "The callback captures that iteration's storage"}
   }
 }

@@ -203,5 +203,13 @@
       "format-exception",
       "parse-number"
     ]
+  },
+  {
+    "id": "event-data-pattern",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var download = new Download();\nEventHandler<ProgressEventArgs> handler = OnProgress;\ndownload.ProgressChanged += handler;\ndownload.Report(50);\ndownload.ProgressChanged -= handler;\n\nstatic void OnProgress(object? sender, ProgressEventArgs e)\n    => Console.WriteLine($\"{e.Percent}%\");\n\nsealed class Download\n{\n    public event EventHandler<ProgressEventArgs>? ProgressChanged;\n    public void Report(int percent)\n        => ProgressChanged?.Invoke(this, new ProgressEventArgs(percent));\n}\n\nsealed class ProgressEventArgs(int percent) : EventArgs\n{\n    public int Percent { get; } = percent;\n}",
+    "related": ["events", "delegates", "idisposable"]
   }
 ]

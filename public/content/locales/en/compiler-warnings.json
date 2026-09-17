@@ -78,5 +78,15 @@
     "tags": ["CS8625", "null", "nullable"],
     "badNotes": {"1": "null is assigned to a non-nullable string"},
     "goodNotes": {"1": "Use string? when null is allowed"}
+  },
+  "cs0108": {
+    "title": "CS0108: Unintentionally hiding an inherited member",
+    "short": "A derived declaration has the same name as an inherited member without stating its intent.",
+    "summary": "CS0108 warns about member hiding. Hiding selects by the variable's compile-time type, unlike overriding a virtual member, which participates in runtime dispatch.",
+    "why": "ReportPrinter.Print is a new member because BasePrinter.Print is not virtual. A BasePrinter reference still calls the base member even when it refers to a ReportPrinter.",
+    "tips": "Use new to acknowledge deliberate hiding, as shown, or change the base member to virtual and use override when [[inheritance-polymorphism|polymorphic dispatch]] is the intended design.",
+    "tags": ["CS0108", "new", "member hiding"],
+    "badNotes": {"8": "This declaration hides the inherited Print without stating that intent"},
+    "goodNotes": {"8": "new explicitly selects member hiding rather than overriding"}
   }
 }

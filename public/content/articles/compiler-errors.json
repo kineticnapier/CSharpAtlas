@@ -248,5 +248,15 @@
     "related": ["using-directive", "scope"],
     "badHighlight": [4],
     "goodHighlight": [1, 3]
+  },
+  {
+    "id": "cs0051",
+    "type": "compiler-error",
+    "bad": "internal class Request { }\n\npublic class Api\n{\n    public void Send(Request request) { }\n}",
+    "good": "public class Request { }\n\npublic class Api\n{\n    public void Send(Request request) { }\n}",
+    "code": null,
+    "related": ["access-modifiers", "interfaces", "methods-parameters-returns"],
+    "badHighlight": [1, 5],
+    "goodHighlight": [1, 5]
   }
 ]

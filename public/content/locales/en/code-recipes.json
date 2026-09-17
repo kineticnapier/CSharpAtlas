@@ -142,5 +142,13 @@
     "why": "When an exception is thrown, normal control flow stops and execution transfers to a matching catch block.",
     "tips": "Avoid swallowing every failure with catch (Exception); handle concrete exceptions only when you can respond meaningfully.",
     "tags": ["try", "catch", "exception"]
+  },
+  "event-data-pattern": {
+    "title": "Passing notification data with EventHandler<T>",
+    "short": "Publish typed event data together with the object that raised the notification.",
+    "summary": "EventHandler<TEventArgs> standardizes a sender and event-data pair. The publisher raises the event, while subscribers attach and detach handlers without being able to invoke it directly.",
+    "why": "Download supplies itself as sender and a ProgressEventArgs instance as data. Keeping the handler in a named variable makes -= remove the exact delegate that += added.",
+    "tips": "The [[events|event]] boundary permits subscription but reserves notification for Download. Long-lived subscriptions should be removed or owned by an IDisposable lifetime when they are no longer needed.",
+    "tags": ["EventHandler", "event data", "unsubscribe"]
   }
 }

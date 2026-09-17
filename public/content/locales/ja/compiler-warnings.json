@@ -78,5 +78,15 @@
     "tags": ["CS8625", "null", "nullable"],
     "badNotes": {"1": "null 非許容の string へ null を代入している"},
     "goodNotes": {"1": "null を許すなら string? と宣言する"}
+  },
+  "cs0108": {
+    "title": "CS0108: 継承メンバーを意図せず隠す",
+    "short": "派生側が、意図を明示せず継承メンバーと同名の宣言をしている。",
+    "summary": "CS0108 はメンバーの隠蔽を警告します。隠蔽は変数のコンパイル時の型で選ばれ、virtual メンバーのオーバーライドによる実行時ディスパッチとは異なります。",
+    "why": "BasePrinter.Print は virtual ではないため ReportPrinter.Print は新しいメンバーです。ReportPrinter を参照していても BasePrinter 型の変数からは基底メンバーが呼ばれます。",
+    "tips": "意図した隠蔽なら例のように new を使います。[[inheritance-polymorphism|多態的ディスパッチ]] が目的なら基底側を virtual、派生側を override にします。",
+    "tags": ["CS0108", "new", "メンバー隠蔽"],
+    "badNotes": {"8": "継承した Print を意図の明示なしに隠している"},
+    "goodNotes": {"8": "new によりオーバーライドではなく隠蔽だと明示する"}
   }
 }
