@@ -100,5 +100,37 @@
     "related": ["inheritance-polymorphism", "static-members"],
     "badHighlight": [8],
     "goodHighlight": [8]
+  },
+  {
+    "id": "cs0162",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "static int ParseOrDefault(string text)\n{\n    if (int.TryParse(text, out int value))\n        return value;\n\n    return 0;\n    Console.WriteLine(\"unreachable\"); // CS0162\n}",
+    "related": ["if-else", "break-continue", "cs0161"]
+  },
+  {
+    "id": "cs8604",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "#nullable enable\nstatic void PrintLength(string text) => Console.WriteLine(text.Length);\n\nstring? maybe = DateTime.Now.Ticks > 0 ? null : \"value\";\nPrintLength(maybe); // CS8604\n\nif (maybe is not null)\n    PrintLength(maybe);",
+    "related": ["nullable", "argument-null", "methods-parameters-returns"]
+  },
+  {
+    "id": "cs8603",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "#nullable enable\nstatic string FindName(bool found)\n{\n    if (found)\n        return \"Ada\";\n\n    return null; // CS8603\n}",
+    "related": ["nullable", "methods-parameters-returns", "cs0161"]
+  },
+  {
+    "id": "cs8509",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "static string Sign(int value) => value switch\n{\n    < 0 => \"negative\",\n    0 => \"zero\"\n    // positive integers are not covered -> CS8509\n};",
+    "related": ["switch-expressions", "pattern-matching", "enums-flags"]
   }
 ]
