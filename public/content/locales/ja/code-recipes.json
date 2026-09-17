@@ -874,5 +874,137 @@
       "async",
       "同時実行数"
     ]
+  },
+  "path-combine-normalize": {
+    "title": "基準ディレクトリを明示してパスを組み立てる",
+    "short": "Path.Combine と GetFullPath で相対パスを明示した基準位置に解決する。",
+    "summary": "相対パスを作業ディレクトリ任せにせず、基準ディレクトリと組み合わせて正規化します。場所を取り違えると [[file-not-found|FileNotFoundException]] の原因になります。",
+    "why": "Path.Combine は区切り文字をプラットフォームに合わせ、Path.GetFullPath は . や .. を含むパスを絶対パスへ正規化します。",
+    "tips": "正規化はファイルの存在確認やシンボリックリンク解決ではありません。外部入力では基準外へ出ないことも別に検証します。",
+    "tags": [
+      "Path",
+      "パス",
+      "GetFullPath"
+    ]
+  },
+  "path-metadata-extension": {
+    "title": "パスからファイル名と拡張子を取り出す",
+    "short": "Path API でファイル名・拡張子を取得し、拡張子を変更する。",
+    "summary": "区切り文字を手作業で分割せず、Path.GetFileName や Path.GetExtension を使います。変更後のパスは [[path-combine-normalize|パスの組み立てと正規化]] と同じルールで扱えます。",
+    "why": "Path API は現在のプラットフォームのパス規則を考慮して最後の要素や拡張子を扱います。",
+    "tips": "拡張子は名前の一部にすぎず、実際のファイル形式や内容が正しいことを保証しません。",
+    "tags": [
+      "Path",
+      "拡張子",
+      "ファイル名"
+    ]
+  },
+  "directory-create-move-delete": {
+    "title": "作業用ディレクトリを作成・移動・削除する",
+    "short": "自分で所有する一時ディレクトリのライフサイクルを管理する。",
+    "summary": "Directory.CreateDirectory で作成し、移動後は [[directory-enumerate|Directory.EnumerateFiles]] で内容を確認できます。最後は所有している正確なディレクトリだけを削除します。",
+    "why": "Directory.Move や再帰削除は対象パスの状態に依存するため、作成した場所と移動後の場所を区別して後始末します。",
+    "tips": "再帰削除を外部入力のパスに対して安易に使わず、自分が作成した専用ディレクトリに限定します。",
+    "tags": [
+      "Directory",
+      "一時ディレクトリ",
+      "cleanup"
+    ]
+  },
+  "file-copy-move-delete": {
+    "title": "ファイルをコピー・移動・削除する",
+    "short": "上書き方針を明示してファイルのライフサイクル操作を行う。",
+    "summary": "File.Copy・File.Move・File.Delete を使い、上書きを許すかどうかを呼び出し時に明示します。事前の存在確認をしても [[io-exception|IOException]] などは依然として起こり得ます。",
+    "why": "存在確認と実際の操作の間に状態が変わる可能性があるため、操作そのものの失敗を処理する必要があります。",
+    "tips": "例では新しく作った一時ディレクトリ内だけを操作し、finally で後始末しています。",
+    "tags": [
+      "File",
+      "コピー",
+      "移動"
+    ]
+  },
+  "file-lines-streaming": {
+    "title": "大きなテキストを1行ずつ処理する",
+    "short": "File.ReadLines でファイル全体を一度にメモリへ載せず列挙する。",
+    "summary": "File.ReadLines は行を必要になった時点で読み進めます。つまり [[linq-deferred|遅延実行]] なので、列挙を始めるまで読み込みや例外発生が遅れることがあります。",
+    "why": "全行を配列として返す ReadAllLines と違い、ReadLines は IEnumerable<string> として逐次処理できます。",
+    "tips": "返された IEnumerable を保存しただけではファイルを読み切ったことにはなりません。列挙時の I/O 失敗も考慮します。",
+    "tags": [
+      "File.ReadLines",
+      "ストリーミング",
+      "IEnumerable"
+    ]
+  },
+  "file-async": {
+    "title": "ファイルの読み書きを非同期で行う",
+    "short": "File の非同期 API を await し、キャンセルも伝播させる。",
+    "summary": "ReadAllTextAsync や WriteAllTextAsync の完了を [[async-await|await]] してから結果を使います。CancellationToken も呼び出し先へ渡します。",
+    "why": "非同期 I/O は待機中に呼び出し元をブロックしませんが、ReadAllTextAsync は内容全体を文字列として保持します。",
+    "tips": "非同期であることと省メモリであることは別です。巨大ファイルにはストリームや行単位処理を検討します。",
+    "tags": [
+      "File",
+      "async",
+      "CancellationToken"
+    ]
+  },
+  "streamreader-writer": {
+    "title": "StreamReader と StreamWriter でテキストを扱う",
+    "short": "ストリーム上のバイト列を明示した文字コードでテキストとして読み書きする。",
+    "summary": "StreamReader / StreamWriter はストリームと文字列の間を変換します。その変換規則は [[encoding-text-bytes|文字列とバイト列のエンコーディング]] と同じ契約です。",
+    "why": "テキスト用ラッパーがバッファリングとエンコード・デコードを担当するため、基底ストリームの所有権は leaveOpen で明示できます。",
+    "tips": "書き込み後に同じストリームを読む場合は Writer を Flush/Dispose し、必要なら Position を戻します。",
+    "tags": [
+      "StreamReader",
+      "StreamWriter",
+      "Encoding"
+    ]
+  },
+  "stream-copy": {
+    "title": "ストリーム間でデータを逐次コピーする",
+    "short": "CopyToAsync で全体を中間配列にせず別のストリームへ転送する。",
+    "summary": "CopyToAsync は読み元から書き先へデータを逐次転送できます。長い処理では [[cancellation-token|CancellationToken]] を渡して呼び出し元のキャンセル要求を伝えます。",
+    "why": "ストリームを使うとデータ全体の byte[] を先に構築せず、一定量ずつ読み書きできます。",
+    "tips": "コピー開始時の Position から処理されます。読み元と書き先の所有権・破棄タイミングも呼び出し側で明確にします。",
+    "tags": [
+      "Stream",
+      "CopyToAsync",
+      "CancellationToken"
+    ]
+  },
+  "gzip-stream": {
+    "title": "GZipStream でデータを圧縮・展開する",
+    "short": "ストリームを重ねて GZip 圧縮し、完了後に展開する。",
+    "summary": "GZipStream は別の Stream を包んで圧縮・展開します。圧縮側は [[idisposable|Dispose]] されると末尾情報まで書き終えるため、出力を読む前にスコープを終了させます。",
+    "why": "圧縮形式の確定に必要なデータが Dispose 時に書かれるため、基底ストリームを leaveOpen で残しつつラッパーを先に閉じます。",
+    "tips": "展開後のサイズは圧縮サイズより大きくなり得ます。信頼できない入力では展開量にも上限を設けます。",
+    "tags": [
+      "GZipStream",
+      "圧縮",
+      "Stream"
+    ]
+  },
+  "zip-archive": {
+    "title": "ZipArchive で複数ファイルを1つにまとめる",
+    "short": "ZipArchiveEntry のストリームを使って ZIP 内のエントリを作成・読み取りする。",
+    "summary": "ZipArchive は複数の名前付きエントリを扱えます。作成モードでは [[idisposable|Dispose]] までに中央ディレクトリ情報が確定するため、読み直す前に Archive を閉じます。",
+    "why": "各エントリは独立したストリームとして読み書きでき、ファイルシステムへ展開しなくても内容を処理できます。",
+    "tips": "外部 ZIP を展開する場合はエントリ名によるパストラバーサルや展開サイズ上限を別途検証します。",
+    "tags": [
+      "ZipArchive",
+      "ZIP",
+      "Stream"
+    ]
+  },
+  "json-document": {
+    "title": "JsonDocument で形が一定でない JSON を調べる",
+    "short": "JsonElement の型とプロパティを確認しながら JSON を読み取る。",
+    "summary": "JsonDocument は読み取り専用の JSON ツリーを提供します。JsonElement は Document のバッファを参照するため、所有者である [[idisposable|JsonDocument の寿命]] を意識します。",
+    "why": "RootElement や子要素は Document に結び付いていますが、Clone した JsonElement は独立して保持できます。",
+    "tips": "TryGetProperty と ValueKind を使い、入力 JSON の形を決め打ちせず必要な型を確認してから値を取得します。",
+    "tags": [
+      "JsonDocument",
+      "JsonElement",
+      "JSON"
+    ]
   }
 }

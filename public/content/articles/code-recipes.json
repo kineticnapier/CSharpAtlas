@@ -853,5 +853,136 @@
       "finally-cleanup",
       "cancellation-token"
     ]
+  },
+  {
+    "id": "path-combine-normalize",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string baseDirectory = Path.GetFullPath(Path.Combine(Path.GetTempPath(), \"atlas-base\"));\nstring relativeInput = Path.Combine(\"reports\", \"today.txt\");\n\nif (Path.IsPathRooted(relativeInput))\n    throw new ArgumentException(\"Expected a relative path.\", nameof(relativeInput));\n\nstring fullPath = Path.GetFullPath(Path.Combine(baseDirectory, relativeInput));\nstring relative = Path.GetRelativePath(baseDirectory, fullPath);\nbool escapesBase = relative == \"..\" ||\n    relative.StartsWith($\"..{Path.DirectorySeparatorChar}\", StringComparison.Ordinal) ||\n    Path.IsPathRooted(relative);\n\nif (escapesBase)\n    throw new InvalidOperationException(\"Path escapes the base directory.\");\n\nConsole.WriteLine(fullPath);",
+    "related": [
+      "file-not-found",
+      "path-metadata-extension",
+      "directory-not-found"
+    ]
+  },
+  {
+    "id": "path-metadata-extension",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string path = Path.Combine(\"reports\", \"summary.tar.gz\");\n\nstring fileName = Path.GetFileName(path);\nstring extension = Path.GetExtension(path);\nstring changed = Path.ChangeExtension(path, \".zip\");\n\nConsole.WriteLine(fileName);   // summary.tar.gz\nConsole.WriteLine(extension);  // .gz\nConsole.WriteLine(changed);    // reports/.../summary.tar.zip",
+    "related": [
+      "path-combine-normalize",
+      "file-copy-move-delete"
+    ]
+  },
+  {
+    "id": "directory-create-move-delete",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string root = Path.Combine(Path.GetTempPath(), $\"atlas-{Guid.NewGuid():N}\");\nstring moved = root + \"-moved\";\n\nDirectory.CreateDirectory(root);\ntry\n{\n    File.WriteAllText(Path.Combine(root, \"note.txt\"), \"hello\");\n    Directory.Move(root, moved);\n\n    foreach (string file in Directory.EnumerateFiles(moved))\n        Console.WriteLine(Path.GetFileName(file));\n}\nfinally\n{\n    if (Directory.Exists(root)) Directory.Delete(root, recursive: true);\n    if (Directory.Exists(moved)) Directory.Delete(moved, recursive: true);\n}",
+    "related": [
+      "directory-enumerate",
+      "directory-not-found",
+      "unauthorized-access"
+    ]
+  },
+  {
+    "id": "file-copy-move-delete",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string root = Path.Combine(Path.GetTempPath(), $\"atlas-{Guid.NewGuid():N}\");\nDirectory.CreateDirectory(root);\n\ntry\n{\n    string source = Path.Combine(root, \"source.txt\");\n    string copy = Path.Combine(root, \"copy.txt\");\n    string moved = Path.Combine(root, \"moved.txt\");\n\n    File.WriteAllText(source, \"data\");\n    File.Copy(source, copy, overwrite: false);\n    File.Move(copy, moved, overwrite: false);\n    File.Delete(moved);\n}\nfinally\n{\n    Directory.Delete(root, recursive: true);\n}",
+    "related": [
+      "io-exception",
+      "file-not-found",
+      "path-combine-normalize"
+    ]
+  },
+  {
+    "id": "file-lines-streaming",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string path = Path.GetTempFileName();\ntry\n{\n    File.WriteAllLines(path, [\"info\", \"warning: disk\", \"done\"]);\n\n    IEnumerable<string> warnings = File.ReadLines(path)\n        .Where(line => line.StartsWith(\"warning\", StringComparison.Ordinal));\n\n    foreach (string line in warnings)\n        Console.WriteLine(line);\n}\nfinally\n{\n    File.Delete(path);\n}",
+    "related": [
+      "file-read",
+      "ienumerable",
+      "linq-deferred"
+    ]
+  },
+  {
+    "id": "file-async",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string path = Path.GetTempFileName();\nusing var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));\nCancellationToken token = cts.Token;\n\ntry\n{\n    await File.WriteAllTextAsync(path, \"hello\", token);\n    string text = await File.ReadAllTextAsync(path, token);\n    Console.WriteLine(text);\n}\nfinally\n{\n    File.Delete(path);\n}",
+    "related": [
+      "file-read",
+      "file-write",
+      "async-await",
+      "cancellation-token"
+    ]
+  },
+  {
+    "id": "streamreader-writer",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var stream = new MemoryStream();\n\nusing (var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true))\n{\n    writer.WriteLine(\"日本語 text\");\n}\n\nstream.Position = 0;\nusing var reader = new StreamReader(\n    stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);\n\nConsole.WriteLine(reader.ReadLine());",
+    "related": [
+      "stream-basics",
+      "encoding-text-bytes"
+    ]
+  },
+  {
+    "id": "stream-copy",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var source = new MemoryStream(Encoding.UTF8.GetBytes(\"copy me\"));\nusing var destination = new MemoryStream();\nusing var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));\n\nawait source.CopyToAsync(destination, cts.Token);\n\ndestination.Position = 0;\nusing var reader = new StreamReader(destination, Encoding.UTF8);\nConsole.WriteLine(await reader.ReadToEndAsync(cts.Token));",
+    "related": [
+      "stream-basics",
+      "file-async",
+      "cancellation-token"
+    ]
+  },
+  {
+    "id": "gzip-stream",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "byte[] payload = Encoding.UTF8.GetBytes(\"compress me\");\nusing var compressed = new MemoryStream();\n\nusing (var gzip = new GZipStream(compressed, CompressionLevel.Optimal, leaveOpen: true))\n{\n    await gzip.WriteAsync(payload);\n}\n\ncompressed.Position = 0;\nusing var decompressor = new GZipStream(compressed, CompressionMode.Decompress, leaveOpen: true);\nusing var restored = new MemoryStream();\nawait decompressor.CopyToAsync(restored);\n\nConsole.WriteLine(Encoding.UTF8.GetString(restored.ToArray()));",
+    "related": [
+      "stream-basics",
+      "stream-copy",
+      "idisposable"
+    ]
+  },
+  {
+    "id": "zip-archive",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var archiveStream = new MemoryStream();\n\nusing (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, leaveOpen: true))\n{\n    ZipArchiveEntry entry = archive.CreateEntry(\"notes/readme.txt\");\n    using var writer = new StreamWriter(entry.Open(), Encoding.UTF8);\n    writer.Write(\"hello from zip\");\n}\n\narchiveStream.Position = 0;\nusing var readArchive = new ZipArchive(archiveStream, ZipArchiveMode.Read, leaveOpen: true);\nZipArchiveEntry saved = readArchive.GetEntry(\"notes/readme.txt\")!;\nusing var reader = new StreamReader(saved.Open(), Encoding.UTF8);\nConsole.WriteLine(reader.ReadToEnd());",
+    "related": [
+      "gzip-stream",
+      "streamreader-writer",
+      "idisposable"
+    ]
+  },
+  {
+    "id": "json-document",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "string json = \"{\\\"kind\\\":\\\"point\\\",\\\"x\\\":3}\";\nJsonElement detached;\n\nusing (JsonDocument document = JsonDocument.Parse(json))\n{\n    JsonElement root = document.RootElement;\n    if (root.TryGetProperty(\"x\", out JsonElement x) && x.ValueKind == JsonValueKind.Number)\n        Console.WriteLine(x.GetInt32());\n\n    detached = root.Clone();\n}\n\nConsole.WriteLine(detached.GetProperty(\"kind\").GetString());",
+    "related": [
+      "json-read",
+      "json-exception",
+      "idisposable"
+    ]
   }
 ]
