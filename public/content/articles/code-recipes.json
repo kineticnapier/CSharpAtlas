@@ -210,7 +210,11 @@
     "bad": null,
     "good": null,
     "code": "var download = new Download();\nEventHandler<ProgressEventArgs> handler = OnProgress;\ndownload.ProgressChanged += handler;\ndownload.Report(50);\ndownload.ProgressChanged -= handler;\n\nstatic void OnProgress(object? sender, ProgressEventArgs e)\n    => Console.WriteLine($\"{e.Percent}%\");\n\nsealed class Download\n{\n    public event EventHandler<ProgressEventArgs>? ProgressChanged;\n    public void Report(int percent)\n        => ProgressChanged?.Invoke(this, new ProgressEventArgs(percent));\n}\n\nsealed class ProgressEventArgs(int percent) : EventArgs\n{\n    public int Percent { get; } = percent;\n}",
-    "related": ["events", "delegates", "idisposable"]
+    "related": [
+      "events",
+      "delegates",
+      "idisposable"
+    ]
   },
   {
     "id": "queue-stack",
@@ -218,7 +222,11 @@
     "bad": null,
     "good": null,
     "code": "var arrivals = new Queue<string>();\narrivals.Enqueue(\"Ada\");\narrivals.Enqueue(\"Grace\");\nif (arrivals.TryDequeue(out string? next))\n    Console.WriteLine(next); // Ada\n\nvar history = new Stack<string>();\nhistory.Push(\"first\");\nhistory.Push(\"second\");\nif (history.TryPop(out string? latest))\n    Console.WriteLine(latest); // second",
-    "related": ["list-basic", "invalid-operation", "ienumerable"]
+    "related": [
+      "list-basic",
+      "invalid-operation",
+      "ienumerable"
+    ]
   },
   {
     "id": "priority-queue",
@@ -226,7 +234,10 @@
     "bad": null,
     "good": null,
     "code": "var jobs = new PriorityQueue<string, int>();\njobs.Enqueue(\"report\", 20);\njobs.Enqueue(\"alert\", 5);\njobs.Enqueue(\"backup\", 20);\n\nwhile (jobs.TryDequeue(out string? job, out int priority))\n    Console.WriteLine($\"{priority}: {job}\");",
-    "related": ["custom-ordering", "queue-stack"]
+    "related": [
+      "custom-ordering",
+      "queue-stack"
+    ]
   },
   {
     "id": "linked-list",
@@ -234,7 +245,10 @@
     "bad": null,
     "good": null,
     "code": "var route = new LinkedList<string>();\nLinkedListNode<string> station = route.AddLast(\"Central\");\nroute.AddBefore(station, \"West\");\nroute.AddAfter(station, \"East\");\nroute.Remove(station);\n\nConsole.WriteLine(string.Join(\" -> \", route));",
-    "related": ["list-basic", "queue-stack"]
+    "related": [
+      "list-basic",
+      "queue-stack"
+    ]
   },
   {
     "id": "immutable-collections",
@@ -242,7 +256,11 @@
     "bad": null,
     "good": null,
     "code": "using System.Collections.Immutable;\n\nImmutableArray<string> first = [\"red\", \"blue\"];\nImmutableArray<string> second = first.Add(\"green\");\n\nConsole.WriteLine(first.Length);  // 2\nConsole.WriteLine(second.Length); // 3",
-    "related": ["readonly-collection-views", "record-shallow-copy", "arrays-basics"]
+    "related": [
+      "readonly-collection-views",
+      "record-shallow-copy",
+      "arrays-basics"
+    ]
   },
   {
     "id": "dictionary-update-insert",
@@ -250,7 +268,11 @@
     "bad": null,
     "good": null,
     "code": "var scores = new Dictionary<string, int>();\nscores.Add(\"Ada\", 90); // initial insertion: succeeds\ntry\n{\n    scores.Add(\"Ada\", 95); // duplicate: throws\n}\ncatch (ArgumentException)\n{\n    Console.WriteLine(\"duplicate rejected\");\n}\n\nbool added = scores.TryAdd(\"Ada\", 95); // duplicate: false\nscores[\"Ada\"] = 95;                    // insert or replace\nbool removed = scores.Remove(\"Ada\", out int oldScore);\n\nConsole.WriteLine($\"{added}, {removed}, {oldScore}\");",
-    "related": ["dict-safe", "key-not-found", "dictionary-duplicate-keys"]
+    "related": [
+      "dict-safe",
+      "key-not-found",
+      "dictionary-duplicate-keys"
+    ]
   },
   {
     "id": "dictionary-comparers",
@@ -258,7 +280,10 @@
     "bad": null,
     "good": null,
     "code": "var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)\n{\n    [\"Content-Type\"] = \"text/plain\"\n};\n\nConsole.WriteLine(headers[\"content-type\"]);\nConsole.WriteLine(headers.TryAdd(\"CONTENT-TYPE\", \"application/json\")); // False",
-    "related": ["dict-safe", "custom-equality-hashing"]
+    "related": [
+      "dict-safe",
+      "custom-equality-hashing"
+    ]
   },
   {
     "id": "hashset-set-operations",
@@ -266,7 +291,11 @@
     "bad": null,
     "good": null,
     "code": "var first = new HashSet<int> { 1, 2, 3 };\nvar second = new HashSet<int> { 3, 4 };\n\nvar union = new HashSet<int>(first);\nunion.UnionWith(second);\nvar common = new HashSet<int>(first);\ncommon.IntersectWith(second);\nvar onlyFirst = new HashSet<int>(first);\nonlyFirst.ExceptWith(second);\n\nConsole.WriteLine(first.Overlaps(second));\nConsole.WriteLine(common.IsSubsetOf(union));",
-    "related": ["hashset-basic", "linq-set-operators", "equality"]
+    "related": [
+      "hashset-basic",
+      "linq-set-operators",
+      "equality"
+    ]
   },
   {
     "id": "array-copy-clear",
@@ -274,7 +303,11 @@
     "bad": null,
     "good": null,
     "code": "var source = new[] { new Box(1), new Box(2), new Box(3) };\nvar target = new Box?[3];\nArray.Copy(source, 1, target, 0, 2);\ntarget[0]!.Value = 20; // source[1] is the same Box\nArray.Clear(target, 1, 2); // sets those slots to null\n\nConsole.WriteLine(source[1].Value); // 20\n\nsealed class Box(int value) { public int Value { get; set; } = value; }",
-    "related": ["arrays-basics", "default-values", "value-reference-types"]
+    "related": [
+      "arrays-basics",
+      "default-values",
+      "value-reference-types"
+    ]
   },
   {
     "id": "array-binary-search",
@@ -282,7 +315,11 @@
     "bad": null,
     "good": null,
     "code": "string[] names = [\"Ada\", \"grace\", \"Linus\"];\nArray.Sort(names, StringComparer.OrdinalIgnoreCase);\n\nint result = Array.BinarySearch(names, \"Ken\", StringComparer.OrdinalIgnoreCase);\nif (result < 0)\n{\n    int insertionIndex = ~result;\n    Console.WriteLine($\"Insert at {insertionIndex}\");\n}",
-    "related": ["arrays-basics", "custom-ordering", "list-sort"]
+    "related": [
+      "arrays-basics",
+      "custom-ordering",
+      "list-sort"
+    ]
   },
   {
     "id": "list-removeall",
@@ -290,7 +327,11 @@
     "bad": null,
     "good": null,
     "code": "var numbers = new List<int> { 1, 2, 3, 4, 5, 6 };\nint removed = numbers.RemoveAll(number => number % 2 == 0);\n\nConsole.WriteLine(removed); // 3\nConsole.WriteLine(string.Join(\", \", numbers)); // 1, 3, 5",
-    "related": ["list-filter", "collection-modified-enumeration", "lambda"]
+    "related": [
+      "list-filter",
+      "collection-modified-enumeration",
+      "lambda"
+    ]
   },
   {
     "id": "linq-any-all",
@@ -298,7 +339,11 @@
     "bad": null,
     "good": null,
     "code": "int[] values = [2, 4, 7];\nbool hasOdd = values.Any(value => value % 2 != 0);\nbool allPositive = values.All(value => value > 0);\n\nint[] empty = [];\nConsole.WriteLine(empty.Any());             // False\nConsole.WriteLine(empty.All(value => false)); // True",
-    "related": ["list-filter", "boolean-operators", "ienumerable"]
+    "related": [
+      "list-filter",
+      "boolean-operators",
+      "ienumerable"
+    ]
   },
   {
     "id": "linq-first-single",
@@ -306,7 +351,11 @@
     "bad": null,
     "good": null,
     "code": "var users = new[] { new User(1, \"Ada\"), new User(2, \"Grace\") };\nUser first = users.First(user => user.Id > 0);\nUser only = users.Single(user => user.Id == 2);\nUser? missing = users.SingleOrDefault(user => user.Id == 3);\n\nConsole.WriteLine($\"{first.Name}, {only.Name}, {missing is null}\");\n\nsealed record User(int Id, string Name);",
-    "related": ["invalid-operation", "linq-any-all", "nullable-value-types"]
+    "related": [
+      "invalid-operation",
+      "linq-any-all",
+      "nullable-value-types"
+    ]
   },
   {
     "id": "linq-aggregate",
@@ -314,7 +363,11 @@
     "bad": null,
     "good": null,
     "code": "string[] words = [\"C#\", \"LINQ\", \"fold\"];\nstring sentence = words.Aggregate(\n    \"Topics:\",\n    (accumulator, word) => $\"{accumulator} {word}\");\n\nstring empty = Array.Empty<string>().Aggregate(\"Topics:\", (text, word) => text + word);\nConsole.WriteLine(sentence);\nConsole.WriteLine(empty); // Topics:",
-    "related": ["linq-sum-average", "lambda", "ienumerable"]
+    "related": [
+      "linq-sum-average",
+      "lambda",
+      "ienumerable"
+    ]
   },
   {
     "id": "linq-sum-average",
@@ -322,7 +375,11 @@
     "bad": null,
     "good": null,
     "code": "var orders = new[] { new Order(12), new Order(18) };\nint total = orders.Sum(order => order.Quantity);\ndouble average = orders.Average(order => order.Quantity);\n\nint?[] optional = [10, null, 20];\nConsole.WriteLine(optional.Sum());     // 30\nConsole.WriteLine(optional.Average()); // 15\n\nsealed record Order(int Quantity);",
-    "related": ["linq-aggregate", "overflow-exception", "nullable-value-types"]
+    "related": [
+      "linq-aggregate",
+      "overflow-exception",
+      "nullable-value-types"
+    ]
   },
   {
     "id": "linq-minby-maxby",
@@ -330,7 +387,11 @@
     "bad": null,
     "good": null,
     "code": "var products = new[]\n{\n    new Product(\"Pen\", 3m),\n    new Product(\"Book\", 20m),\n    new Product(\"Bag\", 45m)\n};\n\nProduct cheapest = products.MinBy(product => product.Price)!;\nProduct priciest = products.MaxBy(product => product.Price)!;\nConsole.WriteLine($\"{cheapest.Name} / {priciest.Name}\");\n\nsealed record Product(string Name, decimal Price);",
-    "related": ["custom-ordering", "linq-first-single", "list-sort"]
+    "related": [
+      "custom-ordering",
+      "linq-first-single",
+      "list-sort"
+    ]
   },
   {
     "id": "linq-selectmany",
@@ -338,7 +399,11 @@
     "bad": null,
     "good": null,
     "code": "var departments = new[]\n{\n    new Department(\"R&D\", [\"Ada\", \"Grace\"]),\n    new Department(\"Ops\", [\"Linus\"])\n};\n\nvar members = departments.SelectMany(\n    department => department.Members,\n    (department, member) => new { department.Name, Member = member });\n\nforeach (var item in members) Console.WriteLine($\"{item.Name}: {item.Member}\");\n\nsealed record Department(string Name, string[] Members);",
-    "related": ["linq-select", "ienumerable", "linq-join"]
+    "related": [
+      "linq-select",
+      "ienumerable",
+      "linq-join"
+    ]
   },
   {
     "id": "linq-join",
@@ -346,7 +411,11 @@
     "bad": null,
     "good": null,
     "code": "var customers = new[] { new Customer(1, \"Ada\"), new Customer(2, \"Grace\") };\nvar orders = new[] { new Order(1, \"Book\"), new Order(1, \"Pen\"), new Order(3, \"Bag\") };\n\nvar rows = customers.Join(\n    orders,\n    customer => customer.Id,\n    order => order.CustomerId,\n    (customer, order) => new { customer.Name, order.Item });\n\nforeach (var row in rows) Console.WriteLine($\"{row.Name}: {row.Item}\");\n\nsealed record Customer(int Id, string Name);\nsealed record Order(int CustomerId, string Item);",
-    "related": ["linq-groupjoin", "dict-safe", "anonymous-types"]
+    "related": [
+      "linq-groupjoin",
+      "dict-safe",
+      "anonymous-types"
+    ]
   },
   {
     "id": "linq-groupjoin",
@@ -354,7 +423,11 @@
     "bad": null,
     "good": null,
     "code": "var customers = new[] { new Customer(1, \"Ada\"), new Customer(2, \"Grace\") };\nvar orders = new[] { new Order(1, \"Book\"), new Order(1, \"Pen\") };\n\nvar grouped = customers.GroupJoin(\n    orders, c => c.Id, o => o.CustomerId,\n    (customer, matches) => new { customer, matches });\n\nvar leftJoin = grouped.SelectMany(\n    row => row.matches.DefaultIfEmpty(),\n    (row, order) => new { row.customer.Name, Item = order?.Item ?? \"(none)\" });\n\nforeach (var row in leftJoin) Console.WriteLine($\"{row.Name}: {row.Item}\");\n\nsealed record Customer(int Id, string Name);\nsealed record Order(int CustomerId, string Item);",
-    "related": ["linq-join", "linq-defaultifempty", "linq-selectmany"]
+    "related": [
+      "linq-join",
+      "linq-defaultifempty",
+      "linq-selectmany"
+    ]
   },
   {
     "id": "linq-pagination",
@@ -362,7 +435,11 @@
     "bad": null,
     "good": null,
     "code": "int pageNumber = 2;\nint pageSize = 3;\nif (pageNumber < 1 || pageSize < 1)\n    throw new ArgumentOutOfRangeException();\n\nint offset = checked((pageNumber - 1) * pageSize);\nvar page = Enumerable.Range(1, 10)\n    .OrderBy(value => value)\n    .Skip(offset)\n    .Take(pageSize)\n    .ToArray();\n\nConsole.WriteLine(string.Join(\", \", page)); // 4, 5, 6",
-    "related": ["list-sort", "linq-deferred", "integer-overflow"]
+    "related": [
+      "list-sort",
+      "linq-deferred",
+      "integer-overflow"
+    ]
   },
   {
     "id": "linq-chunk",
@@ -370,7 +447,11 @@
     "bad": null,
     "good": null,
     "code": "foreach (int[] batch in Enumerable.Range(1, 8).Chunk(3))\n{\n    Console.WriteLine($\"{batch.Length}: {string.Join(\", \", batch)}\");\n}\n// lengths: 3, 3, 2",
-    "related": ["ienumerable", "arrays-basics", "linq-pagination"]
+    "related": [
+      "ienumerable",
+      "arrays-basics",
+      "linq-pagination"
+    ]
   },
   {
     "id": "linq-zip",
@@ -378,7 +459,11 @@
     "bad": null,
     "good": null,
     "code": "string[] names = [\"Ada\", \"Grace\", \"Linus\"];\nint[] scores = [90, 85];\n\nforeach ((string name, int score) in names.Zip(scores))\n    Console.WriteLine($\"{name}: {score}\");\n// Linus has no paired output because scores ends first.",
-    "related": ["tuples-deconstruction", "linq-join", "ienumerable"]
+    "related": [
+      "tuples-deconstruction",
+      "linq-join",
+      "ienumerable"
+    ]
   },
   {
     "id": "linq-set-operators",
@@ -386,7 +471,11 @@
     "bad": null,
     "good": null,
     "code": "string[] first = [\"Ada\", \"GRACE\", \"Ada\"];\nstring[] second = [\"ada\", \"Linus\"];\nvar comparer = StringComparer.OrdinalIgnoreCase;\n\nvar union = first.Union(second, comparer);\nvar common = first.Intersect(second, comparer);\nvar difference = first.Except(second, comparer);\n\nConsole.WriteLine(string.Join(\", \", union));\nConsole.WriteLine(string.Join(\", \", common));\nConsole.WriteLine(string.Join(\", \", difference));",
-    "related": ["hashset-set-operations", "linq-distinct", "equality"]
+    "related": [
+      "hashset-set-operations",
+      "linq-distinct",
+      "equality"
+    ]
   },
   {
     "id": "linq-tolookup",
@@ -394,7 +483,11 @@
     "bad": null,
     "good": null,
     "code": "var orders = new[]\n{\n    new Order(1, \"Book\"),\n    new Order(1, \"Pen\"),\n    new Order(2, \"Bag\")\n};\n\nILookup<int, Order> byCustomer = orders.ToLookup(order => order.CustomerId);\nConsole.WriteLine(string.Join(\", \", byCustomer[1].Select(order => order.Item)));\nConsole.WriteLine(byCustomer[99].Count()); // 0\n\nsealed record Order(int CustomerId, string Item);",
-    "related": ["linq-groupby", "dict-safe", "linq-deferred"]
+    "related": [
+      "linq-groupby",
+      "dict-safe",
+      "linq-deferred"
+    ]
   },
   {
     "id": "linq-cast-oftype",
@@ -402,7 +495,11 @@
     "bad": null,
     "good": null,
     "code": "object?[] mixed = [1, \"two\", null, 3];\n\nint[] integers = mixed.OfType<int>().ToArray(); // 1, 3\nConsole.WriteLine(string.Join(\", \", integers));\n\nIEnumerable<object?> compatible = [\"Ada\", null];\nforeach (string? value in compatible.Cast<string?>())\n    Console.WriteLine(value ?? \"(null)\");",
-    "related": ["invalid-cast", "pattern-matching", "ienumerable"]
+    "related": [
+      "invalid-cast",
+      "pattern-matching",
+      "ienumerable"
+    ]
   },
   {
     "id": "linq-sequenceequal",
@@ -410,7 +507,11 @@
     "bad": null,
     "good": null,
     "code": "string[] first = [\"Ada\", \"Grace\"];\nstring[] second = [\"ada\", \"GRACE\"];\n\nbool sameContents = first.SequenceEqual(second, StringComparer.OrdinalIgnoreCase);\nbool sameReference = ReferenceEquals(first, second);\nConsole.WriteLine($\"{sameContents}, {sameReference}\"); // True, False",
-    "related": ["equality", "reference-equality", "linq-set-operators"]
+    "related": [
+      "equality",
+      "reference-equality",
+      "linq-set-operators"
+    ]
   },
   {
     "id": "linq-defaultifempty",
@@ -418,7 +519,11 @@
     "bad": null,
     "good": null,
     "code": "int[] values = [];\nint[] supplied = values.DefaultIfEmpty(-1).ToArray();\nint implicitDefault = values.DefaultIfEmpty().Single();\n\nConsole.WriteLine(supplied[0]);        // -1\nConsole.WriteLine(implicitDefault);    // 0\nConsole.WriteLine(new[] { 5 }.DefaultIfEmpty(-1).Single()); // 5",
-    "related": ["linq-groupjoin", "linq-sum-average", "default-values"]
+    "related": [
+      "linq-groupjoin",
+      "linq-sum-average",
+      "default-values"
+    ]
   },
   {
     "id": "string-search-replace",
@@ -426,7 +531,11 @@
     "bad": null,
     "good": null,
     "code": "string source = \"mode=TEST; id=42\";\nint start = source.IndexOf(\"id=\", StringComparison.Ordinal);\nif (start >= 0)\n{\n    string idText = source[(start + 3)..];\n    Console.WriteLine(idText);\n}\n\nstring normalized = source.Replace(\"TEST\", \"test\", StringComparison.OrdinalIgnoreCase);\nConsole.WriteLine(source);     // unchanged\nConsole.WriteLine(normalized);",
-    "related": ["string-comparison", "regex-basic", "indices-ranges"]
+    "related": [
+      "string-comparison",
+      "regex-basic",
+      "indices-ranges"
+    ]
   },
   {
     "id": "string-trim-validation",
@@ -434,7 +543,11 @@
     "bad": null,
     "good": null,
     "code": "static string NormalizeName(string? input)\n{\n    if (string.IsNullOrWhiteSpace(input))\n        throw new ArgumentException(\"A name is required.\", nameof(input));\n\n    return input.Trim();\n}\n\nConsole.WriteLine(NormalizeName(\"  Ada  \"));",
-    "related": ["nullable", "argument-exception", "string-split-join"]
+    "related": [
+      "nullable",
+      "argument-exception",
+      "string-split-join"
+    ]
   },
   {
     "id": "stringbuilder",
@@ -442,7 +555,10 @@
     "bad": null,
     "good": null,
     "code": "var builder = new StringBuilder();\nfor (int i = 1; i <= 3; i++)\n{\n    if (builder.Length > 0) builder.Append(\", \");\n    builder.Append(\"item-\").Append(i);\n}\n\nstring result = builder.ToString();\nstring message = $\"Built {result}\";\nConsole.WriteLine(message);",
-    "related": ["string-interpolation", "string-split-join"]
+    "related": [
+      "string-interpolation",
+      "string-split-join"
+    ]
   },
   {
     "id": "unicode-normalization",
@@ -450,7 +566,10 @@
     "bad": null,
     "good": null,
     "code": "string composed = \"café\";\nstring decomposed = \"cafe\\u0301\";\n\nstring left = composed.Normalize(NormalizationForm.FormC);\nstring right = decomposed.Normalize(NormalizationForm.FormC);\nbool equal = string.Equals(left, right, StringComparison.Ordinal);\nConsole.WriteLine(equal); // True",
-    "related": ["unicode-runes", "string-comparison"]
+    "related": [
+      "unicode-runes",
+      "string-comparison"
+    ]
   },
   {
     "id": "span-parse",
@@ -458,7 +577,11 @@
     "bad": null,
     "good": null,
     "code": "string line = \"month=09\";\nReadOnlySpan<char> token = line.AsSpan(6, 2);\n\nif (int.TryParse(token, NumberStyles.None, CultureInfo.InvariantCulture, out int month)\n    && month is >= 1 and <= 12)\n{\n    Console.WriteLine(month);\n}",
-    "related": ["span-memory", "parse-number", "culture-sensitive-numbers"]
+    "related": [
+      "span-memory",
+      "parse-number",
+      "culture-sensitive-numbers"
+    ]
   },
   {
     "id": "base64",
@@ -466,7 +589,10 @@
     "bad": null,
     "good": null,
     "code": "byte[] payload = [0x00, 0xFF, 0x10, 0x80];\nstring encoded = Convert.ToBase64String(payload);\nbyte[] recovered = Convert.FromBase64String(encoded);\nConsole.WriteLine(Convert.ToHexString(recovered));\n\ntry\n{\n    Convert.FromBase64String(\"not base64!\");\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Invalid Base64 text.\");\n}",
-    "related": ["encoding-text-bytes", "format-exception"]
+    "related": [
+      "encoding-text-bytes",
+      "format-exception"
+    ]
   },
   {
     "id": "regex-groups",
@@ -474,7 +600,10 @@
     "bad": null,
     "good": null,
     "code": "var regex = new Regex(\n    @\"\\A(?<amount>\\d+)(?:\\s*(?<unit>kg|g))?(?:\\[(?<note>[^]]*)\\])?\\z\",\n    RegexOptions.CultureInvariant,\n    TimeSpan.FromMilliseconds(100));\n\nMatch match = regex.Match(\"250[]\");\nif (match.Success)\n{\n    Group unit = match.Groups[\"unit\"];\n    Group note = match.Groups[\"note\"];\n    Console.WriteLine(unit.Success ? unit.Value : \"(absent)\");\n    Console.WriteLine(note.Success && note.Value.Length == 0 ? \"(empty)\" : note.Value);\n}",
-    "related": ["regex-basic", "parse-number"]
+    "related": [
+      "regex-basic",
+      "parse-number"
+    ]
   },
   {
     "id": "regex-replace",
@@ -482,7 +611,11 @@
     "bad": null,
     "good": null,
     "code": "var regex = new Regex(\n    @\"(?<name>[A-Za-z]+):(?<value>\\d+)\",\n    RegexOptions.CultureInvariant,\n    TimeSpan.FromMilliseconds(100));\n\nstring input = \"pen:2 book:5\";\nstring output = regex.Replace(input, match =>\n    $\"{match.Groups[\"name\"].Value}={match.Groups[\"value\"].Value}\");\nConsole.WriteLine(output);",
-    "related": ["regex-groups", "lambda", "string-search-replace"]
+    "related": [
+      "regex-groups",
+      "lambda",
+      "string-search-replace"
+    ]
   },
   {
     "id": "date-parse-exact",
@@ -490,7 +623,11 @@
     "bad": null,
     "good": null,
     "code": "string input = \"2026-04-01 09:30\";\nconst string format = \"yyyy-MM-dd HH:mm\";\n\nif (DateTime.TryParseExact(\n    input, format, CultureInfo.InvariantCulture,\n    DateTimeStyles.None, out DateTime wallClock))\n{\n    Console.WriteLine(wallClock);\n    Console.WriteLine(wallClock.Kind); // Unspecified\n}",
-    "related": ["date-format", "format-exception", "datetime-kind"]
+    "related": [
+      "date-format",
+      "format-exception",
+      "datetime-kind"
+    ]
   },
   {
     "id": "time-zone-conversion",
@@ -498,7 +635,11 @@
     "bad": null,
     "good": null,
     "code": "TimeZoneInfo zone = TimeZoneInfo.Local; // chosen by application configuration\nDateTimeOffset instant = DateTimeOffset.Parse(\n    \"2026-04-01T00:30:00+00:00\", CultureInfo.InvariantCulture);\nDateTimeOffset inZone = TimeZoneInfo.ConvertTime(instant, zone);\nConsole.WriteLine(inZone);\n\nDateTime candidate = new(2026, 11, 1, 1, 30, 0, DateTimeKind.Unspecified);\nif (zone.IsInvalidTime(candidate))\n    Console.WriteLine(\"This wall-clock time does not exist in the selected zone.\");\nelse if (zone.IsAmbiguousTime(candidate))\n    Console.WriteLine(\"Choose which offset is intended.\");",
-    "related": ["datetimeoffset", "datetime-kind", "dateonly-timeonly"]
+    "related": [
+      "datetimeoffset",
+      "datetime-kind",
+      "dateonly-timeonly"
+    ]
   },
   {
     "id": "timespan-arithmetic",
@@ -506,7 +647,11 @@
     "bad": null,
     "good": null,
     "code": "TimeSpan timeout = TimeSpan.FromSeconds(30);\nTimeSpan extended = timeout + TimeSpan.FromSeconds(15);\n\nDateTimeOffset started = DateTimeOffset.Parse(\n    \"2026-04-01T00:00:00+00:00\", CultureInfo.InvariantCulture);\nDateTimeOffset finished = started.AddMinutes(12);\nTimeSpan elapsed = finished - started;\n\nConsole.WriteLine(extended.TotalSeconds); // 45\nConsole.WriteLine(elapsed.TotalMinutes);  // 12",
-    "related": ["datetimeoffset", "timespan-component-totals", "stopwatch"]
+    "related": [
+      "datetimeoffset",
+      "timespan-component-totals",
+      "stopwatch"
+    ]
   },
   {
     "id": "stopwatch",
@@ -514,7 +659,10 @@
     "bad": null,
     "good": null,
     "code": "var samples = new List<TimeSpan>();\nfor (int i = 0; i < 3; i++)\n{\n    var stopwatch = Stopwatch.StartNew();\n    Thread.SpinWait(10_000);\n    stopwatch.Stop();\n    samples.Add(stopwatch.Elapsed);\n}\n\nforeach (TimeSpan elapsed in samples)\n    Console.WriteLine(elapsed.TotalMilliseconds);",
-    "related": ["timespan-arithmetic", "task-delay"]
+    "related": [
+      "timespan-arithmetic",
+      "task-delay"
+    ]
   },
   {
     "id": "math-rounding",
@@ -522,7 +670,11 @@
     "bad": null,
     "good": null,
     "code": "decimal positive = 2.5m;\ndecimal negative = -2.5m;\n\nConsole.WriteLine(Math.Round(positive, MidpointRounding.ToEven));      // 2\nConsole.WriteLine(Math.Round(positive, MidpointRounding.AwayFromZero)); // 3\nConsole.WriteLine(Math.Floor(negative));    // -3\nConsole.WriteLine(Math.Ceiling(negative));  // -2\nConsole.WriteLine(Math.Truncate(negative)); // -2",
-    "related": ["numeric-conversions", "decimal-calculations", "floating-equality"]
+    "related": [
+      "numeric-conversions",
+      "decimal-calculations",
+      "floating-equality"
+    ]
   },
   {
     "id": "math-clamp",
@@ -530,7 +682,11 @@
     "bad": null,
     "good": null,
     "code": "double value = 125;\ndouble minimum = 0;\ndouble maximum = 100;\n\nif (!double.IsFinite(value) || !double.IsFinite(minimum) || !double.IsFinite(maximum))\n    throw new ArgumentOutOfRangeException(nameof(value), \"Finite values are required.\");\n\ndouble bounded = Math.Clamp(value, minimum, maximum);\nConsole.WriteLine(bounded); // 100\n// Math.Clamp(value, 10, 0) throws ArgumentException.",
-    "related": ["numeric-types", "argument-exception", "nan-infinity"]
+    "related": [
+      "numeric-types",
+      "argument-exception",
+      "nan-infinity"
+    ]
   },
   {
     "id": "random-generation",
@@ -538,7 +694,10 @@
     "bad": null,
     "good": null,
     "code": "var random = new Random(12345);\nint die = random.Next(1, 7);       // 1 through 6; 7 is exclusive\ndouble fraction = random.NextDouble(); // 0.0 <= value < 1.0\n\nvar replay = new Random(12345);\nConsole.WriteLine(die == replay.Next(1, 7)); // True",
-    "related": ["numeric-types", "arrays-basics"]
+    "related": [
+      "numeric-types",
+      "arrays-basics"
+    ]
   },
   {
     "id": "random-shuffle-sampling",
@@ -546,7 +705,11 @@
     "bad": null,
     "good": null,
     "code": "string[] source = [\"A\", \"B\", \"C\", \"D\", \"E\"];\nstring[] pool = source.ToArray(); // owned copy\nRandom.Shared.Shuffle(pool);      // mutates pool\nstring[] sample = pool[..3];\n\nConsole.WriteLine(string.Join(\", \", sample));\nConsole.WriteLine(string.Join(\", \", source)); // original order is unchanged",
-    "related": ["random-generation", "arrays-basics", "linq-pagination"]
+    "related": [
+      "random-generation",
+      "arrays-basics",
+      "linq-pagination"
+    ]
   },
   {
     "id": "guid",
@@ -554,7 +717,11 @@
     "bad": null,
     "good": null,
     "code": "Guid created = Guid.NewGuid();\nstring persisted = created.ToString(\"D\");\n\nif (Guid.TryParseExact(persisted, \"D\", out Guid parsed))\n{\n    var values = new Dictionary<Guid, string> { [parsed] = \"stored\" };\n    Console.WriteLine(values[parsed]);\n}",
-    "related": ["parse-number", "format-exception", "dictionary-update-insert"]
+    "related": [
+      "parse-number",
+      "format-exception",
+      "dictionary-update-insert"
+    ]
   },
   {
     "id": "biginteger",
@@ -562,7 +729,11 @@
     "bad": null,
     "good": null,
     "code": "BigInteger factorial = BigInteger.One;\nfor (int value = 2; value <= 50; value++)\n    factorial *= value;\n\nConsole.WriteLine(factorial);\ntry\n{\n    long fixedWidth = checked((long)factorial);\n}\ncatch (OverflowException)\n{\n    Console.WriteLine(\"The value does not fit in Int64.\");\n}",
-    "related": ["numeric-types", "integer-overflow", "overflow-exception"]
+    "related": [
+      "numeric-types",
+      "integer-overflow",
+      "overflow-exception"
+    ]
   },
   {
     "id": "decimal-calculations",
@@ -570,6 +741,117 @@
     "bad": null,
     "good": null,
     "code": "decimal unitPrice = 19.95m;\nint quantity = 3;\ndecimal taxRate = 0.10m;\n\ndecimal subtotal = unitPrice * quantity;\ndecimal total = subtotal * (1m + taxRate);\ndecimal charged = Math.Round(total, 2, MidpointRounding.ToEven);\nConsole.WriteLine(charged);",
-    "related": ["numeric-types", "math-rounding", "floating-equality"]
+    "related": [
+      "numeric-types",
+      "math-rounding",
+      "floating-equality"
+    ]
+  },
+  {
+    "id": "memory-stream",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var stream = new MemoryStream();\nstream.WriteByte(0x41);\nstream.WriteByte(0x42);\n\nConsole.WriteLine($\"{stream.Length} bytes / capacity {stream.Capacity}\");\nstream.Position = 0;\nConsole.WriteLine(stream.ReadByte()); // 65\n\nbyte[] copy = stream.ToArray();\nConsole.WriteLine(copy.Length);",
+    "related": [
+      "stream-basics",
+      "stream-position",
+      "arrays-basics"
+    ]
+  },
+  {
+    "id": "binary-reader-writer",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var stream = new MemoryStream();\nusing (var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true))\n{\n    writer.Write(42);\n    writer.Write(\"Atlas\");\n}\n\nstream.Position = 0;\nusing var reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen: true);\nint number = reader.ReadInt32();\nstring name = reader.ReadString();\nConsole.WriteLine($\"{number}: {name}\");",
+    "related": [
+      "stream-basics",
+      "end-of-stream",
+      "encoding-text-bytes"
+    ]
+  },
+  {
+    "id": "json-options-contracts",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\nusing System.Text.Json.Serialization;\n\nvar options = new JsonSerializerOptions\n{\n    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,\n    WriteIndented = true\n};\n\nstring json = JsonSerializer.Serialize(new User(\"Ada\", \"secret\"), options);\nConsole.WriteLine(json);\n\nrecord User(\n    [property: JsonPropertyName(\"display_name\")] string Name,\n    [property: JsonIgnore] string Secret);",
+    "related": [
+      "json-read",
+      "json-write",
+      "custom-attributes-reflection"
+    ]
+  },
+  {
+    "id": "http-response-status",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Net;\n\nusing var response = new HttpResponseMessage(HttpStatusCode.NotFound)\n{\n    Content = new StringContent(\"missing\")\n};\n\nif (response.IsSuccessStatusCode)\n{\n    string body = await response.Content.ReadAsStringAsync();\n    Console.WriteLine(body);\n}\nelse\n{\n    Console.WriteLine($\"HTTP {(int)response.StatusCode} {response.ReasonPhrase}\");\n}",
+    "related": [
+      "http-get",
+      "http-request-exception",
+      "try-catch"
+    ]
+  },
+  {
+    "id": "task-whenall",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "Task<int> first = Task.FromResult(10);\nTask<int> second = Task.FromResult(20);\nTask<int> third = Task.FromResult(30);\n\nint[] results = await Task.WhenAll(first, second, third);\nConsole.WriteLine(string.Join(\", \", results)); // 10, 20, 30",
+    "related": [
+      "task",
+      "async-await",
+      "aggregate-exception"
+    ]
+  },
+  {
+    "id": "task-run-cpu",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var cts = new CancellationTokenSource();\nCancellationToken token = cts.Token;\n\nlong sum = await Task.Run(() =>\n{\n    long total = 0;\n    for (int i = 0; i < 100_000; i++)\n    {\n        if ((i & 1023) == 0) token.ThrowIfCancellationRequested();\n        total += i;\n    }\n    return total;\n}, token);\n\nConsole.WriteLine(sum);",
+    "related": [
+      "task",
+      "async-await",
+      "cancellation-token"
+    ]
+  },
+  {
+    "id": "interlocked",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "int completed = 0;\n\nParallel.For(0, 1_000, _ =>\n{\n    Interlocked.Increment(ref completed);\n});\n\nConsole.WriteLine(Volatile.Read(ref completed)); // 1000",
+    "related": [
+      "lock-shared-state",
+      "static-members"
+    ]
+  },
+  {
+    "id": "concurrent-dictionary",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Collections.Concurrent;\n\nvar counts = new ConcurrentDictionary<string, int>(StringComparer.Ordinal);\nstring[] words = [\"red\", \"blue\", \"red\"];\n\nParallel.ForEach(words, word =>\n{\n    counts.AddOrUpdate(word, 1, (_, oldValue) => oldValue + 1);\n});\n\nConsole.WriteLine(counts[\"red\"]); // 2",
+    "related": [
+      "dict-safe",
+      "lock-shared-state",
+      "concurrent-collection-factories"
+    ]
+  },
+  {
+    "id": "semaphore-async",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var gate = new SemaphoreSlim(2);\nusing var cts = new CancellationTokenSource();\n\nasync Task WorkAsync(int id, CancellationToken token)\n{\n    bool entered = false;\n    try\n    {\n        await gate.WaitAsync(token);\n        entered = true;\n        await Task.Delay(20, token);\n        Console.WriteLine(id);\n    }\n    finally\n    {\n        if (entered) gate.Release();\n    }\n}\n\nawait Task.WhenAll(Enumerable.Range(0, 4).Select(i => WorkAsync(i, cts.Token)));",
+    "related": [
+      "lock-shared-state",
+      "finally-cleanup",
+      "cancellation-token"
+    ]
   }
 ]

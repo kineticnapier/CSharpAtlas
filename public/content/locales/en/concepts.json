@@ -5,7 +5,11 @@
     "summary": "C# types are broadly divided into value types and reference types, and assignment and mutation behave differently for each.",
     "why": "int is a value type, so its value is copied. List<T> is a reference type, so the reference to the same object is copied.",
     "tips": "Even for a reference type, the reference itself is passed as a value. Passing by reference with ref is a separate mechanism.",
-    "tags": ["value type", "reference type", "class"]
+    "tags": [
+      "value type",
+      "reference type",
+      "class"
+    ]
   },
   "boxing-unboxing": {
     "title": "Boxing and unboxing",
@@ -13,7 +17,11 @@
     "summary": "Converting a value type to object or an interface type can wrap the value in an object representation.",
     "why": "Value types and reference types use different storage models, so boxing creates an object that can hold the value through a reference.",
     "tips": "Generic APIs usually avoid unnecessary boxing more easily than older non-generic APIs.",
-    "tags": ["boxing", "object", "value type"]
+    "tags": [
+      "boxing",
+      "object",
+      "value type"
+    ]
   },
   "var-keyword": {
     "title": "var and type inference",
@@ -21,7 +29,11 @@
     "summary": "var is not dynamic typing. The compiler determines a specific static type from the initialization expression.",
     "why": "Because the type is fixed at compile time, the variable cannot later hold an unrelated type.",
     "tips": "var is convenient when the type is obvious from the right-hand side; use an explicit type when it makes code easier to understand.",
-    "tags": ["var", "type inference", "variable"]
+    "tags": [
+      "var",
+      "type inference",
+      "variable"
+    ]
   },
   "const-readonly": {
     "title": "const and readonly",
@@ -29,7 +41,11 @@
     "summary": "const represents compile-time constants, while readonly is commonly used for fields that are assigned during construction and not changed afterward.",
     "why": "A runtime value such as DateTime.Now cannot be const, but it can be assigned to a readonly field.",
     "tips": "A public const value is embedded into consuming assemblies, so library compatibility matters when changing it.",
-    "tags": ["const", "readonly", "constant"]
+    "tags": [
+      "const",
+      "readonly",
+      "constant"
+    ]
   },
   "properties": {
     "title": "Properties",
@@ -37,7 +53,11 @@
     "summary": "Properties expose values through get and set accessors and can include validation or computed behavior when needed.",
     "why": "Compared with a public field, a property makes read/write permissions and later behavior changes easier to express.",
     "tips": "Use init when a value should only be assignable during initialization.",
-    "tags": ["property", "get", "set"]
+    "tags": [
+      "property",
+      "get",
+      "set"
+    ]
   },
   "records": {
     "title": "record",
@@ -45,7 +65,11 @@
     "summary": "record is useful for data-centric types and provides value-based equality so instances with the same components can compare as equal.",
     "why": "Unlike the default reference identity of a normal class, record generates equality based on its data components.",
     "tips": "A with expression can create a new value while changing only selected members.",
-    "tags": ["record", "data", "equality"]
+    "tags": [
+      "record",
+      "data",
+      "equality"
+    ]
   },
   "interfaces": {
     "title": "interface",
@@ -53,7 +77,11 @@
     "summary": "An interface expresses what a type can do rather than how it does it, allowing multiple implementations to be used through the same abstraction.",
     "why": "Callers can depend on only the capabilities they need instead of depending on a specific class.",
     "tips": ".NET uses interfaces extensively, including IEnumerable<T> and IDisposable.",
-    "tags": ["interface", "abstraction", "type"]
+    "tags": [
+      "interface",
+      "abstraction",
+      "type"
+    ]
   },
   "generics": {
     "title": "Generics",
@@ -61,7 +89,11 @@
     "summary": "Generics let code specify a concrete type at use time, as with T in List<T>.",
     "why": "The same logic can work with int, string, and other types without duplication while preserving type information.",
     "tips": "Use where T : ... constraints to restrict which types are valid.",
-    "tags": ["generic", "T", "type"]
+    "tags": [
+      "generic",
+      "T",
+      "type"
+    ]
   },
   "delegates": {
     "title": "delegate",
@@ -69,7 +101,11 @@
     "summary": "A delegate can refer to methods with a specific parameter list and return type and can be handled much like a value.",
     "why": "Passing behavior as an argument lets callers supply operations such as sorting rules or transformations.",
     "tips": "Action is a common delegate type with no return value; Func represents delegates that return a value.",
-    "tags": ["delegate", "Func", "Action"]
+    "tags": [
+      "delegate",
+      "Func",
+      "Action"
+    ]
   },
   "events": {
     "title": "event",
@@ -77,7 +113,11 @@
     "summary": "Based on delegates, an event exposes subscription and unsubscription while restricting who can raise the notification.",
     "why": "This separates the object that publishes a notification from the code that reacts to it.",
     "tips": "Leaving a subscription attached to a long-lived publisher can keep references alive longer than intended.",
-    "tags": ["event", "delegate", "notification"]
+    "tags": [
+      "event",
+      "delegate",
+      "notification"
+    ]
   },
   "lambda": {
     "title": "Lambda expressions",
@@ -85,7 +125,11 @@
     "summary": "Syntax such as x => x * 2 concisely defines behavior that can be converted to a delegate.",
     "why": "LINQ and callback APIs often need short operations that are convenient to provide inline.",
     "tips": "For multiple statements, use the block form x => { ... }.",
-    "tags": ["lambda", "=>", "LINQ"]
+    "tags": [
+      "lambda",
+      "=>",
+      "LINQ"
+    ]
   },
   "linq-deferred": {
     "title": "LINQ deferred execution",
@@ -93,7 +137,11 @@
     "summary": "Many LINQ operations returning IEnumerable<T> do their actual work only when the sequence is enumerated, for example by foreach.",
     "why": "Calling Where does not freeze the result; the source numbers are read when enumeration happens.",
     "tips": "Use ToList or ToArray when you need to materialize and freeze the result at that point.",
-    "tags": ["LINQ", "deferred execution", "IEnumerable"]
+    "tags": [
+      "LINQ",
+      "deferred execution",
+      "IEnumerable"
+    ]
   },
   "ienumerable": {
     "title": "IEnumerable<T>",
@@ -101,7 +149,11 @@
     "summary": "IEnumerable<T> is the basis of foreach and much of LINQ and represents a sequence that can provide elements one at a time.",
     "why": "Code can depend only on the ability to enumerate rather than on a concrete collection such as List<T>.",
     "tips": "IEnumerable<T> alone does not guarantee cheap Count access or indexing.",
-    "tags": ["IEnumerable", "foreach", "yield"]
+    "tags": [
+      "IEnumerable",
+      "foreach",
+      "yield"
+    ]
   },
   "async-await": {
     "title": "async / await",
@@ -109,7 +161,11 @@
     "summary": "Awaiting an asynchronous operation that returns Task lets the method continue from that point after the operation completes.",
     "why": "The method is structured as a continuation that resumes later instead of simply stopping the current thread for the whole wait.",
     "tips": "async does not automatically mean the method runs on another thread.",
-    "tags": ["async", "await", "asynchronous"]
+    "tags": [
+      "async",
+      "await",
+      "asynchronous"
+    ]
   },
   "task": {
     "title": "Task",
@@ -117,7 +173,11 @@
     "summary": "Task represents asynchronous completion, failure, or cancellation and can be awaited.",
     "why": "Even when a result does not exist yet, Task<T> can represent the value that will become available when the operation finishes.",
     "tips": "Task.Run is useful for moving CPU-bound work to the thread pool; it is not required for every asynchronous operation.",
-    "tags": ["Task", "asynchronous", "await"]
+    "tags": [
+      "Task",
+      "asynchronous",
+      "await"
+    ]
   },
   "idisposable": {
     "title": "IDisposable and using",
@@ -125,7 +185,11 @@
     "summary": "Objects such as files and streams may implement IDisposable when they require explicit cleanup.",
     "why": "The garbage collector alone cannot guarantee that operating-system resources such as file handles are released at the exact time you need.",
     "tips": "A using statement and a using directive share the same keyword but serve different purposes.",
-    "tags": ["IDisposable", "Dispose", "using"]
+    "tags": [
+      "IDisposable",
+      "Dispose",
+      "using"
+    ]
   },
   "equality": {
     "title": "== and Equals",
@@ -133,7 +197,11 @@
     "summary": "The meaning of == depends on the type: some types compare values, while others may compare references.",
     "why": "string defines == as content comparison. For user-defined types, equality behavior depends on the implementation.",
     "tips": "Use ReferenceEquals when you specifically need to know whether two references point to the same object.",
-    "tags": ["Equals", "==", "comparison"]
+    "tags": [
+      "Equals",
+      "==",
+      "comparison"
+    ]
   },
   "pattern-matching": {
     "title": "Pattern matching",
@@ -141,7 +209,11 @@
     "summary": "Pattern matching lets you combine a type test with extracting a strongly typed variable in one expression.",
     "why": "After value is string text succeeds, the compiler knows that text is a string inside that branch.",
     "tips": "This is safer than directly casting an uncertain object. See [[invalid-cast|InvalidCastException]] for casts that fail at runtime.",
-    "tags": ["pattern matching", "is", "type test"]
+    "tags": [
+      "pattern matching",
+      "is",
+      "type test"
+    ]
   },
   "program-entry": {
     "title": "Program entry points and top-level statements",
@@ -149,7 +221,11 @@
     "summary": "An executable starts at a suitable static Main method, or the compiler generates that entry point from one file of top-level statements. Both forms can receive command-line arguments.",
     "why": "Top-level statements remove ceremony for small programs without changing the fact that execution has one entry point.",
     "tips": "The implicit args variable and other top-level locals follow normal [[scope]] rules; they are not members that other types can access.",
-    "tags": ["Main", "top-level statements", "args"]
+    "tags": [
+      "Main",
+      "top-level statements",
+      "args"
+    ]
   },
   "variables-assignment": {
     "title": "Variable declarations and assignment",
@@ -157,7 +233,11 @@
     "summary": "A declaration introduces a variable and its type; assignment stores a value compatible with that type. A local must be definitely assigned before it is read.",
     "why": "Separating the ideas explains why declaring int score; is valid even though reading score immediately is not.",
     "tips": "Use an inferred declaration with [[var-keyword|var]] when the initializer makes the static type clear; var still requires an initializer.",
-    "tags": ["variable", "assignment", "definite assignment"]
+    "tags": [
+      "variable",
+      "assignment",
+      "definite assignment"
+    ]
   },
   "numeric-types": {
     "title": "Numeric type ranges and precision",
@@ -165,7 +245,11 @@
     "summary": "Integer types represent exact whole numbers within fixed ranges, double uses binary floating point for a wide approximate range, and decimal represents base-10 fractions with finite precision.",
     "why": "The appropriate type depends on the domain: counts, scientific measurements, and financial amounts do not have identical requirements.",
     "tips": "When a fixed-width integer exceeds its range it can wrap in unchecked arithmetic or throw in a checked context; see [[integer-overflow]].",
-    "tags": ["int", "double", "decimal"]
+    "tags": [
+      "int",
+      "double",
+      "decimal"
+    ]
   },
   "numeric-conversions": {
     "title": "Numeric conversions and information loss",
@@ -173,7 +257,11 @@
     "summary": "Widening int to long is implicit because every int fits. Narrowing or converting floating point to an integer needs an explicit operation and may lose range, precision, or a fractional part.",
     "why": "A cast from double to int truncates toward zero, while Convert.ToInt32 rounds to the nearest integer using midpoint-to-even behavior.",
     "tips": "Omitting a required explicit conversion produces [[cs0266|CS0266]]. Adding a cast can compile successfully while still discarding data, so verify the intended semantics.",
-    "tags": ["conversion", "cast", "rounding"]
+    "tags": [
+      "conversion",
+      "cast",
+      "rounding"
+    ]
   },
   "boolean-operators": {
     "title": "Boolean operators and compound conditions",
@@ -181,7 +269,11 @@
     "summary": "The ! operator negates a bool, && requires both operands, and || requires either operand. The latter two short-circuit when the result is already known.",
     "why": "Short-circuiting allows a guard on the left to make evaluation on the right safe and can avoid unnecessary work.",
     "tips": "A [[nullable|null guard]] such as name is not null && name.Length > 0 prevents the member access when name is null.",
-    "tags": ["bool", "&&", "short-circuit"]
+    "tags": [
+      "bool",
+      "&&",
+      "short-circuit"
+    ]
   },
   "if-else": {
     "title": "Conditional branches with if and else",
@@ -189,7 +281,11 @@
     "summary": "An if / else if / else chain executes at most one branch, testing conditions from top to bottom. Braces make each controlled block and the associated else unambiguous.",
     "why": "Ordering matters because a broader earlier condition can make a later, more specific branch unreachable in practice.",
     "tips": "A variable declared inside a branch has block [[scope]] and cannot be read after that block; declare a result outside when every branch assigns it.",
-    "tags": ["if", "else", "branch"]
+    "tags": [
+      "if",
+      "else",
+      "branch"
+    ]
   },
   "switch-statement": {
     "title": "Multiway branching with switch statements",
@@ -197,7 +293,11 @@
     "summary": "A switch statement compares one input against case labels and executes the matching section. A deliberate default handles values not listed explicitly.",
     "why": "It keeps multiway routing centered on the input rather than repeating the same comparison across a long if chain.",
     "tips": "A [[break-continue|break]] ends the current switch section and continues after the switch; it does not mean the same thing as continue in a loop.",
-    "tags": ["switch", "case", "default"]
+    "tags": [
+      "switch",
+      "case",
+      "default"
+    ]
   },
   "while-do-loops": {
     "title": "Repeating work with while and do",
@@ -205,7 +305,11 @@
     "summary": "while checks its condition before the first iteration, so it may run zero times. do checks afterward, so its body runs at least once.",
     "why": "Condition-controlled loops fit work whose repetition count is not known in advance, but their state must eventually make the condition false.",
     "tips": "Use [[for-loop|indexed traversal]] when initialization, condition, and update naturally belong together; use while when the controlling event is less index-oriented.",
-    "tags": ["while", "do", "loop"]
+    "tags": [
+      "while",
+      "do",
+      "loop"
+    ]
   },
   "break-continue": {
     "title": "Loop control with break and continue",
@@ -213,7 +317,11 @@
     "summary": "break exits the nearest enclosing loop or switch. continue targets the nearest loop and starts its next iteration after the loop's normal update step where applicable.",
     "why": "These statements change local control flow, not every enclosing construct, so nested loops must be traced one level at a time.",
     "tips": "In a [[while-do-loops|while loop]], do not let continue bypass the update that makes the condition advance, or the loop may never terminate.",
-    "tags": ["break", "continue", "loop"]
+    "tags": [
+      "break",
+      "continue",
+      "loop"
+    ]
   },
   "methods-parameters-returns": {
     "title": "Method parameters and return values",
@@ -221,7 +329,11 @@
     "summary": "Parameters are names in a method declaration; arguments are the values supplied by a call. return sends a result back to the caller.",
     "why": "Ordinary value parameters receive a copy of the argument value, so reassigning the parameter does not reassign the caller's variable.",
     "tips": "Use explicit [[ref-out-in|by-reference parameters]] only when the method must share the caller's storage; returning a value is usually clearer for one result.",
-    "tags": ["method", "parameter", "return"]
+    "tags": [
+      "method",
+      "parameter",
+      "return"
+    ]
   },
   "optional-named-arguments": {
     "title": "Optional and named arguments",
@@ -229,7 +341,11 @@
     "summary": "An optional parameter has a compile-time default. A named argument binds to a parameter by name and can make reordered or non-obvious calls clearer.",
     "why": "The caller's compiled code supplies the default, so changing a public default may not affect already compiled callers until they are rebuilt.",
     "tips": "[[methods-parameters-returns|Parameter names]] belong to the declaration, while argument values belong to each call; renaming a public parameter can break named callers.",
-    "tags": ["optional parameter", "named argument", "default"]
+    "tags": [
+      "optional parameter",
+      "named argument",
+      "default"
+    ]
   },
   "params-arrays": {
     "title": "Variable argument counts with params",
@@ -237,7 +353,11 @@
     "summary": "A params parameter is an array inside the method. Callers can list individual values, pass no values, or supply an explicit compatible array.",
     "why": "The convenient individual-argument form normally creates an array for the call, while an explicitly supplied array can be used directly.",
     "tips": "Treat the received value using normal [[arrays-basics|array]] rules, including fixed Length; params does not create a growable collection.",
-    "tags": ["params", "array", "argument"]
+    "tags": [
+      "params",
+      "array",
+      "argument"
+    ]
   },
   "ref-out-in": {
     "title": "Passing parameters with ref, out, and in",
@@ -245,7 +365,11 @@
     "summary": "ref shares initialized writable storage, out requires the method to assign before returning, and in exposes a readonly reference to an initialized argument.",
     "why": "The modifiers make aliasing and assignment obligations explicit at both the declaration and, for ref and out, the call site.",
     "tips": "Passing a [[value-reference-types|reference type]] normally still copies its reference value. That is different from passing the variable itself by ref.",
-    "tags": ["ref", "out", "in"]
+    "tags": [
+      "ref",
+      "out",
+      "in"
+    ]
   },
   "tuples-deconstruction": {
     "title": "Tuples and deconstruction",
@@ -253,7 +377,11 @@
     "summary": "A ValueTuple can give names to multiple result components. Deconstruction assigns them to separate variables, and _ discards an unwanted component.",
     "why": "Named tuple elements improve readability without requiring a new type for every small, local result shape.",
     "tips": "For a domain concept with behavior or a stable public contract, prefer a named type such as [[records|record]] over a lightweight tuple.",
-    "tags": ["tuple", "deconstruction", "discard"]
+    "tags": [
+      "tuple",
+      "deconstruction",
+      "discard"
+    ]
   },
   "enums-flags": {
     "title": "Enumerations and flag combinations",
@@ -261,7 +389,11 @@
     "summary": "An enum gives names to integral values. With power-of-two members and FlagsAttribute, independent choices can be combined, but casts can still create unnamed values.",
     "why": "Named values communicate intent better than unexplained integers, while validation remains necessary when values come from external input.",
     "tips": "Combining with | and testing with & are [[bitwise-operations|bit-mask operations]]; define None as zero and each independent flag as one bit.",
-    "tags": ["enum", "Flags", "bit mask"]
+    "tags": [
+      "enum",
+      "Flags",
+      "bit mask"
+    ]
   },
   "nullable-value-types": {
     "title": "Nullable value types",
@@ -269,7 +401,11 @@
     "summary": "T? for a non-nullable value type is Nullable<T>. It stores either no value or one T value and can be checked with HasValue, a pattern, or ?? fallback.",
     "why": "A missing measurement or date is different from a numeric zero or default date, so the absence deserves its own state.",
     "tips": "This runtime storage differs from [[nullable|nullable reference annotations]], which primarily let analysis describe whether a reference may be null.",
-    "tags": ["Nullable", "value type", "null"]
+    "tags": [
+      "Nullable",
+      "value type",
+      "null"
+    ]
   },
   "default-values": {
     "title": "Default values and initialization",
@@ -277,7 +413,11 @@
     "summary": "default(T) produces a type's default value. Fields and new array elements are zero-initialized, including null for references, but locals follow definite-assignment analysis.",
     "why": "Runtime-created object storage is initialized predictably, while the compiler prevents a local read when no assignment path is proven.",
     "tips": "An unassigned local cannot simply be read as its default; it produces [[cs0165|CS0165]]. Initialize it or assign it on every path first.",
-    "tags": ["default", "initialization", "field"]
+    "tags": [
+      "default",
+      "initialization",
+      "field"
+    ]
   },
   "arrays-basics": {
     "title": "Creating arrays and updating elements",
@@ -285,7 +425,11 @@
     "summary": "An array has a fixed Length chosen at creation. Its elements can be read, updated, or traversed with foreach, but the array itself cannot gain another slot.",
     "why": "Fixed size enables direct indexed storage, while element mutability is separate from whether the number of elements can change.",
     "tips": "Use a resizable collection such as [[list-basic|List<T>]] when the number of elements must grow or shrink.",
-    "tags": ["array", "index", "foreach"]
+    "tags": [
+      "array",
+      "index",
+      "foreach"
+    ]
   },
   "multidimensional-jagged-arrays": {
     "title": "Multidimensional and jagged arrays",
@@ -293,7 +437,11 @@
     "summary": "T[,] is one rectangular array with dimensions queried by GetLength. T[][] is an array whose elements hold separate row arrays, so each row can have another length.",
     "why": "Rectangular data and uneven data have different shapes, allocation patterns, and traversal bounds.",
     "tips": "For a jagged array, each element of the outer [[arrays-basics|array]] is itself a row array and can even be null unless you initialize it.",
-    "tags": ["multidimensional array", "jagged array", "GetLength"]
+    "tags": [
+      "multidimensional array",
+      "jagged array",
+      "GetLength"
+    ]
   },
   "indices-ranges": {
     "title": "Slicing with indices and ranges",
@@ -301,7 +449,11 @@
     "summary": "^1 names the last element, while start..end includes start and excludes end. Applying a range to an array creates a new array copy; slicing a Span<T> creates a view.",
     "why": "The exclusive end makes slice length easy to derive, but valid bounds still run from zero through the collection length.",
     "tips": "The [[arrays-basics|array]] returned by values[1..3] owns copied elements; changes to it do not change the source. A span slice instead views existing storage.",
-    "tags": ["Index", "Range", "slice"]
+    "tags": [
+      "Index",
+      "Range",
+      "slice"
+    ]
   },
   "string-literals": {
     "title": "String literals and escaping",
@@ -309,7 +461,11 @@
     "summary": "Ordinary literals interpret backslash escapes, verbatim literals preserve backslashes and double embedded quotes, and raw literals reduce escaping for quotes and multiline text.",
     "why": "Choosing syntax that matches the data makes paths, structured text, and multiline content easier to verify visually.",
     "tips": "A $ prefix adds [[string-interpolation|interpolation]] to ordinary or verbatim literals; raw interpolated strings use their number of $ characters to determine brace syntax.",
-    "tags": ["string", "verbatim string", "raw string"]
+    "tags": [
+      "string",
+      "verbatim string",
+      "raw string"
+    ]
   },
   "operator-precedence": {
     "title": "Operator precedence and parentheses",
@@ -317,7 +473,11 @@
     "summary": "Precedence determines grouping between different operators, while associativity resolves operators at the same level. Parentheses override and document that grouping.",
     "why": "A correct but visually surprising expression is easy to misread during maintenance, especially when arithmetic and conditions mix.",
     "tips": "Use parentheses to make grouping in a compound [[boolean-operators|boolean condition]] explicit even when precedence would already produce the same result.",
-    "tags": ["operator", "precedence", "parentheses"]
+    "tags": [
+      "operator",
+      "precedence",
+      "parentheses"
+    ]
   },
   "switch-expressions": {
     "title": "Selecting a value with switch expressions",
@@ -325,7 +485,11 @@
     "summary": "A switch expression evaluates the first matching arm and produces its expression value. Patterns test the input, when adds a guard, and _ can provide a fallback.",
     "why": "It makes value-producing selection concise and requires every executed path to yield a compatible result.",
     "tips": "Each arm uses [[pattern-matching|pattern matching]] rather than ordinary case equality alone, so type, property, relational, and other patterns can participate.",
-    "tags": ["switch expression", "pattern", "when"]
+    "tags": [
+      "switch expression",
+      "pattern",
+      "when"
+    ]
   },
   "property-patterns": {
     "title": "Inspecting state with property patterns",
@@ -333,7 +497,11 @@
     "summary": "A property pattern checks named members and can traverse nested properties. It fails when a required receiver in that path is null instead of dereferencing it.",
     "why": "The test and extraction stay close together, making a structural condition easier to read than repeated member checks.",
     "tips": "The names inside the pattern refer to [[properties|properties or fields]] on the matched type; they are not new positional slots.",
-    "tags": ["property pattern", "pattern matching", "null"]
+    "tags": [
+      "property pattern",
+      "pattern matching",
+      "null"
+    ]
   },
   "relational-logical-patterns": {
     "title": "Relational and logical patterns",
@@ -341,7 +509,11 @@
     "summary": "Relational patterns compare with <, <=, >, or >=. The and, or, and not combinators compose patterns and can express numeric intervals and alternatives.",
     "why": "Pattern composition keeps the value being classified implicit while describing the accepted shape directly.",
     "tips": "Pattern combinators are not the same tokens as [[boolean-operators|boolean expression operators]]: use and/or/not inside patterns and &&/||/! between bool expressions.",
-    "tags": ["relational pattern", "and pattern", "or pattern"]
+    "tags": [
+      "relational pattern",
+      "and pattern",
+      "or pattern"
+    ]
   },
   "positional-patterns": {
     "title": "Positional patterns and Deconstruct",
@@ -349,7 +521,11 @@
     "summary": "A positional pattern calls an applicable Deconstruct method, then matches its output components in order. Records can generate that contract automatically.",
     "why": "It supports concise shape tests and variable extraction when component order is a natural part of the type's meaning.",
     "tips": "The ordered components follow the same contract used by [[tuples-deconstruction|deconstruction]], so changing their order changes both forms' meaning.",
-    "tags": ["positional pattern", "Deconstruct", "record"]
+    "tags": [
+      "positional pattern",
+      "Deconstruct",
+      "record"
+    ]
   },
   "list-patterns": {
     "title": "Matching sequence shapes with list patterns",
@@ -357,7 +533,11 @@
     "summary": "List patterns match elements by position and normally imply a length. A .. slice pattern absorbs zero or more elements and can capture that middle portion.",
     "why": "They express structural cases such as empty, singleton, or fixed endpoints without a separate sequence of length and index checks.",
     "tips": "The slice resembles [[indices-ranges|range slicing]], but inside a list pattern it participates in matching; support depends on suitable Length or Count and indexing members.",
-    "tags": ["list pattern", "slice pattern", "sequence"]
+    "tags": [
+      "list pattern",
+      "slice pattern",
+      "sequence"
+    ]
   },
   "conditional-operator": {
     "title": "Choosing an expression result with the conditional operator",
@@ -365,7 +545,11 @@
     "summary": "condition ? whenTrue : whenFalse evaluates only the selected branch and produces one result whose branches must have a compatible or target-convertible type.",
     "why": "It is useful when a concise decision belongs inside a larger expression, including an assignment or return.",
     "tips": "Unlike statement-based [[if-else|if / else]] control flow, the conditional operator must produce a value; prefer if when branches contain substantial actions.",
-    "tags": ["conditional operator", "?:", "expression"]
+    "tags": [
+      "conditional operator",
+      "?:",
+      "expression"
+    ]
   },
   "bitwise-operations": {
     "title": "Bitwise operations and shifts",
@@ -373,7 +557,11 @@
     "summary": "&, |, ^, and ~ operate on individual bits, while << and >> shift a fixed-width integer representation. Casts may be needed when storing results in smaller types.",
     "why": "Bit fields compactly represent independent binary choices or packed numeric fields, but signedness and width affect the result.",
     "tips": "[[enums-flags|Flag enums]] give names to bit masks; assign each independent flag a distinct power of two before combining with | and testing with &.",
-    "tags": ["bitwise", "shift", "mask"]
+    "tags": [
+      "bitwise",
+      "shift",
+      "mask"
+    ]
   },
   "class-constructors": {
     "title": "Class creation and constructors",
@@ -381,7 +569,11 @@
     "summary": "new allocates an object and runs a matching constructor. The constructor receives required inputs, initializes instance fields and properties, and can reject state that would violate the class invariant.",
     "why": "Each Account instance owns its own balance and Owner state; constructing one completely prevents later methods from starting with a partly initialized object.",
     "tips": "Expose constructed state through controlled [[properties|properties]] rather than public mutable fields, and validate arguments before assigning them.",
-    "tags": ["class", "constructor", "invariant"]
+    "tags": [
+      "class",
+      "constructor",
+      "invariant"
+    ]
   },
   "constructor-chaining": {
     "title": "Constructor chaining and initialization order",
@@ -389,7 +581,11 @@
     "summary": "A constructor initializer selects one other constructor: this(...) delegates within the same class and base(...) selects a base constructor. Instance fields initialize from the most-derived class toward the base, then constructor bodies run from base toward derived.",
     "why": "The one-argument overload delegates to the two-argument overload, so fields initialize once. The trace shows PremiumAccount field, Account field, Account constructor, then PremiumAccount constructor.",
     "tips": "Choose one [[class-constructors|constructor]] that ultimately establishes the invariant instead of duplicating initialization across overloads.",
-    "tags": ["constructor", "this", "base"]
+    "tags": [
+      "constructor",
+      "this",
+      "base"
+    ]
   },
   "access-modifiers": {
     "title": "Access modifiers and API visibility",
@@ -397,7 +593,11 @@
     "summary": "public is available to callers, internal stays within the assembly, protected is available to derived types, and private stays within its declaring type.",
     "why": "A smaller visible surface reduces coupling. SystemClock publishes only the operations callers need while its helper remains replaceable implementation detail.",
     "tips": "A public [[interfaces|interface]] can define the contract while private or internal members and types implement it without becoming part of the public API.",
-    "tags": ["public", "private", "API"]
+    "tags": [
+      "public",
+      "private",
+      "API"
+    ]
   },
   "static-members": {
     "title": "Static members and shared state",
@@ -405,7 +605,11 @@
     "summary": "A static member belongs to the type and is initialized once for its runtime type, whereas an instance member needs a particular object. Mutable static fields therefore live across all instances and often need synchronization.",
     "why": "CreatedCount and nextId are shared, but Id belongs to each Ticket. Changing shared state affects later construction throughout the process.",
     "tips": "Using only a type name cannot identify which object's instance member to read, which leads to [[cs0120|CS0120]]. Prefer immutable static data when sharing is unnecessary.",
-    "tags": ["static", "instance", "shared state"]
+    "tags": [
+      "static",
+      "instance",
+      "shared state"
+    ]
   },
   "inheritance-polymorphism": {
     "title": "Inheritance and virtual dispatch",
@@ -413,7 +617,11 @@
     "summary": "A virtual base member defines an override point. An override participates in dynamic dispatch, so the runtime object controls which implementation runs even when the variable's static type is the base class.",
     "why": "animal is declared as Animal but refers to a Dog, so Speak dispatches to Dog.Speak without converting or copying away the derived behavior.",
     "tips": "Inheritance reuses an implementation relationship; implementing an [[interfaces|interface]] supplies a contract without inheriting that class's state.",
-    "tags": ["inheritance", "virtual", "override"]
+    "tags": [
+      "inheritance",
+      "virtual",
+      "override"
+    ]
   },
   "abstract-sealed-classes": {
     "title": "Designing inheritance with abstract and sealed",
@@ -421,7 +629,11 @@
     "summary": "An abstract class cannot be instantiated and can declare abstract members that derived concrete classes must implement. sealed can prevent further derivation or prevent another override of a virtual member.",
     "why": "Shape leaves Area incomplete, Circle supplies it, and the sealed Circle and sealed Label override state where extension is no longer supported.",
     "tips": "Document which [[inheritance-polymorphism|virtual extension points]] derived types may override; sealing is useful when further substitution would break the intended contract.",
-    "tags": ["abstract", "sealed", "inheritance"]
+    "tags": [
+      "abstract",
+      "sealed",
+      "inheritance"
+    ]
   },
   "struct-design": {
     "title": "Designing structs for small values",
@@ -429,7 +641,11 @@
     "summary": "A struct is a value type. Small immutable structs fit values with value-like identity, while large or mutable structs can make copies expensive or surprising. Its all-zero default state must be considered.",
     "why": "Temperature is immutable and default(Temperature) naturally represents zero Celsius, so a copied value remains independent and meaningful.",
     "tips": "Assigning a struct copies its value under [[value-reference-types|value-type semantics]]; keep the representation small and avoid setters that make copied state diverge unexpectedly.",
-    "tags": ["struct", "value type", "immutable"]
+    "tags": [
+      "struct",
+      "value type",
+      "immutable"
+    ]
   },
   "record-structs": {
     "title": "Value data with record structs",
@@ -437,7 +653,11 @@
     "summary": "record struct generates value equality, printing, deconstruction, and with support while remaining a value type. readonly record struct also prevents its generated properties from being mutated after construction.",
     "why": "Point copies its two values on assignment, and equality compares its components rather than object identity.",
     "tips": "It shares data-centric conveniences with [[records|record classes]], but a record struct has value-type copying and storage semantics rather than reference semantics.",
-    "tags": ["record struct", "value type", "equality"]
+    "tags": [
+      "record struct",
+      "value type",
+      "equality"
+    ]
   },
   "init-required-members": {
     "title": "Initialization contracts with init and required",
@@ -445,7 +665,11 @@
     "summary": "An init accessor accepts assignment during object initialization but not afterward. required makes construction sites initialize the member unless a constructor is known to satisfy the requirement.",
     "why": "These keywords shape when assignments are legal; they do not by themselves validate text or prevent a caller from explicitly assigning null.",
     "tips": "Required presence and the non-null initialization analysis behind [[cs8618|CS8618]] are related but distinct contracts, so validate domain rules separately.",
-    "tags": ["init", "required", "initialization"]
+    "tags": [
+      "init",
+      "required",
+      "initialization"
+    ]
   },
   "object-collection-initializers": {
     "title": "Object and collection initializers",
@@ -453,7 +677,11 @@
     "summary": "An object initializer first calls a constructor, then invokes the listed property setters. A collection initializer invokes an accessible Add method; a nested member initializer uses the already-created member instead of replacing it.",
     "why": "Project(42) establishes Id first, Name's setter runs next, and Tags = { ... } calls Add on the existing Tags list.",
     "tips": "The [[class-constructors|constructor call]] always precedes initializer assignments, so constructor invariants cannot depend on members supplied only by an initializer.",
-    "tags": ["object initializer", "collection initializer", "Add"]
+    "tags": [
+      "object initializer",
+      "collection initializer",
+      "Add"
+    ]
   },
   "indexers": {
     "title": "Custom element access with indexers",
@@ -461,7 +689,11 @@
     "summary": "An indexer declares this[...] with get and optionally set accessors. It lets a custom type expose element-like access without exposing its internal array or accepting invalid indexes silently.",
     "why": "ScoreRow checks every index before reading or writing, preserving the same boundary for both access paths.",
     "tips": "An indexer accessor behaves like a parameterized [[properties|property accessor]]; use meaningful key or index types and throw ArgumentOutOfRangeException for invalid positions.",
-    "tags": ["indexer", "this", "accessor"]
+    "tags": [
+      "indexer",
+      "this",
+      "accessor"
+    ]
   },
   "extension-methods": {
     "title": "Extension methods and static resolution",
@@ -469,7 +701,11 @@
     "summary": "A conventional extension method is a static method in a static class whose first parameter uses this. Candidate lookup is compile-time and an applicable instance member takes precedence over extensions.",
     "why": "Surround is still a static call; the receiver supplies the first argument and no member is added to string at runtime.",
     "tips": "The extension's namespace must be visible at the call site through a [[using-directive|using directive]] or enclosing namespace, otherwise lookup cannot find it.",
-    "tags": ["extension method", "static", "namespace"]
+    "tags": [
+      "extension method",
+      "static",
+      "namespace"
+    ]
   },
   "generic-constraints": {
     "title": "Guaranteeing generic operations with constraints",
@@ -477,7 +713,11 @@
     "summary": "where clauses can require an interface, base class, parameterless constructor, value type, or reference type. Those guarantees make corresponding operations on T valid in the generic body.",
     "why": "IResettable permits the Reset call and new() permits construction of T; without them, those operations are not known to be safe for every possible type argument.",
     "tips": "A [[generics|type parameter]] is a placeholder, while its constraints define the members and construction or storage guarantees code may use.",
-    "tags": ["generic", "constraint", "where"]
+    "tags": [
+      "generic",
+      "constraint",
+      "where"
+    ]
   },
   "generic-variance": {
     "title": "Covariance and contravariance",
@@ -485,7 +725,11 @@
     "summary": "Covariance allows a producer of a more-derived reference type to be viewed as producing a base type. Contravariance allows a consumer of a base type to stand in for a consumer of a derived type.",
     "why": "IEnumerable<string> only produces strings, which are objects. Action<object> can consume every string, so it can be assigned where Action<string> is expected.",
     "tips": "This broader-input conversion is defined by a contravariant [[delegates|delegate]] parameter. Mutable types such as List<T> remain invariant because they both consume and produce T.",
-    "tags": ["covariance", "contravariance", "variance"]
+    "tags": [
+      "covariance",
+      "contravariance",
+      "variance"
+    ]
   },
   "explicit-interface-implementation": {
     "title": "Explicit interface implementation",
@@ -493,7 +737,11 @@
     "summary": "An explicit implementation names the interface member and has no separate public access modifier. Callers reach it by viewing the object through that interface.",
     "why": "Report can supply distinct Render implementations for IPlainText and IHtml even though their member signatures collide.",
     "tips": "The member belongs to an [[interfaces|interface contract]], so cast or assign the object to that interface to call it; the concrete Report variable does not expose Render.",
-    "tags": ["interface", "explicit implementation", "contract"]
+    "tags": [
+      "interface",
+      "explicit implementation",
+      "contract"
+    ]
   },
   "default-interface-members": {
     "title": "Default interface implementations",
@@ -501,7 +749,11 @@
     "summary": "An interface member can include a default implementation. A class may provide its own matching public member, and calls through the interface dispatch to the class implementation when present.",
     "why": "FriendlyGreeter replaces the fallback greeting; a class that omits Greet can still satisfy this interface member through its default body.",
     "tips": "Like [[explicit-interface-implementation|explicit interface members]], a default member is not necessarily callable through a concrete variable when the class declares no such member; use an interface-typed reference.",
-    "tags": ["interface", "default implementation", "dispatch"]
+    "tags": [
+      "interface",
+      "default implementation",
+      "dispatch"
+    ]
   },
   "local-functions": {
     "title": "Organizing method logic with local functions",
@@ -509,7 +761,11 @@
     "summary": "A local function can be declared within a method and called from that method's body. Marking it static proves that it does not capture locals, parameters, or the containing instance.",
     "why": "Sum is an implementation detail of FormatTotal, so it stays close to its single caller without enlarging the class API.",
     "tips": "The helper's restricted [[scope|visibility]] communicates that no other method should depend on it; omit static only when capturing surrounding state is intentional.",
-    "tags": ["local function", "static", "scope"]
+    "tags": [
+      "local function",
+      "static",
+      "scope"
+    ]
   },
   "closures": {
     "title": "Closures and captured variable lifetimes",
@@ -517,7 +773,11 @@
     "summary": "A closure captures variables, not one-time values. The captured storage remains reachable as long as the returned delegate can use it, so repeated calls can observe and update shared state.",
     "why": "CreateCounter returns before next is invoked, yet the callback retains count and increments the same variable on each call.",
     "tips": "The [[lambda|lambda expression]] references count from the surrounding method, causing that variable to be captured; capture state deliberately because it extends lifetime.",
-    "tags": ["closure", "capture", "lambda"]
+    "tags": [
+      "closure",
+      "capture",
+      "lambda"
+    ]
   },
   "multicast-delegates": {
     "title": "Multicast delegate invocation rules",
@@ -525,7 +785,11 @@
     "summary": "A combined delegate stores an invocation list and calls entries in order. For a non-void delegate, the combined call returns only the final callback's value.",
     "why": "Both callbacks run, then result receives 2 from second. If one callback throws, the delegate call propagates that exception and later callbacks are not invoked automatically.",
     "tips": "Inspect or reason about the [[delegates|delegate]] invocation list when order, return values, or per-handler exception isolation matters.",
-    "tags": ["multicast delegate", "invocation list", "exception"]
+    "tags": [
+      "multicast delegate",
+      "invocation list",
+      "exception"
+    ]
   },
   "custom-attributes-reflection": {
     "title": "Defining attributes and reading them with reflection",
@@ -533,7 +797,11 @@
     "summary": "An Attribute-derived type describes metadata allowed on selected declarations. Reflection can retrieve the attribute from a Type, member, parameter, or other supported declaration.",
     "why": "LabelAttribute records text on Product.Name, but merely applying it executes no labeling behavior; code must inspect and interpret the metadata.",
     "tips": "GetProperty locates the [[properties|property declaration]], and GetCustomAttribute reads metadata attached there rather than reading the property's current value.",
-    "tags": ["attribute", "reflection", "metadata"]
+    "tags": [
+      "attribute",
+      "reflection",
+      "metadata"
+    ]
   },
   "custom-equality-hashing": {
     "title": "Equality and hash-code contracts for custom types",
@@ -541,7 +809,11 @@
     "summary": "IEquatable<T> supplies strongly typed equality, Equals(object) preserves the object contract, and GetHashCode must return the same hash for values considered equal.",
     "why": "ProductCode compares without case and uses the same comparer for hashing, so HashSet can locate an equal code in its expected bucket.",
     "tips": "Start by defining the [[equality|meaning of equality]], then hash exactly the same stable components; never mutate equality-relevant state while an object is in a hashed collection.",
-    "tags": ["IEquatable", "GetHashCode", "HashSet"]
+    "tags": [
+      "IEquatable",
+      "GetHashCode",
+      "HashSet"
+    ]
   },
   "custom-ordering": {
     "title": "Ordering with IComparable<T> and IComparer<T>",
@@ -549,7 +821,11 @@
     "summary": "IComparable<T> defines a type's natural order; IComparer<T> represents a separate ordering. A comparison returns a negative number, zero, or a positive number rather than only -1, 0, or 1.",
     "why": "Job compares priority first and name as a stable tie-breaker, while the external comparer can sort the same objects by name alone.",
     "tips": "[[list-sort|List.Sort]] consumes either the intrinsic comparison or a supplied comparer. Keep comparison transitive and decide explicitly whether zero means equality for the use case.",
-    "tags": ["IComparable", "IComparer", "sorting"]
+    "tags": [
+      "IComparable",
+      "IComparer",
+      "sorting"
+    ]
   },
   "operator-overloading": {
     "title": "User-defined operators",
@@ -557,7 +833,11 @@
     "summary": "A type can declare static operator members when the operation has an unsurprising domain meaning. Some operators must be declared in pairs, including == with != and < with >.",
     "why": "Adding two distances produces another distance, and equality compares meters consistently with Equals and GetHashCode.",
     "tips": "A small [[struct-design|value-like struct]] is a suitable operator example. Avoid clever meanings, preserve algebraic expectations, and implement required pairs consistently.",
-    "tags": ["operator", "overload", "value object"]
+    "tags": [
+      "operator",
+      "overload",
+      "value object"
+    ]
   },
   "user-defined-conversions": {
     "title": "User-defined type conversions",
@@ -565,7 +845,11 @@
     "summary": "A type can define implicit and explicit conversion operators. Implicit conversions should always succeed without surprising loss, while explicit conversions signal validation, narrowing, or possible failure.",
     "why": "Every Digit can become its underlying int safely, but not every int is a Digit, so int-to-Digit validates and requires a cast.",
     "tips": "Apply the same safety expectations as [[numeric-conversions|built-in numeric conversions]]; avoid bidirectional implicit conversions that make overload resolution or meaning unclear.",
-    "tags": ["conversion", "implicit", "explicit"]
+    "tags": [
+      "conversion",
+      "implicit",
+      "explicit"
+    ]
   },
   "partial-types": {
     "title": "Splitting type declarations with partial",
@@ -573,7 +857,11 @@
     "summary": "All declarations marked partial with the same identity contribute members to one compiled type. They do not create separate objects or runtime layers.",
     "why": "Order.Core.cs and Order.Logging.cs can be maintained separately, yet new Order creates one object containing members from both parts.",
     "tips": "All parts contribute to the same compiled [[class-constructors|type]]. Partial method declarations provide compile-time hooks between parts and must obey their signature and accessibility rules.",
-    "tags": ["partial", "type declaration", "partial method"]
+    "tags": [
+      "partial",
+      "type declaration",
+      "partial method"
+    ]
   },
   "dynamic-binding": {
     "title": "Dynamic values and runtime binding",
@@ -581,7 +869,11 @@
     "summary": "var infers a fixed static type, object stores any value but exposes only object members statically, and dynamic defers operations such as member lookup until execution.",
     "why": "The compiler verifies inferred.Length, requires a cast to access the string through asObject, and allows lateBound.Length even though another runtime value could cause a binder error.",
     "tips": "[[var-keyword|Inferred typing]] still preserves static checking. Keep dynamic at interop boundaries and convert into known types quickly so failures remain local.",
-    "tags": ["dynamic", "object", "runtime binding"]
+    "tags": [
+      "dynamic",
+      "object",
+      "runtime binding"
+    ]
   },
   "anonymous-types": {
     "title": "Anonymous types for temporary data shapes",
@@ -589,7 +881,11 @@
     "summary": "new { ... } asks the compiler to generate an anonymous reference type with inferred read-only properties. var is required because source code cannot name that generated type directly.",
     "why": "The query keeps only Name and a calculated WithTax value, creating a convenient shape for local formatting or further query stages.",
     "tips": "Anonymous types are useful for temporary [[linq-select|query projections]], but use a named record, class, tuple, or interface when a method boundary needs a stable public contract.",
-    "tags": ["anonymous type", "projection", "var"]
+    "tags": [
+      "anonymous type",
+      "projection",
+      "var"
+    ]
   },
   "readonly-struct-members": {
     "title": "Readonly structs and defensive copies",
@@ -597,7 +893,11 @@
     "summary": "A readonly struct cannot mutate instance state. On a non-readonly struct, a readonly member promises not to mutate this; invoking a mutating member through readonly storage may first make a defensive copy.",
     "why": "The in parameter is readonly storage, so Increment operates on a temporary Counter and the caller's counter remains unchanged.",
     "tips": "Readonly access through an [[ref-out-in|in parameter]] does not make a mutable struct immutable. Prefer immutable structs and mark non-mutating members readonly to avoid unnecessary copies.",
-    "tags": ["readonly struct", "defensive copy", "in"]
+    "tags": [
+      "readonly struct",
+      "defensive copy",
+      "in"
+    ]
   },
   "sorted-collections": {
     "title": "Choosing SortedDictionary and SortedSet",
@@ -605,7 +905,11 @@
     "summary": "SortedDictionary<TKey,TValue> stores key-value pairs by key order, while SortedSet<T> stores unique values in order. Their comparer determines both position and uniqueness.",
     "why": "OrdinalIgnoreCase orders text without case distinctions and treats Ada and ada as the same set member.",
     "tips": "A zero result from [[custom-ordering|the comparer]] means the values occupy one key or member slot even when ordinary object equality might differ.",
-    "tags": ["SortedDictionary", "SortedSet", "comparer"]
+    "tags": [
+      "SortedDictionary",
+      "SortedSet",
+      "comparer"
+    ]
   },
   "readonly-collection-views": {
     "title": "Read-only views versus immutable data",
@@ -613,7 +917,11 @@
     "summary": "IReadOnlyList<T> and ReadOnlyCollection<T> omit mutation operations for that reference, but another owner can still change the underlying List<T>.",
     "why": "Both views report three elements after owner adds green, demonstrating that they are live views rather than immutable snapshots.",
     "tips": "A read-only [[interfaces|interface]] limits the operations available through that reference; it does not control object lifetime, aliases, or other owners.",
-    "tags": ["IReadOnlyList", "ReadOnlyCollection", "immutability"]
+    "tags": [
+      "IReadOnlyList",
+      "ReadOnlyCollection",
+      "immutability"
+    ]
   },
   "list-capacity": {
     "title": "Count and Capacity in List<T>",
@@ -621,7 +929,11 @@
     "summary": "Count is the number of elements that exist. Capacity is the size of reserved internal storage and can be larger without creating any elements.",
     "why": "Constructing with capacity 100 still has Count zero; only Add creates an element and changes Count.",
     "tips": "Adding through [[list-basic|List<T> operations]] changes Count. Preallocating can reduce resizing when a reliable size estimate exists, but excess capacity also retains memory.",
-    "tags": ["List", "Count", "Capacity"]
+    "tags": [
+      "List",
+      "Count",
+      "Capacity"
+    ]
   },
   "collection-expressions": {
     "title": "Collection expressions and spread elements",
@@ -629,7 +941,11 @@
     "summary": "C# 12 collection expressions use brackets and require a target type. A spread element enumerates its source and eagerly contributes those values to the new collection.",
     "why": "The int[] target determines the first result type, while the List<int> target selects a mutable list for the second expression.",
     "tips": "Spreading [[ienumerable|an IEnumerable source]] enumerates it during construction; it does not retain a lazy link to future source changes.",
-    "tags": ["collection expression", "spread", "C# 12"]
+    "tags": [
+      "collection expression",
+      "spread",
+      "C# 12"
+    ]
   },
   "string-comparison": {
     "title": "Culture and case policies in string comparison",
@@ -637,7 +953,11 @@
     "summary": "Ordinal comparison examines code-unit values and is normally appropriate for identifiers, protocol tokens, and file-format fields. Culture-aware comparison applies linguistic rules for text shown to people.",
     "why": "Case folding and ordering differ across policies. Even [[equality|string equality]] needs an explicit policy that matches the text's role.",
     "tips": "Use StringComparer with dictionaries and sets so lookup follows the same policy. Do not silently reuse a display-sorting rule for security-sensitive identifiers.",
-    "tags": ["string", "StringComparison", "culture"]
+    "tags": [
+      "string",
+      "StringComparison",
+      "culture"
+    ]
   },
   "unicode-runes": {
     "title": "UTF-16 chars and Unicode scalar values",
@@ -645,7 +965,11 @@
     "summary": "A C# char is one UTF-16 code unit. A supplementary Unicode scalar uses a surrogate pair and is represented by Rune during scalar traversal, while one grapheme cluster can contain several scalars.",
     "why": "The sample has five code units, four scalars, and three grapheme clusters. [[encoding-text-bytes|Byte encoding]] is another representation layer and does not generally preserve any of those counts.",
     "tips": "Use EnumerateRunes for scalar processing and StringInfo for text-element boundaries; indexing a string by char can split a surrogate pair or grapheme.",
-    "tags": ["Unicode", "Rune", "UTF-16"]
+    "tags": [
+      "Unicode",
+      "Rune",
+      "UTF-16"
+    ]
   },
   "span-memory": {
     "title": "Memory views with Span<T> and Memory<T>",
@@ -653,7 +977,11 @@
     "summary": "Span<T> and Memory<T> are non-owning views over contiguous storage. Span is stack-constrained and cannot be kept across await or in ordinary heap fields, while Memory can be stored and later exposed as a Span.",
     "why": "Changing the span changes the owning array because [[indices-ranges|slicing the view]] copies no elements. The owner must remain valid for every consumer.",
     "tips": "A read-only view prevents mutation through that view but is not an immutable snapshot; another alias can still change the same storage.",
-    "tags": ["Span", "Memory", "slice"]
+    "tags": [
+      "Span",
+      "Memory",
+      "slice"
+    ]
   },
   "encoding-text-bytes": {
     "title": "Converting text and bytes with Encoding",
@@ -661,7 +989,11 @@
     "summary": "Encoding.GetBytes converts text to a byte sequence, and the matching Encoding.GetString decodes it. Character, UTF-16 code-unit, Unicode scalar, and encoded-byte counts are different measurements.",
     "why": "UTF-8 uses a variable number of bytes per scalar, so [[unicode-runes|the scalar and code-unit structure]] cannot predict byte length by a simple multiplier.",
     "tips": "Record or specify the producer's encoding before decoding. A BOM is a protocol choice, not something every byte sequence contains; strict fallbacks help detect malformed input.",
-    "tags": ["Encoding", "UTF-8", "bytes"]
+    "tags": [
+      "Encoding",
+      "UTF-8",
+      "bytes"
+    ]
   },
   "regex-options-anchors": {
     "title": "Regular-expression anchors and newline options",
@@ -669,7 +1001,11 @@
     "summary": "\\A and \\z anchor the absolute beginning and end. ^ and $ are line-sensitive under Multiline, while Singleline independently makes dot match newline characters.",
     "why": "A [[regex-basic|substring search]] can succeed without validating the rest of the input; absolute anchors express a whole-input contract.",
     "tips": "Multiline does not make dot cross lines, and Singleline does not change ^ or $. Apply a finite timeout to matching work.",
-    "tags": ["regex", "anchor", "Multiline"]
+    "tags": [
+      "regex",
+      "anchor",
+      "Multiline"
+    ]
   },
   "datetime-kind": {
     "title": "DateTime.Kind and interpreting timestamps",
@@ -677,7 +1013,11 @@
     "summary": "DateTime.Kind records whether a value is Utc, Local, or Unspecified. SpecifyKind only changes that label; conversion methods can change clock fields to represent the same instant in another basis.",
     "why": "Labeling an unknown clock reading as UTC invents an interpretation. [[datetimeoffset|Retaining an offset]] often states the observed instant more clearly.",
     "tips": "Establish the source time basis before conversion or subtraction. Unspecified values need an explicit zone or offset policy before they represent an instant.",
-    "tags": ["DateTime", "Kind", "UTC"]
+    "tags": [
+      "DateTime",
+      "Kind",
+      "UTC"
+    ]
   },
   "datetimeoffset": {
     "title": "Representing instants and offsets with DateTimeOffset",
@@ -685,7 +1025,11 @@
     "summary": "DateTimeOffset identifies an instant by combining date-time fields with an offset. Different clock readings and offsets can therefore denote the same UTC instant.",
     "why": "An offset such as +09:00 does not name the region or its past and future rules; [[time-zone-conversion|a named time zone]] is required for seasonal offset rules.",
     "tips": "Persist the offset when it is part of the observation, and normalize to UTC for comparisons when that matches the domain. Do not infer a location from an offset alone.",
-    "tags": ["DateTimeOffset", "offset", "instant"]
+    "tags": [
+      "DateTimeOffset",
+      "offset",
+      "instant"
+    ]
   },
   "dateonly-timeonly": {
     "title": "Separating dates and clock times with DateOnly and TimeOnly",
@@ -693,6 +1037,70 @@
     "summary": "DateOnly has no clock or time zone, and TimeOnly has no date. Combining them produces a wall-clock DateTime but still needs an offset or zone interpretation to become an instant.",
     "why": "The composed value is Unspecified because [[datetime-kind|its DateTime interpretation]] has not yet been chosen.",
     "tips": "These types suit birthdays, business dates, and recurring local times. Resolve invalid or ambiguous local times when a zone is finally applied.",
-    "tags": ["DateOnly", "TimeOnly", "calendar"]
+    "tags": [
+      "DateOnly",
+      "TimeOnly",
+      "calendar"
+    ]
+  },
+  "stream-basics": {
+    "title": "Stream capabilities and byte-oriented I/O",
+    "short": "A Stream exposes byte I/O with separate read, write, and seek capabilities.",
+    "summary": "Stream unifies byte-oriented I/O. Check CanRead, CanWrite, and CanSeek, and use Position or Length only when the implementation supports them.",
+    "why": "Not every Stream supports every operation; unsupported members can throw [[not-supported|NotSupportedException]].",
+    "tips": "Read does not promise to fill the requested buffer. Exact-size protocols must account for [[stream-short-reads|short reads]].",
+    "tags": [
+      "Stream",
+      "I/O",
+      "bytes"
+    ]
+  },
+  "lock-shared-state": {
+    "title": "Protecting shared-state invariants with lock",
+    "short": "Guard all operations in a shared multi-step invariant with the same lock.",
+    "summary": "lock allows one thread at a time into a synchronized region for a particular object. Protect related reads and writes with one private gate.",
+    "why": "Even individually valid reads and writes can expose an intermediate state when a compound operation races with another caller.",
+    "tips": "Keep critical sections short and synchronous; do not await inside lock. For one independent value, [[interlocked|Interlocked]] may be enough.",
+    "tags": [
+      "lock",
+      "shared state",
+      "concurrency"
+    ]
+  },
+  "lazy-initialization": {
+    "title": "Deferred initialization with Lazy<T>",
+    "short": "Delay value creation until the value is first needed.",
+    "summary": "Lazy<T> invokes its factory when Value is first requested and then stores the result. The selected mode also controls publication behavior between threads.",
+    "why": "Expensive construction can be avoided when the value is never used. Some modes also cache an exception thrown by the factory.",
+    "tips": "Safe publication of a Lazy value does not synchronize later mutation of that value. Design separate [[lock-shared-state|shared-state synchronization]] when needed.",
+    "tags": [
+      "Lazy",
+      "deferred initialization",
+      "thread safety"
+    ]
+  },
+  "custom-exceptions": {
+    "title": "Custom exceptions and preserving causes",
+    "short": "Create a custom exception only when callers benefit from distinguishing the failure.",
+    "summary": "At a domain boundary, a custom Exception type can add useful meaning when standard exceptions are insufficient. Preserve an underlying failure as InnerException when wrapping it.",
+    "why": "Discarding the original exception loses diagnostic context and makes the real source harder to investigate.",
+    "tips": "Prefer a standard [[argument-exception|argument exception]] when it already describes the invalid condition. Custom types are most useful when callers need a distinct recovery path.",
+    "tags": [
+      "Exception",
+      "InnerException",
+      "exception design"
+    ]
+  },
+  "finally-cleanup": {
+    "title": "Cleanup and exception propagation with finally",
+    "short": "Run required cleanup on both normal and exceptional exits.",
+    "summary": "finally executes when control leaves its try block, which makes it suitable for releasing acquired permits and similar cleanup. For owned disposable resources, [[idisposable|using]] can express the same intent more directly.",
+    "why": "Cleanup placed only on the normal path is skipped when an earlier operation throws.",
+    "tips": "Avoid throwing a new failure from finally unless that policy is deliberate, because it can hide the original exception.",
+    "tags": [
+      "finally",
+      "exceptions",
+      "cleanup"
+    ]
   }
 }
