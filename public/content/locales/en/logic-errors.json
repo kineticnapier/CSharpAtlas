@@ -6,12 +6,8 @@
     "why": "Values such as 0.1 and 0.2 do not have finite exact representations in double, so their stored values include rounding error.",
     "tips": "Choose a tolerance based on the scale and precision your application actually needs. See [[equality]] for general equality behavior. For money, decimal may be a better fit.",
     "tags": ["double", "floating point", "comparison"],
-    "badNotes": {
-      "2": "This compares double values directly with =="
-    },
-    "goodNotes": {
-      "3": "Compare whether the difference is within an acceptable tolerance"
-    }
+    "badNotes": {"2": "This compares double values directly with =="},
+    "goodNotes": {"3": "Compare whether the difference is within an acceptable tolerance"}
   },
   "integer-overflow": {
     "title": "Integer overflow",
@@ -20,12 +16,8 @@
     "why": "int has a fixed number of bits, so values beyond its representable range can leave only the low-order bits of the result.",
     "tips": "For calculations that can grow large, decide whether using long is sufficient or whether checked should raise an [[overflow-exception|OverflowException]].",
     "tags": ["int", "overflow", "checked"],
-    "badNotes": {
-      "2": "The value wraps when it exceeds the int range"
-    },
-    "goodNotes": {
-      "2": "checked detects the overflow"
-    }
+    "badNotes": {"2": "The value wraps when it exceeds the int range"},
+    "goodNotes": {"2": "checked detects the overflow"}
   },
   "reference-equality": {
     "title": "Confusing reference identity with value equality",
@@ -34,12 +26,8 @@
     "why": "A normal class does not treat separately created instances as equal values unless equality is defined appropriately.",
     "tips": "For types that should compare by value, consider [[records|record]] or implementing [[equality|Equals / GetHashCode]].",
     "tags": ["class", "reference", "=="],
-    "badNotes": {
-      "4": "A normal class compares these as separate instances"
-    },
-    "goodNotes": {
-      "1": "Use record when value-based equality matches the type's meaning"
-    }
+    "badNotes": {"4": "A normal class compares these as separate instances"},
+    "goodNotes": {"1": "Use record when value-based equality matches the type's meaning"}
   },
   "deferred-enumeration": {
     "title": "Enumerating a LINQ query repeatedly",
@@ -48,13 +36,8 @@
     "why": "Count() and foreach each enumerate query from the beginning, so GetItems or IsValid can run repeatedly.",
     "tips": "Materialize with ToList when repeated enumeration is actually a problem. That does not mean every [[ienumerable|IEnumerable]] should always be materialized.",
     "tags": ["LINQ", "IEnumerable", "deferred execution"],
-    "badNotes": {
-      "2": "Count() enumerates query once",
-      "3": "foreach enumerates the same query again"
-    },
-    "goodNotes": {
-      "1": "ToList materializes the result once"
-    }
+    "badNotes": {"2": "Count() enumerates query once", "3": "foreach enumerates the same query again"},
+    "goodNotes": {"1": "ToList materializes the result once"}
   },
   "empty-statement-loop": {
     "title": "A stray semicolon creates an empty loop",
@@ -63,12 +46,8 @@
     "why": "The bounded condition still advances i, but the block has separate [[scope]] and executes after the loop has already finished.",
     "tips": "Remove the semicolon and use braces for the intended body, then verify the number and values of the observed iterations.",
     "tags": ["while", "semicolon", "empty statement"],
-    "badNotes": {
-      "2": "This semicolon is the entire loop body"
-    },
-    "goodNotes": {
-      "2": "Without the semicolon, the following block belongs to the loop"
-    }
+    "badNotes": {"2": "This semicolon is the entire loop body"},
+    "goodNotes": {"2": "Without the semicolon, the following block belongs to the loop"}
   },
   "negative-remainder": {
     "title": "Negative remainders break circular indexing",
@@ -77,14 +56,8 @@
     "why": "With offset -1 and length 3, offset % length is -1, which cannot index the array.",
     "tips": "Require a positive wrap length so the calculation does not encounter [[divide-by-zero|division by zero]], then normalize with (value % length + length) % length.",
     "tags": ["remainder", "modulo", "circular index"],
-    "badNotes": {
-      "3": "The remainder is -1, not 2",
-      "4": "A negative array index fails"
-    },
-    "goodNotes": {
-      "4": "Reject a nonpositive wrap length before using %",
-      "5": "The second remainder keeps the normalized index within bounds"
-    }
+    "badNotes": {"3": "The remainder is -1, not 2", "4": "A negative array index fails"},
+    "goodNotes": {"4": "Reject a nonpositive wrap length before using %", "5": "The second remainder keeps the normalized index within bounds"}
   },
   "mutable-struct-copy": {
     "title": "Updating only a copy of a struct",
@@ -187,5 +160,85 @@
     "why": "Derive the next calendar date with [[dateonly-timeonly|DateOnly]] instead of guessing the day's final time-of-day.",
     "tips": "The sample defines a UTC calendar day and compares UTC-based DateTimeOffset values. For a local calendar day, resolve both boundaries through the chosen time zone first.",
     "tags": ["date range", "half-open interval", "UTC"]
+  },
+  "stream-short-reads": {
+    "title": "Assuming Stream.Read fills the requested buffer",
+    "short": "A single Read can return fewer bytes than requested without failing.",
+    "summary": "Handle a short read with a loop or ReadExactly and distinguish a zero-byte end-of-stream result from a temporarily smaller read.",
+    "why": "Stream abstracts many sources, including files, compression, and transport, so one read is not a contract to fill the entire buffer.",
+    "tips": "For fixed-size records, combine this rule with [[end-of-stream|EndOfStreamException]] handling and verify the complete record before decoding it.",
+    "tags": ["Stream", "Read", "I/O"]
+  },
+  "stream-position": {
+    "title": "Reading a stream from its end after writing",
+    "short": "After writing, Position is at the end, so an immediate read sees end-of-stream.",
+    "summary": "A seekable Stream shares one cursor for reads and writes. Rewind explicitly when the next operation should read from the beginning.",
+    "why": "MemoryStream.Write advances Position, so the following ReadByte starts after the final byte.",
+    "tips": "Not every stream is seekable. Check [[stream-basics|CanSeek]] and change Position only when seeking is supported.",
+    "tags": ["Stream", "Position", "seek"]
+  },
+  "encoding-mismatch": {
+    "title": "Mismatched encodings corrupt decoded text",
+    "short": "Using different encodings to produce and consume bytes changes the decoded text.",
+    "summary": "A byte sequence has no universal text meaning by itself; the producer and consumer must agree on the character encoding.",
+    "why": "UTF-8 bytes interpreted as UTF-16 no longer preserve the original character boundaries or code points.",
+    "tips": "Make Encoding explicit in [[encoding-text-bytes|text/byte conversion]] and choose whether malformed input should be rejected strictly.",
+    "tags": ["Encoding", "UTF-8", "text"]
+  },
+  "json-reference-cycles": {
+    "title": "Cyclic object references break JSON serialization",
+    "short": "An object graph that points back to itself fails under the default JSON contract.",
+    "summary": "Parent-child graphs that contain a cycle cause JsonException with the default System.Text.Json reference handling.",
+    "why": "Naively expanding a cyclic object graph into tree-shaped JSON would continue revisiting the same objects.",
+    "tips": "Choose the public [[json-options-contracts|JSON contract]] first: remove cycles with DTOs, ignore a back-reference, or deliberately enable reference preservation.",
+    "tags": ["JSON", "cycle", "JsonException"]
+  },
+  "exception-rethrow": {
+    "title": "Losing the original throw location when rethrowing",
+    "short": "Using throw ex inside a catch resets useful stack information.",
+    "summary": "Use a bare throw to rethrow the current exception while preserving its original throw location; use ExceptionDispatchInfo when a captured exception must be rethrown later.",
+    "why": "Throwing the exception object as a new throw makes the original diagnostic path harder to follow.",
+    "tips": "When a [[try-catch|catch]] only logs an exception it cannot handle, rethrow with throw rather than naming the exception variable.",
+    "tags": ["exception", "stack trace", "throw"]
+  },
+  "async-void-errors": {
+    "title": "Callers cannot await failures from async void",
+    "short": "Ordinary async void methods expose neither completion nor failure as a Task.",
+    "summary": "Async methods should normally return Task or Task<T> so callers can await completion and observe exceptions; reserve async void for required event-handler signatures.",
+    "why": "A void return value carries no asynchronous operation state for the caller to await or catch through normal await flow.",
+    "tips": "Outside a boundary that requires a void [[events|event-handler]] signature, return Task.",
+    "tags": ["async", "void", "Task"]
+  },
+  "sync-over-async": {
+    "title": "Blocking asynchronous work causes deadlocks or starvation",
+    "short": "Task.Result or Wait can cause deadlock or thread starvation depending on the environment.",
+    "summary": "Keep the call chain asynchronous and await Task completion. Synchronous blocking does not deadlock everywhere, but it can deadlock under particular synchronization contexts and worsen thread-pool starvation under load.",
+    "why": "The blocked caller can occupy a context or worker that a continuation needs before the operation can complete.",
+    "tips": "Propagate [[async-await|async / await]] upward instead of wrapping already asynchronous I/O in Task.Run merely to make blocking appear safe.",
+    "tags": ["async", "deadlock", "Task"]
+  },
+  "cancel-without-awaiting": {
+    "title": "Treating a cancellation request as completed shutdown",
+    "short": "Cancel requests a stop but does not prove that the target Task has finished.",
+    "summary": "After CancellationTokenSource.Cancel, work can continue until it observes the token and terminates. Await the target Task before disposing resources that work still uses.",
+    "why": "[[cancellation-token|CancellationToken]] is a cooperative mechanism rather than a forced-termination instruction.",
+    "tips": "Use an ownership-aware shutdown order: request cancellation, await termination, classify cancellation, then dispose resources.",
+    "tags": ["cancellation", "Task", "shutdown"]
+  },
+  "concurrent-collection-factories": {
+    "title": "Assuming ConcurrentDictionary factories run only once",
+    "short": "A GetOrAdd valueFactory can execute more than once under contention.",
+    "summary": "ConcurrentDictionary coordinates the single stored value, but competing callers can each compute candidate values before one is published.",
+    "why": "User callbacks can run outside internal locks so the dictionary remains safe and avoids invoking arbitrary code while holding its synchronization.",
+    "tips": "Keep factories free of irreversible side effects; when creation itself must be once-only, consider storing [[lazy-initialization|Lazy<T>]] values.",
+    "tags": ["ConcurrentDictionary", "GetOrAdd", "Lazy"]
+  },
+  "deadlock-lock-order": {
+    "title": "Opposite lock acquisition orders cause deadlock",
+    "short": "Two operations can each hold one lock while waiting forever for the other.",
+    "summary": "When code needs multiple locks, applying the same global acquisition order everywhere prevents this common circular-wait pattern.",
+    "why": "If one path holds A while waiting for B and another holds B while waiting for A, neither can proceed.",
+    "tips": "Keep [[lock-shared-state|lock]] objects private, critical sections small, and multiple-lock acquisition ordered consistently.",
+    "tags": ["lock", "deadlock", "concurrency"]
   }
 }
