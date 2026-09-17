@@ -984,5 +984,133 @@
       "json-exception",
       "idisposable"
     ]
+  },
+  {
+    "id": "json-serializer-options",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\n\nvar options = new JsonSerializerOptions\n{\n    WriteIndented = true,\n    PropertyNameCaseInsensitive = true\n};\n\nstring json = JsonSerializer.Serialize(new User(\"Ada\", 17), options);\nUser? user = JsonSerializer.Deserialize<User>(json, options);\nConsole.WriteLine(user?.Name);\n\nsealed record User(string Name, int Age);",
+    "related": [
+      "json-read",
+      "json-write",
+      "json-options-contracts"
+    ]
+  },
+  {
+    "id": "json-naming-policy",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\n\nvar options = new JsonSerializerOptions\n{\n    PropertyNamingPolicy = JsonNamingPolicy.CamelCase\n};\n\nstring json = JsonSerializer.Serialize(new Player(\"Ada\", 120), options);\nConsole.WriteLine(json); // {\"name\":\"Ada\",\"score\":120}\n\nsealed record Player(string Name, int Score);",
+    "related": [
+      "json-serializer-options",
+      "json-write"
+    ]
+  },
+  {
+    "id": "json-enum-converter",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\nusing System.Text.Json.Serialization;\n\nvar options = new JsonSerializerOptions();\noptions.Converters.Add(new JsonStringEnumConverter());\n\nstring json = JsonSerializer.Serialize(Status.Ready, options);\nStatus restored = JsonSerializer.Deserialize<Status>(json, options);\nConsole.WriteLine($\"{json} -> {restored}\");\n\nenum Status { Pending, Ready, Failed }",
+    "related": [
+      "json-serializer-options",
+      "enums-flags"
+    ]
+  },
+  {
+    "id": "json-ignore-null",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Text.Json;\nusing System.Text.Json.Serialization;\n\nvar options = new JsonSerializerOptions\n{\n    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull\n};\n\nvar message = new Message(\"hello\", null);\nConsole.WriteLine(JsonSerializer.Serialize(message, options));\n\nsealed record Message(string Text, string? Detail);",
+    "related": [
+      "json-serializer-options",
+      "nullable"
+    ]
+  },
+  {
+    "id": "httpclient-lifetime",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "sealed class ApiClient\n{\n    private static readonly HttpClient Http = new();\n\n    public async Task<string> GetTextAsync(Uri uri, CancellationToken token)\n    {\n        using HttpResponseMessage response = await Http.GetAsync(uri, token);\n        response.EnsureSuccessStatusCode();\n        return await response.Content.ReadAsStringAsync(token);\n    }\n}",
+    "related": [
+      "http-get",
+      "http-request-exception",
+      "cancellation-token"
+    ]
+  },
+  {
+    "id": "http-request-headers",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var client = new HttpClient();\nusing var request = new HttpRequestMessage(HttpMethod.Get, new Uri(\"https://example.test/\"));\nrequest.Headers.UserAgent.ParseAdd(\"CSharpAtlas/1.0\");\nrequest.Headers.Accept.ParseAdd(\"application/json\");\n\nConsole.WriteLine(request.Headers.UserAgent);\nConsole.WriteLine(request.Headers.Accept);\n// Pass the prepared request to SendAsync when a real endpoint is available.",
+    "related": [
+      "http-get",
+      "httpclient-lifetime",
+      "uri-format"
+    ]
+  },
+  {
+    "id": "http-json-request",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Net.Http.Json;\n\nvar payload = new CreateUser(\"Ada\", 17);\nusing JsonContent content = JsonContent.Create(payload);\nusing var request = new HttpRequestMessage(HttpMethod.Post, new Uri(\"https://example.test/users\"))\n{\n    Content = content\n};\n\nConsole.WriteLine(request.Method);\nConsole.WriteLine(request.Content.Headers.ContentType);\n\nsealed record CreateUser(string Name, int Age);",
+    "related": [
+      "json-write",
+      "http-request-headers",
+      "uri-format"
+    ]
+  },
+  {
+    "id": "http-json-response",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using System.Net;\nusing System.Net.Http.Json;\n\nusing var response = new HttpResponseMessage(HttpStatusCode.OK)\n{\n    Content = JsonContent.Create(new User(\"Ada\", 17))\n};\n\nUser? user = await response.Content.ReadFromJsonAsync<User>();\nConsole.WriteLine(user?.Name);\n\nsealed record User(string Name, int Age);",
+    "related": [
+      "json-read",
+      "http-response-status",
+      "http-json-request"
+    ]
+  },
+  {
+    "id": "uri-builder",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var builder = new UriBuilder(\"https\", \"example.com\")\n{\n    Path = \"api/search\",\n    Query = \"q=\" + Uri.EscapeDataString(\"C# streams\")\n};\n\nUri uri = builder.Uri;\nConsole.WriteLine(uri.AbsoluteUri);",
+    "related": [
+      "uri-format",
+      "http-get",
+      "encoding-text-bytes"
+    ]
+  },
+  {
+    "id": "form-url-encoded-content",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "var fields = new Dictionary<string, string>\n{\n    [\"name\"] = \"Ada Lovelace\",\n    [\"language\"] = \"C#\"\n};\n\nusing var content = new FormUrlEncodedContent(fields);\nstring body = await content.ReadAsStringAsync();\nConsole.WriteLine(content.Headers.ContentType);\nConsole.WriteLine(body);",
+    "related": [
+      "http-request-headers",
+      "encoding-text-bytes"
+    ]
+  },
+  {
+    "id": "multipart-form-data",
+    "type": "code",
+    "bad": null,
+    "good": null,
+    "code": "using var form = new MultipartFormDataContent();\nform.Add(new StringContent(\"Ada\"), \"name\");\n\nbyte[] bytes = \"hello\"u8.ToArray();\nvar file = new ByteArrayContent(bytes);\nfile.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(\"text/plain\");\nform.Add(file, \"file\", \"note.txt\");\n\nConsole.WriteLine(form.Headers.ContentType);\nConsole.WriteLine(form.Count());",
+    "related": [
+      "http-request-headers",
+      "form-url-encoded-content",
+      "stream-basics"
+    ]
   }
 ]

@@ -1006,5 +1006,137 @@
       "JsonElement",
       "JSON"
     ]
+  },
+  "json-serializer-options": {
+    "title": "JsonSerializerOptions を共有して JSON の契約をそろえる",
+    "short": "シリアライズとデシリアライズで同じ JSON 設定を使う。",
+    "summary": "JsonSerializerOptions にインデントや大文字小文字の扱いなどをまとめると、[[json-read|読み取り]]と[[json-write|書き込み]]で同じ契約を使えます。",
+    "why": "同じ型でもオプションが異なると、プロパティ名や変換方法など JSON との対応関係が変わるためです。",
+    "tips": "設定は処理ごとに場当たり的に作らず、アプリ内で意図した契約単位にまとめて再利用します。",
+    "tags": [
+      "JSON",
+      "JsonSerializerOptions",
+      "契約"
+    ]
+  },
+  "json-naming-policy": {
+    "title": "JSON のプロパティ名を camelCase にする",
+    "short": "JsonNamingPolicy で C# の名前と JSON の名前付け規則を分ける。",
+    "summary": "PropertyNamingPolicy に CamelCase を指定すると、C# 側の PascalCase を JSON 側では camelCase にできます。設定は [[json-serializer-options|JsonSerializerOptions]] にまとめます。",
+    "why": "C# の命名規則と外部 JSON の命名規則が異なっていても、モデルのプロパティ名を崩さず変換できるためです。",
+    "tips": "既存 API と接続するときは、相手側の契約に合わせて命名ポリシーや個別属性を選びます。",
+    "tags": [
+      "JSON",
+      "camelCase",
+      "JsonNamingPolicy"
+    ]
+  },
+  "json-enum-converter": {
+    "title": "enum を JSON の文字列として扱う",
+    "short": "JsonStringEnumConverter で数値ではなく名前を読み書きする。",
+    "summary": "JsonStringEnumConverter を登録すると enum を \"Ready\" のような文字列として表現できます。enum 自体の基本は [[enums-flags|enum と Flags]] と同じです。",
+    "why": "数値表現より読みやすくなる一方、名前の変更が外部 JSON の契約変更になり得ます。",
+    "tips": "保存形式や公開 API では、enum メンバー名の変更も互換性に影響するものとして扱います。",
+    "tags": [
+      "JSON",
+      "enum",
+      "converter"
+    ]
+  },
+  "json-ignore-null": {
+    "title": "JSON 出力から null プロパティを省く",
+    "short": "JsonIgnoreCondition.WhenWritingNull で null の出力方針を設定する。",
+    "summary": "DefaultIgnoreCondition を設定すると、[[nullable|nullable]] な値が null のとき JSON へ書き出すかどうかを一括で制御できます。",
+    "why": "null を明示する契約と、プロパティ自体を省略する契約は意味が異なる場合があるため、意図的に選ぶ必要があります。",
+    "tips": "受信側が「欠落」と「null」を区別する API では、安易に省略しないでください。",
+    "tags": [
+      "JSON",
+      "null",
+      "JsonIgnoreCondition"
+    ]
+  },
+  "httpclient-lifetime": {
+    "title": "HttpClient を繰り返し利用する",
+    "short": "リクエストごとに作り直さず、長寿命の HttpClient を使う。",
+    "summary": "繰り返し通信するクライアントでは HttpClient を再利用し、各レスポンスは必要に応じて破棄します。通信失敗は [[http-request-exception|HttpRequestException]] として扱います。",
+    "why": "HttpClient は複数リクエストを送るためのクライアントで、毎回作成・破棄するより再利用する設計が基本です。",
+    "tips": "長い処理には CancellationToken を渡し、呼び出し側のキャンセル要求を伝播させます。",
+    "tags": [
+      "HttpClient",
+      "HTTP",
+      "lifetime"
+    ]
+  },
+  "http-request-headers": {
+    "title": "HTTP リクエストヘッダーを型付き API で設定する",
+    "short": "User-Agent や Accept を HttpRequestMessage に設定する。",
+    "summary": "HttpRequestMessage.Headers の型付きプロパティを使うと、文字列を手作業で連結せずヘッダーを構築できます。URI の妥当性は [[uri-format|URI の解析]] と別に考えます。",
+    "why": "ヘッダーごとの構文規則を専用 API が検証し、リクエスト本体とメタデータを分けて扱えるためです。",
+    "tips": "Content-Type は request.Headers ではなく、通常 request.Content.Headers に属します。",
+    "tags": [
+      "HTTP",
+      "headers",
+      "HttpRequestMessage"
+    ]
+  },
+  "http-json-request": {
+    "title": "JSON を本文に持つ HTTP リクエストを組み立てる",
+    "short": "JsonContent でオブジェクトから JSON の HTTP Content を作る。",
+    "summary": "JsonContent.Create はオブジェクトを JSON の HttpContent に変換します。シリアライズ自体は [[json-write|JSON 書き込み]]と同じ契約です。",
+    "why": "文字列を自前で組み立てず、Content-Type と JSON 変換を一緒に扱えるためです。",
+    "tips": "例はリクエストを組み立てるだけです。実送信時は HttpClient.SendAsync と CancellationToken を組み合わせます。",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "JsonContent"
+    ]
+  },
+  "http-json-response": {
+    "title": "HTTP レスポンスの JSON を型として読む",
+    "short": "ReadFromJsonAsync で JSON 本文を C# オブジェクトへ変換する。",
+    "summary": "HttpContent.ReadFromJsonAsync を使うと JSON 本文を型へ変換できます。まず [[http-response-status|HTTP ステータス]]を確認してから本文を解釈する設計が重要です。",
+    "why": "成功時とエラー時で本文の形式が異なる API が多く、ステータスと JSON 変換を分けて考える必要があるためです。",
+    "tips": "外部 JSON では null や不足プロパティも想定し、戻り値を無条件に非 null と決めつけないようにします。",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "ReadFromJsonAsync"
+    ]
+  },
+  "uri-builder": {
+    "title": "UriBuilder で URI の各要素を組み立てる",
+    "short": "scheme・host・path・query を構造として扱う。",
+    "summary": "UriBuilder を使うと URI 全体を文字列連結せずに構成できます。入力文字列の解析失敗については [[uri-format|UriFormatException]] も確認します。",
+    "why": "URI の path と query ではエスケープ規則が異なるため、構造を意識して組み立てる方が安全です。",
+    "tips": "クエリ値を埋め込む場合は値単位で適切にエスケープし、完成 URI 全体を二重エスケープしないようにします。",
+    "tags": [
+      "UriBuilder",
+      "URI",
+      "query"
+    ]
+  },
+  "form-url-encoded-content": {
+    "title": "フォーム形式の HTTP 本文を作る",
+    "short": "FormUrlEncodedContent で key-value を application/x-www-form-urlencoded にする。",
+    "summary": "FormUrlEncodedContent は key-value をフォーム URL エンコードされた本文へ変換し、Content-Type も設定します。文字列とバイト列の関係は [[encoding-text-bytes|Encoding]] とも関係します。",
+    "why": "空白や記号を含む値を含め、フォーム形式のエンコードをライブラリに任せられるためです。",
+    "tips": "JSON API へ送る場合はこの形式ではなく、相手の契約に応じて JsonContent などを選びます。",
+    "tags": [
+      "HTTP",
+      "form",
+      "FormUrlEncodedContent"
+    ]
+  },
+  "multipart-form-data": {
+    "title": "multipart/form-data に文字列とファイルを入れる",
+    "short": "MultipartFormDataContent で複数パートの本文を構成する。",
+    "summary": "MultipartFormDataContent は文字列やバイト列など複数の HttpContent を1つの multipart 本文へまとめます。大きなファイルでは [[stream-basics|Stream]] を使う Content も検討します。",
+    "why": "各パートに名前・ファイル名・Content-Type を持たせられ、ファイルアップロード形式を構造的に作れるためです。",
+    "tips": "大容量データを ByteArrayContent に全読み込みするとメモリを使うため、必要なら StreamContent を使います。",
+    "tags": [
+      "HTTP",
+      "multipart",
+      "file upload"
+    ]
   }
 }

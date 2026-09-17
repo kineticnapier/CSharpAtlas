@@ -1006,5 +1006,137 @@
       "JsonElement",
       "JSON"
     ]
+  },
+  "json-serializer-options": {
+    "title": "Sharing JsonSerializerOptions for one JSON contract",
+    "short": "Use the same JSON settings for serialization and deserialization.",
+    "summary": "JsonSerializerOptions collects indentation, name matching, and other behavior so [[json-read|reading]] and [[json-write|writing]] follow the same contract.",
+    "why": "Different options can change how the same C# type maps to property names and values in JSON.",
+    "tips": "Create options around intentional contracts instead of constructing unrelated settings at each call site.",
+    "tags": [
+      "JSON",
+      "JsonSerializerOptions",
+      "contract"
+    ]
+  },
+  "json-naming-policy": {
+    "title": "Writing JSON property names in camelCase",
+    "short": "Use JsonNamingPolicy to separate C# naming from JSON naming.",
+    "summary": "PropertyNamingPolicy can map PascalCase C# properties to camelCase JSON while remaining part of the shared [[json-serializer-options|JsonSerializerOptions]] contract.",
+    "why": "The C# model can follow C# naming conventions while external JSON follows a different naming convention.",
+    "tips": "When integrating with an existing API, match its documented contract with a naming policy or explicit attributes.",
+    "tags": [
+      "JSON",
+      "camelCase",
+      "JsonNamingPolicy"
+    ]
+  },
+  "json-enum-converter": {
+    "title": "Representing enums as JSON strings",
+    "short": "Use JsonStringEnumConverter to read and write enum names instead of numbers.",
+    "summary": "JsonStringEnumConverter represents values such as Ready by name. The underlying type behavior is still the same as [[enums-flags|C# enums]].",
+    "why": "String values are easier to inspect, but renaming an enum member can become a breaking change to persisted or public JSON.",
+    "tips": "Treat enum member names as part of the external contract when they are serialized as strings.",
+    "tags": [
+      "JSON",
+      "enum",
+      "converter"
+    ]
+  },
+  "json-ignore-null": {
+    "title": "Omitting null properties from JSON output",
+    "short": "Use JsonIgnoreCondition.WhenWritingNull to define null output behavior.",
+    "summary": "DefaultIgnoreCondition controls whether [[nullable|nullable]] properties with null values are written or omitted from JSON.",
+    "why": "A missing property and an explicitly present null can mean different things to another system.",
+    "tips": "Do not omit nulls blindly when the receiving API distinguishes between missing and null values.",
+    "tags": [
+      "JSON",
+      "null",
+      "JsonIgnoreCondition"
+    ]
+  },
+  "httpclient-lifetime": {
+    "title": "Reusing HttpClient across requests",
+    "short": "Keep a long-lived HttpClient instead of recreating one for every request.",
+    "summary": "Clients that perform repeated HTTP calls should reuse HttpClient while disposing per-request responses as appropriate. Transport failures surface through [[http-request-exception|HttpRequestException]].",
+    "why": "HttpClient is designed to send many requests and is normally better treated as a reusable client than a per-request object.",
+    "tips": "Pass CancellationToken through long-running calls so cancellation remains cooperative.",
+    "tags": [
+      "HttpClient",
+      "HTTP",
+      "lifetime"
+    ]
+  },
+  "http-request-headers": {
+    "title": "Setting HTTP request headers with typed APIs",
+    "short": "Configure User-Agent and Accept on HttpRequestMessage.",
+    "summary": "Typed HttpRequestMessage.Headers APIs avoid manually concatenating header syntax. URI parsing remains a separate concern covered by [[uri-format|URI validation]].",
+    "why": "Dedicated header APIs validate header-specific syntax and keep request metadata separate from the body.",
+    "tips": "Content-Type usually belongs to request.Content.Headers rather than request.Headers.",
+    "tags": [
+      "HTTP",
+      "headers",
+      "HttpRequestMessage"
+    ]
+  },
+  "http-json-request": {
+    "title": "Building an HTTP request with a JSON body",
+    "short": "Create JSON HttpContent from an object with JsonContent.",
+    "summary": "JsonContent.Create turns an object into JSON HttpContent using the same serialization ideas as [[json-write|writing JSON]].",
+    "why": "It avoids hand-building JSON strings while pairing the payload with an appropriate media type.",
+    "tips": "The example only constructs a request. Real sending should use HttpClient.SendAsync with an appropriate CancellationToken.",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "JsonContent"
+    ]
+  },
+  "http-json-response": {
+    "title": "Reading a JSON HTTP response into a type",
+    "short": "Deserialize a response body with ReadFromJsonAsync.",
+    "summary": "HttpContent.ReadFromJsonAsync converts JSON response content into a C# type. Check [[http-response-status|HTTP status]] before assuming the body has the success shape.",
+    "why": "Many APIs return different body schemas for success and error responses, so status handling and deserialization are separate concerns.",
+    "tips": "Treat external JSON as nullable or incomplete unless the contract guarantees otherwise.",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "ReadFromJsonAsync"
+    ]
+  },
+  "uri-builder": {
+    "title": "Composing URI components with UriBuilder",
+    "short": "Treat scheme, host, path, and query as URI structure instead of one concatenated string.",
+    "summary": "UriBuilder constructs URI components without manually concatenating the entire URI. Invalid source text is still related to [[uri-format|UriFormatException]].",
+    "why": "Paths and query values follow different escaping rules, so preserving URI structure helps avoid malformed strings.",
+    "tips": "Escape individual query values where appropriate and avoid double-escaping the completed URI.",
+    "tags": [
+      "UriBuilder",
+      "URI",
+      "query"
+    ]
+  },
+  "form-url-encoded-content": {
+    "title": "Creating form-urlencoded HTTP content",
+    "short": "Encode key-value fields as application/x-www-form-urlencoded.",
+    "summary": "FormUrlEncodedContent converts key-value pairs into form URL encoded content and supplies the content type. The underlying text-to-byte conversion also relates to [[encoding-text-bytes|encoding]].",
+    "why": "The library handles spaces and reserved characters according to the form encoding rules.",
+    "tips": "Use this only when the endpoint expects form content; JSON endpoints should use a JSON content contract instead.",
+    "tags": [
+      "HTTP",
+      "form",
+      "FormUrlEncodedContent"
+    ]
+  },
+  "multipart-form-data": {
+    "title": "Combining fields and files as multipart/form-data",
+    "short": "Use MultipartFormDataContent to assemble multiple content parts.",
+    "summary": "MultipartFormDataContent combines strings, bytes, or other HttpContent values into one multipart body. For large files, consider a [[stream-basics|stream-backed]] content source.",
+    "why": "Each part can carry its own name, filename, and Content-Type without manually constructing multipart boundaries.",
+    "tips": "ByteArrayContent holds all bytes in memory; use StreamContent when the payload should remain streamed.",
+    "tags": [
+      "HTTP",
+      "multipart",
+      "file upload"
+    ]
   }
 }
