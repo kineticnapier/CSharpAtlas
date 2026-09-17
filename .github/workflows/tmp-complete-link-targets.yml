@@ -1,0 +1,41 @@
+name: Temporary content repair
+
+on:
+  push:
+    branches:
+      - codex/content-expand-300
+    paths:
+      - .github/workflows/tmp-complete-link-targets.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/content-expand-300
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Add missing content targets
+        run: node .github/tmp-atlas-link-targets.mjs
+      - name: Verify tests
+        run: npm test
+      - name: Verify build
+        run: npm run build
+      - name: Commit verified content and remove temporary helper
+        shell: bash
+        run: |
+          rm .github/tmp-atlas-link-targets.mjs
+          rm .github/workflows/tmp-complete-link-targets.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/content .github/tmp-atlas-link-targets.mjs .github/workflows/tmp-complete-link-targets.yml
+          git commit -m "content: restore missing article link targets"
+          git push origin HEAD:codex/content-expand-300
