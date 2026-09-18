@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">C# Atlas</title>
+  <desc id="desc">Search C# errors, exceptions, code examples, and concepts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#15112b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9b6cff"/>
+      <stop offset="1" stop-color="#5b21b6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <path d="M760 0h440v630H670c90-80 105-172 40-260-54-74-34-159 50-256z" fill="#171a34" opacity=".55"/>
+  <g opacity=".16" fill="#b8a7ff" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="22">
+    <text x="790" y="75">try {</text><text x="820" y="110">var result = DoSomething();</text><text x="790" y="145">}</text>
+    <text x="790" y="180">catch (Exception ex) { ... }</text>
+    <text x="820" y="510">LINQ · async/await · Streams · JSON</text>
+  </g>
+  <text x="64" y="82" fill="#9694b5" font-family="Arial, sans-serif" font-size="18" letter-spacing="8">C# DEVELOPER REFERENCE</text>
+  <text x="60" y="245" fill="#ffffff" font-family="Arial, sans-serif" font-size="105" font-weight="800"><tspan fill="#9b6cff">C#</tspan><tspan> Atlas</tspan></text>
+  <text x="64" y="315" fill="#e4e3f3" font-family="Arial, sans-serif" font-size="34">Search C# errors, exceptions,</text>
+  <text x="64" y="360" fill="#e4e3f3" font-family="Arial, sans-serif" font-size="34">code examples, and concepts.</text>
+  <rect x="64" y="405" width="600" height="72" rx="36" fill="#20243c" stroke="#454b70" stroke-width="2"/>
+  <circle cx="105" cy="441" r="15" fill="none" stroke="#aaa8cf" stroke-width="4"/><path d="M116 452l15 15" stroke="#aaa8cf" stroke-width="4" stroke-linecap="round"/>
+  <text x="150" y="451" fill="#aaa8cf" font-family="Arial, sans-serif" font-size="25">Find the error. Find the answer.</text>
+  <g transform="translate(825 170)">
+    <path d="M140 0 275 78v156L140 312 5 234V78z" fill="url(#accent)"/>
+    <path d="M140 0 275 78 140 156 5 78z" fill="#b187ff" opacity=".7"/>
+    <text x="140" y="205" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="145" font-weight="800">C#</text>
+  </g>
+  <g fill="#d8d7ea" font-family="Arial, sans-serif" font-size="20">
+    <text x="64" y="555">Errors &amp; Exceptions</text><text x="260" y="555">Code Examples</text><text x="425" y="555">Concepts &amp; APIs</text><text x="600" y="555">Fast Search</text>
+  </g>
+</svg>
