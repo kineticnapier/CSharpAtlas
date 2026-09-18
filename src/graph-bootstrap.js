@@ -124,6 +124,7 @@ async function initializeGraphView() {
     graphButton.classList.toggle('active', showingGraph);
     listButton.setAttribute('aria-pressed', String(!showingGraph));
     graphButton.setAttribute('aria-pressed', String(showingGraph));
+    graphCanvas.setActive(showingGraph);
     if (showingGraph) {
       requestAnimationFrame(() => {
         graphCanvas.resize();
