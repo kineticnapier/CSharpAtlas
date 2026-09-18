@@ -129,3 +129,18 @@ test('collision resolution spreads diagonal neighbors in two dimensions instead 
   assert.ok(dx > 100, `horizontal distance did not grow: ${dx}`);
   assert.ok(dy > 70, `vertical distance did not grow: ${dy}`);
 });
+
+test('large graphs enter at a readable scale instead of full-fit scale', async () => {
+  const graphView = await import('../src/graph-view.js');
+  assert.equal(typeof graphView.initialGraphScale, 'function');
+  const scale = graphView.initialGraphScale(300);
+  assert.ok(scale >= 0.5, `initial scale is too small: ${scale}`);
+  assert.ok(cardScreenSize(scale, false).width >= 90);
+});
+
+test('floating amplitude remains visible on screen after zooming out', async () => {
+  const graphView = await import('../src/graph-view.js');
+  assert.equal(typeof graphView.floatingWorldAmplitude, 'function');
+  const worldAmplitude = graphView.floatingWorldAmplitude(5, 0.08);
+  assert.ok(Math.abs(worldAmplitude * 0.08 - 5) < 0.001);
+});
