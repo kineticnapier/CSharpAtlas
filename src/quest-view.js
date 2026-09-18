@@ -17,6 +17,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
   let dragging = false;
   let dragStart = null;
   let panStart = null;
+  let selectedId = null;
 
   function applyTransform() {
     world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
@@ -53,6 +54,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
   }
 
   function selectNode(id) {
+    selectedId = id;
     nodeLayer.querySelectorAll('.quest-node').forEach(button => {
       button.classList.toggle('selected', button.dataset.id === id);
     });
@@ -61,6 +63,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
 
   function render(nextGraph) {
     graph = nextGraph;
+    selectedId = null;
     const byId = new Map(graph.nodes.map(node => [node.id, node]));
     const bounds = questWorldBounds(graph.nodes);
     world.style.width = `${bounds.width}px`;
