@@ -19,6 +19,7 @@
   <meta name="twitter:image" content="https://csharpatlas.pages.dev/csharp-atlas-og.png">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="stylesheet" href="/src/code-enhancements.css">
+  <link rel="stylesheet" href="/src/graph-view.css">
 </head>
 <body>
 <header>
@@ -72,12 +73,40 @@
       </aside>
 
       <section>
-        <div class="list-head">
-          <h2 id="listTitle">おすすめ</h2>
-          <span id="resultCount"></span>
+        <div class="view-switch" role="group" aria-label="View mode">
+          <button id="listViewButton" type="button" class="active" aria-pressed="true">一覧で見る</button>
+          <button id="graphViewButton" type="button" aria-pressed="false">グラフで見る</button>
         </div>
-        <div id="cards" class="cards"></div>
-        <div id="empty" class="empty">一致する項目がありません。</div>
+
+        <div id="listViewPanel">
+          <div class="list-head">
+            <h2 id="listTitle">おすすめ</h2>
+            <span id="resultCount"></span>
+          </div>
+          <div id="cards" class="cards"></div>
+          <div id="empty" class="empty">一致する項目がありません。</div>
+        </div>
+
+        <div id="graphViewPanel" class="graph-view-panel hidden">
+          <div class="graph-toolbar">
+            <label for="edgeModeSelect">
+              <span id="graphEdgeModeLabel">接続</span>
+              <select id="edgeModeSelect">
+                <option value="both">related + Wiki</option>
+                <option value="related">related のみ</option>
+                <option value="wiki">Wiki のみ</option>
+              </select>
+            </label>
+            <button id="graphResetButton" type="button">全体を表示</button>
+            <span id="graphStats" class="graph-stats"></span>
+          </div>
+          <div class="graph-shell">
+            <canvas id="articleGraph" aria-label="Article relationship graph"></canvas>
+            <div id="graphTooltip" class="graph-tooltip hidden"></div>
+            <div id="graphHelp" class="graph-help">ドラッグ: 移動 / ホイール: ズーム / クリック: 強調 / ダブルクリック: 記事を開く</div>
+          </div>
+          <div id="graphLegend" class="graph-legend"></div>
+        </div>
       </section>
     </div>
   </section>
@@ -89,5 +118,6 @@
 </main>
 
 <script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/graph-bootstrap.js"></script>
 </body>
 </html>
