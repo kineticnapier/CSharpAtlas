@@ -113,10 +113,19 @@ test('worldToScreen transforms plain coordinates without node animation metadata
   );
 });
 
-test('resolveCardCollisions leaves generous default breathing room', () => {
+test('resolveCardCollisions leaves genuinely wide default breathing room', () => {
   const nodes = [{ x: 0, y: 0 }, { x: 10, y: 10 }];
-  resolveCardCollisions(nodes, { iterations: 30 });
+  resolveCardCollisions(nodes, { iterations: 40 });
   const dx = Math.abs(nodes[1].x - nodes[0].x);
   const dy = Math.abs(nodes[1].y - nodes[0].y);
-  assert.ok(dx >= 250 || dy >= 154, `cards remained too close: dx=${dx}, dy=${dy}`);
+  assert.ok(dx >= 360 || dy >= 195, `cards remained too close: dx=${dx}, dy=${dy}`);
+});
+
+test('collision resolution spreads diagonal neighbors in two dimensions instead of shelf-packing them', () => {
+  const nodes = [{ x: 0, y: 0 }, { x: 100, y: 70 }];
+  resolveCardCollisions(nodes, { iterations: 40 });
+  const dx = Math.abs(nodes[1].x - nodes[0].x);
+  const dy = Math.abs(nodes[1].y - nodes[0].y);
+  assert.ok(dx > 100, `horizontal distance did not grow: ${dx}`);
+  assert.ok(dy > 70, `vertical distance did not grow: ${dy}`);
 });
