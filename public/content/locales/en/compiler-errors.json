@@ -250,5 +250,51 @@
     "goodNotes": {
       "2": "Pass the missing argument"
     }
+  },
+  "cs0131": {
+    "title": "CS0131: Assignment to a nonassignable expression",
+    "short": "The left side of an assignment does not identify writable storage.",
+    "summary": "CS0131 appears when code tries to assign to a computed value rather than a variable, writable property, or indexer.",
+    "why": "left + right produces a result but no storage location that the assignment can update.",
+    "tips": "A [[variables-assignment|variable assignment]] must target actual storage. Store the computed result in a variable first, or write through an appropriate property or indexer.",
+    "tags": ["CS0131", "assignment", "expression"],
+    "badNotes": {
+      "3": "The addition result is a value, not an assignable storage location"
+    },
+    "goodNotes": {
+      "3": "Create a variable to hold the computed value",
+      "4": "A variable is a valid assignment target"
+    }
+  },
+  "cs0104": {
+    "title": "CS0104: Ambiguous name references",
+    "short": "More than one imported namespace provides the referenced type name.",
+    "summary": "CS0104 appears when the compiler finds multiple accessible symbols with the same unqualified name and cannot choose one.",
+    "why": "Both First and Second contain Widget, and importing both namespaces introduces competing candidates for Widget.",
+    "tips": "The [[using-directive|using directives]] make both names available. Qualify the type with its namespace or introduce a clear using alias.",
+    "tags": ["CS0104", "namespace", "alias"],
+    "badNotes": {
+      "4": "Widget could mean either imported type"
+    },
+    "goodNotes": {
+      "1": "Give one fully qualified type a local alias",
+      "3": "The alias makes the intended type unambiguous"
+    }
+  },
+  "cs0051": {
+    "title": "CS0051: Parameter type accessibility mismatch",
+    "short": "A method is more visible than one of the types in its parameter list.",
+    "summary": "CS0051 reports inconsistent accessibility when callers can see a method but cannot name a parameter type required by that method's signature.",
+    "why": "Api.Send is public while Request is internal, so code outside the assembly could discover Send but could not form its required argument type.",
+    "tips": "Align the [[access-modifiers|accessibility boundary]] deliberately: make the contract type public, or reduce the method's visibility when the operation is internal.",
+    "tags": ["CS0051", "accessibility", "parameter"],
+    "badNotes": {
+      "1": "Request is visible only within its assembly",
+      "5": "A public signature exposes the less-accessible Request type"
+    },
+    "goodNotes": {
+      "1": "Request is now as visible as the public method",
+      "5": "Every caller that sees Send can name its parameter type"
+    }
   }
 }

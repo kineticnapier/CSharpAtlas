@@ -214,5 +214,1061 @@
       "catch",
       "例外"
     ]
+  },
+  "event-data-pattern": {
+    "title": "EventHandler<T> で通知データを渡す",
+    "short": "通知元オブジェクトと型付きイベントデータを一緒に公開する。",
+    "summary": "EventHandler<TEventArgs> は sender とイベントデータの組を標準化します。発行元だけがイベントを発生させ、購読側は直接呼び出さずにハンドラーを追加・削除します。",
+    "why": "Download は sender に自身を、データに ProgressEventArgs を渡します。名前付き変数へ保持したハンドラーなら、+= で追加した同じデリゲートを -= で確実に削除できます。",
+    "tips": "[[events|イベント]] の境界は購読を許し、通知の発行は Download だけに保ちます。長寿命の購読は不要時に解除するか IDisposable の寿命へ結び付けます。",
+    "tags": [
+      "EventHandler",
+      "イベントデータ",
+      "購読解除"
+    ]
+  },
+  "queue-stack": {
+    "title": "Queue<T> と Stack<T> で順番を管理する",
+    "short": "FIFO と LIFO を選び、空のコレクションも安全に扱う。",
+    "summary": "Queue<T> は最初に Enqueue した要素を、Stack<T> は最後に Push した要素を先に取り出します。TryDequeue と TryPop は空でも例外を投げず false を返します。",
+    "why": "キューは Ada を先に、スタックは second を先に表示し、それぞれの取り出し規則を明確にします。",
+    "tips": "[[ienumerable|IEnumerable として内容を見る]]だけでは要素を削除しません。Dequeue、TryDequeue、Pop、TryPop は次の要素を取り除きます。",
+    "tags": [
+      "Queue",
+      "Stack",
+      "FIFO"
+    ]
+  },
+  "priority-queue": {
+    "title": "PriorityQueue<TElement,TPriority> で優先順に取り出す",
+    "short": "要素とは別の優先度が最小の項目から取り出す。",
+    "summary": "PriorityQueue は要素と優先度を別々に保持し、既定では最小の優先度を先に取り出します。同じ優先度同士の順序は保証されません。",
+    "why": "alert の優先度は 5 なので、挿入順に関係なく優先度 20 の2件より先に取り出されます。",
+    "tips": "[[custom-ordering|優先度の比較規則]]が取り出し順を決めます。同順位の安定した順序が必要なら、優先度へ明示的なタイブレーク値を含めます。",
+    "tags": [
+      "PriorityQueue",
+      "優先度",
+      "TryDequeue"
+    ]
+  },
+  "linked-list": {
+    "title": "LinkedList<T> でノードの前後へ挿入する",
+    "short": "保持したノードを基準に前後の位置を更新する。",
+    "summary": "LinkedList<T> は既知のノードの前後へ定数時間で挿入・削除できますが、値や位置からノードを探す処理には走査が必要です。",
+    "why": "Central ノードを保持することで、AddBefore、AddAfter、Remove がそのリンクを直接操作できます。",
+    "tips": "[[list-basic|添字を使う List<T>]] と異なり、任意の添字へ高速にはアクセスできません。保持するノードはそのリストに所属している間だけ使います。",
+    "tags": [
+      "LinkedList",
+      "ノード",
+      "挿入"
+    ]
+  },
+  "immutable-collections": {
+    "title": "ImmutableArray<T> で不変のスナップショットを持つ",
+    "short": "以前の値を変えず、変更後の列を別の値として作る。",
+    "summary": "ImmutableArray<T> はコンテナーの安定したスナップショットを保持します。Add は新しい値を返すため、first は変わらず second だけが green を含みます。",
+    "why": "不変コンテナーのスロットは置き換えられませんが、スロットに格納した参照が可変オブジェクトを指すことはあります。",
+    "tips": "安定した不変コンテナーは、別の所有者による変更が見える [[readonly-collection-views|読み取り専用ビュー]] とは異なります。",
+    "tags": [
+      "ImmutableArray",
+      "不変",
+      "スナップショット"
+    ]
+  },
+  "dictionary-update-insert": {
+    "title": "Dictionary の追加・更新・削除を使い分ける",
+    "short": "重複キーの扱いに合う操作を選ぶ。",
+    "summary": "Add は重複時に例外を投げ、TryAdd は false を返します。インデクサー代入は追加または置換を行い、Remove は成功と削除値を同時に返せます。",
+    "why": "各操作を要件に合わせると、意図しない上書きや拒否を避け、重複ポリシーをコードで示せます。",
+    "tips": "追加時の方針と [[dict-safe|キーを安全に検索する方法]] は別の問題です。読み取りでキー不在が想定内なら TryGetValue を使います。",
+    "tags": [
+      "Dictionary",
+      "TryAdd",
+      "Remove"
+    ]
+  },
+  "dictionary-comparers": {
+    "title": "Dictionary のキー比較を指定する",
+    "short": "すべてのキー操作へ同じ等価性の規則を適用する。",
+    "summary": "Dictionary のコンストラクターへ渡した comparer は、その Dictionary の追加、検索、置換、削除を一貫して支配します。",
+    "why": "OrdinalIgnoreCase では Content-Type の大文字小文字違いが同じキーになるため、検索は成功し、重複する TryAdd は false になります。",
+    "tips": "渡す comparer は [[custom-equality-hashing|等価性とハッシュ値の契約]] を守り、等しいキーへ整合するハッシュ値を返す必要があります。",
+    "tags": [
+      "Dictionary",
+      "StringComparer",
+      "キー等価性"
+    ]
+  },
+  "hashset-set-operations": {
+    "title": "集合の和・積・差を求める",
+    "short": "要素の集合を組み合わせ、集合間の関係を調べる。",
+    "summary": "UnionWith、IntersectWith、ExceptWith は呼び出し元を変更します。元の集合を残す必要がある場合は先にコピーします。",
+    "why": "3つのコピーがそれぞれ、全要素、共通要素、first だけの要素を独立して計算します。",
+    "tips": "[[hashset-basic|HashSet の所属判定]]は comparer の等価性を使い、IsSubsetOf や Overlaps も同じ規則で判定します。",
+    "tags": [
+      "HashSet",
+      "和集合",
+      "積集合"
+    ]
+  },
+  "array-copy-clear": {
+    "title": "配列の部分コピーと初期化",
+    "short": "範囲をコピーし、指定スロットを既定値へ戻す。",
+    "summary": "Array.Copy は指定部分をコピーし、コピー元と先が重なる場合も正しく扱います。Array.Clear は範囲内の各スロットへ既定値を代入します。",
+    "why": "オブジェクト配列のコピーは浅いため、target も同じ Box への参照を受け取ります。一方、target のクリアは参照スロットを null にします。",
+    "tips": "[[value-reference-types|参照型のコピー]]では、コピーした参照からオブジェクトの状態を変えると、同じオブジェクトを指すすべての参照から見えます。",
+    "tags": [
+      "Array.Copy",
+      "Array.Clear",
+      "浅いコピー"
+    ]
+  },
+  "array-binary-search": {
+    "title": "整列済み配列を二分探索する",
+    "short": "整列済みデータを探し、不在時の挿入位置を求める。",
+    "summary": "Array.BinarySearch は一致すれば添字を返します。不在なら、その値を挿入できる添字のビット反転値を返します。",
+    "why": "負の結果へ ~ を適用すると、もう一度走査せず挿入位置を復元できます。",
+    "tips": "ソートと検索には同じ [[custom-ordering|比較規則]] を使う必要があります。異なる規則を使った二分探索の結果は保証されません。",
+    "tags": [
+      "Array",
+      "BinarySearch",
+      "挿入位置"
+    ]
+  },
+  "list-removeall": {
+    "title": "List<T> から条件に合う要素をまとめて削除する",
+    "short": "述語で List を変更し、削除件数を受け取る。",
+    "summary": "RemoveAll は List を走査し、一致するすべての要素をその場で削除して、削除した件数を返します。",
+    "why": "偶数は numbers 自体から消え、removed には一致した3件が記録されます。",
+    "tips": "元の List を変えず別の絞り込み列が必要なら、[[list-filter|Where によるフィルター]] を使います。",
+    "tags": [
+      "List",
+      "RemoveAll",
+      "述語"
+    ]
+  },
+  "linq-any-all": {
+    "title": "Any と All で条件を判定する",
+    "short": "一部またはすべての要素が条件を満たすか調べる。",
+    "summary": "Any は最初の成功で、All は最初の失敗で評価を止めます。空の列に対する Any は false、述語付き All は空虚真により true です。",
+    "why": "結果が確定した後の要素を調べる必要がないため、どちらも短絡評価します。",
+    "tips": "この停止規則は、結果が決まると残りを評価しない [[boolean-operators|論理演算子の短絡評価]] と同じ考え方です。",
+    "tags": [
+      "LINQ",
+      "Any",
+      "All"
+    ]
+  },
+  "linq-first-single": {
+    "title": "First と Single で要素数の契約を表す",
+    "short": "許容する一致件数を表す演算子を選ぶ。",
+    "summary": "First は1件以上から先頭を返し、Single はちょうど1件を要求します。OrDefault でない形式は0件で失敗し、Single は複数件でも失敗します。",
+    "why": "Single はユーザーが一意という契約を表します。SingleOrDefault は不在を許しますが、default(T) 自体が有効値なら曖昧です。",
+    "tips": "件数の契約違反は [[invalid-operation|InvalidOperationException]] になります。既定値が曖昧なら nullable、Any、明示的な番兵値を検討します。",
+    "tags": [
+      "LINQ",
+      "First",
+      "Single"
+    ]
+  },
+  "linq-aggregate": {
+    "title": "Aggregate で独自の集約を行う",
+    "short": "明示した初期値へ列の要素を畳み込む。",
+    "summary": "Aggregate は累積状態と現在の要素を関数へ渡し、その結果を次の要素に対する新しい状態として使います。",
+    "why": "Topics: を明示的な seed にしたため、入力が空でも先頭要素を要求せず結果を定義できます。",
+    "tips": "[[lambda|累積関数]]の第1引数は以前の状態、第2引数は現在の要素です。可能なら意外な副作用を持たせません。",
+    "tags": [
+      "LINQ",
+      "Aggregate",
+      "畳み込み"
+    ]
+  },
+  "linq-sum-average": {
+    "title": "LINQ で合計と平均を求める",
+    "short": "数値そのもの、または selector で取り出した値を集約する。",
+    "summary": "Sum と Average には数値列用と selector 用のオーバーロードがあります。非 nullable の Average は空列で例外となり、nullable の Average は値がなければ null を返します。nullable 集約は null を無視します。",
+    "why": "selector が各 Quantity を取り出します。nullable の例では欠損値を除外し、合計30、平均15になります。",
+    "tips": "nullable 入力は [[nullable-value-types|欠損値の意味]] に従います。空の数値列の Sum は0で、整数用 Sum は合計が範囲外なら OverflowException を投げることがあります。",
+    "tags": [
+      "LINQ",
+      "Sum",
+      "Average"
+    ]
+  },
+  "linq-minby-maxby": {
+    "title": "MinBy と MaxBy で極値の要素を取り出す",
+    "short": "選択したキーが最小・最大の元要素を返す。",
+    "summary": "MinBy と MaxBy は列全体をソートせず走査し、選択したキーだけではなく元の要素を返します。",
+    "why": "Price が順序キーなので、完全な Pen オブジェクトと Bag オブジェクトを1回の走査で取得できます。",
+    "tips": "キーには既定または指定した [[custom-ordering|順序規則]] が使われます。空の参照型列は null、空の非 nullable 値型列は InvalidOperationException です。",
+    "tags": [
+      "LINQ",
+      "MinBy",
+      "MaxBy"
+    ]
+  },
+  "linq-selectmany": {
+    "title": "SelectMany で入れ子の列を平坦化する",
+    "short": "各子要素を出力し、必要なら親の値も保持する。",
+    "summary": "Select は入力ごとに1つの結果を作ります。SelectMany は各入力の子列を列挙し、すべての子結果を1つの列へ平坦化します。",
+    "why": "result selector は Department と各 member の両方を受け取るため、平坦化後も部署名を保持できます。",
+    "tips": "結果を入れ子のままにするか平坦化するかは、[[linq-select|Select の入力1件につき出力1件]]という規則と比較して選びます。",
+    "tags": [
+      "LINQ",
+      "SelectMany",
+      "平坦化"
+    ]
+  },
+  "linq-join": {
+    "title": "Join でキーの一致するデータを結合する",
+    "short": "等しいキーからメモリ上の内部結合行を作る。",
+    "summary": "Join は外側と内側のキーを照合します。一致しない要素は行を作らず、同じキーの内側要素が複数なら外側1件から複数行を作ります。",
+    "why": "Ada は Book と Pen の2行を作り、Grace と顧客3の注文は一致相手がないため内部結合から除かれます。",
+    "tips": "result selector は後続処理に必要なフィールドだけを持つ [[anonymous-types|匿名の結合形状]] を作れます。",
+    "tags": [
+      "LINQ",
+      "Join",
+      "内部結合"
+    ]
+  },
+  "linq-groupjoin": {
+    "title": "GroupJoin で親ごとに対応する要素をまとめる",
+    "short": "各外側要素へ一致するすべての内側要素を関連付ける。",
+    "summary": "GroupJoin は一致する内側要素がなくても外側要素ごとに1つの結果を返します。その空グループを平坦化すると左外部結合を作れます。",
+    "why": "DefaultIfEmpty が Grace の空グループへ null の注文を1つ補うため、SelectMany はフォールバック項目とともに親を残します。",
+    "tips": "平坦化時に [[linq-defaultifempty|DefaultIfEmpty]] を使うと不一致の親を残せます。使わなければ空グループは行を生成しません。",
+    "tags": [
+      "LINQ",
+      "GroupJoin",
+      "左外部結合"
+    ]
+  },
+  "linq-pagination": {
+    "title": "Skip と Take でページを切り出す",
+    "short": "ページ指定を検証し、オフセットから有限の範囲を得る。",
+    "summary": "Skip は指定した先頭部分を飛ばし、Take はページサイズ以下を返します。例では無効な値を拒否し、オフセットを checked で計算します。",
+    "why": "決定的な OrderBy により、元の並びが変わっても2ページ目は一貫して4から6になります。",
+    "tips": "ページングには安定した [[list-sort|順序規則]] が必要です。一般の遅延 IEnumerable では後方ページまでに先行要素をすべて列挙する場合があります。",
+    "tags": [
+      "LINQ",
+      "Skip",
+      "Take"
+    ]
+  },
+  "linq-chunk": {
+    "title": "Chunk で一定件数のまとまりを作る",
+    "short": "元の要素を指定件数以下の配列単位で処理する。",
+    "summary": "Chunk は元の列を列挙し、指定サイズを上限とする別々の配列を返します。最後の配列は短いことがあります。",
+    "why": "8個の値を3個ずつにすると、長さ3、3、2の配列になります。",
+    "tips": "各結果は独立した [[arrays-basics|配列]] で、Length は上限値ではなく、そのチャンクが実際に持つ要素数です。",
+    "tags": [
+      "LINQ",
+      "Chunk",
+      "バッチ"
+    ]
+  },
+  "linq-zip": {
+    "title": "Zip で複数の列を位置ごとに組み合わせる",
+    "short": "同じ位置にある要素同士を組み合わせる。",
+    "summary": "Zip は入力列を同時に進め、最短の入力が終わった時点で停止します。長い入力に残る要素は結果に含まれません。",
+    "why": "scores は2件なので、Ada と Grace だけが点数と組になり、Linus は出力されません。",
+    "tips": "Zip は位置で組み合わせ、[[linq-join|Join はキーで照合]]します。同一性で結ぶ場合は Join を選びます。",
+    "tags": [
+      "LINQ",
+      "Zip",
+      "タプル"
+    ]
+  },
+  "linq-set-operators": {
+    "title": "LINQ の集合演算で列を比較する",
+    "short": "重複のない和・積・差の列を新しく作る。",
+    "summary": "Union、Intersect、Except は新しい遅延列を返し、指定した等価性 comparer に従って重複する要素を除きます。",
+    "why": "OrdinalIgnoreCase は Ada と ada を同じ要素として、3つの演算すべてで一貫して扱います。",
+    "tips": "comparer が [[equality|要素の等価性契約]] を定義し、2つの値を同じ集合要素とみなすか決めます。",
+    "tags": [
+      "LINQ",
+      "Union",
+      "Except"
+    ]
+  },
+  "linq-tolookup": {
+    "title": "ToLookup で複数値を持つ索引を作る",
+    "short": "キーから繰り返し参照できる一対多索引を実体化する。",
+    "summary": "ToLookup は一対多の索引を直ちに構築します。存在しないキーを指定しても例外ではなく空の列を返します。",
+    "why": "顧客1は2つの注文を繰り返し取得でき、顧客99のグループは Count が0になります。",
+    "tips": "ToLookup は遅延する [[linq-groupby|GroupBy の列挙]] と異なりその場で実体化し、取り込んだデータへの反復キー参照に向きます。",
+    "tags": [
+      "LINQ",
+      "ToLookup",
+      "索引"
+    ]
+  },
+  "linq-cast-oftype": {
+    "title": "Cast と OfType で型付きの列へ変換する",
+    "short": "異種要素へ厳密なキャストか型による絞り込みを選ぶ。",
+    "summary": "Cast<T> はすべての要素をキャストし、Cast<string?> は互換な null を保持します。OfType<T> は T が nullable や参照型でも null を除外し、T へ代入可能な null 以外の要素だけを出力します。",
+    "why": "OfType<int> は1と3を残します。Cast の例は string と null を受け入れますが、int を加えると列挙がそこへ到達した時点で失敗します。",
+    "tips": "Cast は遅延実行なので、互換性のない要素による [[invalid-cast|InvalidCastException]] はクエリ作成時ではなく列挙時に発生します。",
+    "tags": [
+      "LINQ",
+      "Cast",
+      "OfType"
+    ]
+  },
+  "linq-sequenceequal": {
+    "title": "SequenceEqual で要素の並びを比較する",
+    "short": "1つの等価性規則で要素の値と位置を比較する。",
+    "summary": "SequenceEqual は2つの列を同時に進め、長さが同じで、同じ位置の要素がすべて等しいことを要求します。",
+    "why": "大文字小文字を無視する comparer により、2つの配列が別オブジェクトでも順序付き内容は等しくなります。",
+    "tips": "SequenceEqual は [[equality|要素の等価性契約]] を使います。重複数と順序も意味を持つため、集合の等価性とは異なります。",
+    "tags": [
+      "LINQ",
+      "SequenceEqual",
+      "順序付き比較"
+    ]
+  },
+  "linq-defaultifempty": {
+    "title": "DefaultIfEmpty で空の列を補う",
+    "short": "元の列が空の場合だけ1つの代替値を返す。",
+    "summary": "DefaultIfEmpty は空でない元列をそのまま通します。空なら明示した代替値、または default(T) をちょうど1回返します。",
+    "why": "空の整数配列は指定時に -1、省略時に0を作り、5を含む元列は5のままです。",
+    "tips": "省略時の代替値は [[default-values|default(T)]] です。1つの代替行は左外部結合を支え、後続の集約における空の扱いも変えられます。",
+    "tags": [
+      "LINQ",
+      "DefaultIfEmpty",
+      "代替値"
+    ]
+  },
+  "string-search-replace": {
+    "title": "文字列の検索と置換",
+    "short": "明示した比較規則でリテラルのトークンを探し、文字列を置換します。",
+    "summary": "IndexOf は見つからなければ -1 を返し、文字列は不変なので Replace は新しい文字列を返します。どちらもテキストの比較方法を明示できます。",
+    "why": "このトークンは識別子なので、カルチャ依存ではなく[[string-comparison|序数比較の方針]]を明示します。",
+    "tips": "スライス前に未検出の結果を確認します。要件が実際にパターンである場合だけ正規表現を使います。",
+    "tags": [
+      "string",
+      "IndexOf",
+      "Replace"
+    ]
+  },
+  "string-trim-validation": {
+    "title": "空文字と空白を区別して入力を整える",
+    "short": "許可した境界を取り除く前に、内容がない入力を検証します。",
+    "summary": "IsNullOrWhiteSpace は null、空文字、空白だけの入力を扱います。その後 Trim は先頭と末尾の空白だけを除き、内部の内容を変えません。",
+    "why": "インスタンスの文字列メソッドを呼ぶ前に[[nullable|null の場合]]を扱う必要があります。",
+    "tips": "入力契約を決めます。Trim() は Unicode の空白を認識し、特定の境界文字だけを許す契約なら文字を指定した Trim が適します。",
+    "tags": [
+      "string",
+      "Trim",
+      "検証"
+    ]
+  },
+  "stringbuilder": {
+    "title": "StringBuilder で繰り返し文字列を組み立てる",
+    "short": "各反復で新しい文字列を作らず、多数の断片を蓄積します。",
+    "summary": "StringBuilder は繰り返す Append のために可変の文字バッファを保ち、ToString で最終的な不変文字列を作ります。",
+    "why": "ループでは区切りと値を効率よく追加でき、短いメッセージ一つなら[[string-interpolation|通常の文字列補間]]の方が読みやすいままです。",
+    "tips": "数個の固定連結だけに StringBuilder を導入する必要はありません。実際の string が必要になる境界で ToString を呼びます。",
+    "tags": [
+      "StringBuilder",
+      "string",
+      "パフォーマンス"
+    ]
+  },
+  "unicode-normalization": {
+    "title": "Unicode 正規化で表現の違いをそろえる",
+    "short": "比較前に正準等価なスカラー値列をそろえます。",
+    "summary": "正規化形式 C は正準等価な列を一貫した表現へ合成し、目的に合う比較方針で等価なテキストを認識できるようにします。",
+    "why": "同じ見た目の文字列でも、合成済みの一文字と基底文字＋結合文字のように異なる[[unicode-runes|Unicode スカラー値列]]を持てます。",
+    "tips": "正規化はアクセントを除去せず、無関係な見た目の似た文字を同一にしません。決めた境界で正規化し、その後に意図した比較規則を適用します。",
+    "tags": [
+      "Unicode",
+      "正規化",
+      "FormC"
+    ]
+  },
+  "span-parse": {
+    "title": "文字列を切り出さずに Span から解析する",
+    "short": "範囲を限定したビューを Span 対応パーサーへ直接渡します。",
+    "summary": "AsSpan は元の文字列の一部を示す ReadOnlySpan<char> を作り、数値の TryParse オーバーロードは一時的な部分文字列を割り当てずにそのビューを読めます。",
+    "why": "トークンの Span は[[span-memory|元の文字列ストレージを共有する]]ため、有効期間はその所有元に依存します。",
+    "tips": "スライス境界を検証し、NumberStyles とカルチャを明示します。計測したホットパスでなければ割り当て削減より明瞭さを優先します。",
+    "tags": [
+      "ReadOnlySpan",
+      "TryParse",
+      "割り当て"
+    ]
+  },
+  "base64": {
+    "title": "Base64 でバイナリを文字列として表す",
+    "short": "テキストで扱える表現を経由してバイト列を往復し、不正入力を拒否します。",
+    "summary": "Base64 は任意のバイト列を印字可能な文字列へ写像して戻します。FromBase64String は文字種、パディング、長さが不正なら FormatException を投げます。",
+    "why": "復号後も任意のバイナリはバイト列のままです。元の生成側がテキストを符号化した場合に限り、同じ[[encoding-text-bytes|文字エンコーディング]]で復元バイトをデコードします。",
+    "tips": "Base64 は暗号化でも改ざん検出でもなく、通常はサイズが約 3 分の 1 増えます。",
+    "tags": [
+      "Base64",
+      "バイト列",
+      "FormatException"
+    ]
+  },
+  "regex-groups": {
+    "title": "正規表現の名前付きグループで値を取り出す",
+    "short": "有限時間の照合成功を確認してから名前付きフィールドを読みます。",
+    "summary": "名前付きキャプチャはフィールドを明確にします。Match.Success はパターン全体の一致、Group.Success は省略可能なグループが不参加だった場合と空文字に一致した場合を区別します。",
+    "why": "キャプチャしたフィールドを使う前に[[regex-basic|照合の成功]]を確認します。",
+    "tips": "照合と解析を分け、抽出した数値文字列は後で検証または TryParse します。必ず有限のタイムアウトを使います。",
+    "tags": [
+      "正規表現",
+      "グループ",
+      "キャプチャ"
+    ]
+  },
+  "regex-replace": {
+    "title": "正規表現で変換ルールを使った置換を行う",
+    "short": "キャプチャまたは MatchEvaluator で繰り返す一致を変換します。",
+    "summary": "Regex.Replace は置換テキスト中のキャプチャ参照を使うか、計算した出力のため各一致で MatchEvaluator を呼べます。置換構文はパターン構文とは別です。",
+    "why": "評価関数は各 Match を受け取り、[[regex-groups|名前付きキャプチャグループ]]が公開する値を読めます。",
+    "tips": "リテラルの置換には string.Replace を使います。利用者由来の置換テキストでは、パターンのエスケープが置換構文までリテラル化するとは限りません。",
+    "tags": [
+      "正規表現",
+      "Replace",
+      "MatchEvaluator"
+    ]
+  },
+  "date-parse-exact": {
+    "title": "日時を決められた形式で解析する",
+    "short": "明示したカルチャとスタイルで、文書化した日時形式だけを受け入れます。",
+    "summary": "TryParseExact は入力が指定形式、カルチャ、DateTimeStyles に適合したときだけ成功し、広いカルチャ依存解析の曖昧さを避けます。",
+    "why": "出力に使う[[date-format|書式トークン]]を入力契約にも一致させます。yyyy-MM-dd はカルチャ固有の短い日付形式とは異なります。",
+    "tips": "オフセットのない壁時計時刻は解析後も Unspecified です。瞬間として扱う前にゾーンかオフセットを明示します。",
+    "tags": [
+      "DateTime",
+      "TryParseExact",
+      "カルチャ"
+    ]
+  },
+  "time-zone-conversion": {
+    "title": "TimeZoneInfo でタイムゾーンを変換する",
+    "short": "既知の瞬間を変換し、遷移付近のローカル時計時刻を検証します。",
+    "summary": "ConvertTime は曖昧でない瞬間を選択したゾーンへ写します。ローカル時計の入力は、時計を進める遷移で存在せず、戻す遷移で曖昧になり得るためアプリの方針が必要です。",
+    "why": "[[datetimeoffset|DateTimeOffset の入力]]がゾーン変換に使う曖昧でない瞬間を提供します。",
+    "tips": "タイムゾーン ID と導入済み規則データは環境で異なります。任意の ID が全環境で使えるとせず、意図したゾーンを設定して検証します。",
+    "tags": [
+      "TimeZoneInfo",
+      "夏時間",
+      "DateTimeOffset"
+    ]
+  },
+  "timespan-arithmetic": {
+    "title": "TimeSpan で経過時間を計算する",
+    "short": "時間基準を明示して経過量を生成、加減算します。",
+    "summary": "TimeSpan は期間を表します。互換性のあるタイムスタンプ同士を引いて得られ、期間同士の加減算には暦の規則を含みません。",
+    "why": "基準が分かっている 2 個の[[datetimeoffset|DateTimeOffset 値]]は経過時間の減算に適する瞬間を表します。",
+    "tips": "1 か月やローカル暦日の長さは固定 TimeSpan ではありません。暦の型とゾーン規則で暦計算を行います。",
+    "tags": [
+      "TimeSpan",
+      "期間",
+      "DateTimeOffset"
+    ]
+  },
+  "stopwatch": {
+    "title": "Stopwatch で処理時間を計測する",
+    "short": "単調な計時源で処理の経過時間を測ります。",
+    "summary": "Stopwatch は経過時間の計測用で、DateTime.Now の減算に影響し得る実時間時計の調整を避けます。",
+    "why": "Elapsed は[[timespan-arithmetic|TimeSpan の期間]]として返り、報告には TotalMilliseconds などを使えます。",
+    "tips": "ウォームアップ、スケジューリング、ランタイム最適化、ノイズは小さい標本に影響します。複数回測り、実験が裏付ける精度だけを示します。",
+    "tags": [
+      "Stopwatch",
+      "経過時間",
+      "計測"
+    ]
+  },
+  "math-rounding": {
+    "title": "丸め・切り捨て・切り上げを選ぶ",
+    "short": "正負両方に対する境界規則を明示的に選びます。",
+    "summary": "Round は中間値方針を適用し、Floor は負の無限大、Ceiling は正の無限大、Truncate は 0 の方向へ進めます。",
+    "why": "キャストは浮動小数点や decimal を 0 方向に切り詰める[[numeric-conversions|数値変換]]であり、あらゆる丸め方針の代わりにはなりません。",
+    "tips": "ドメイン境界で MidpointRounding を明示します。正の例だけでは差が隠れるため、負数とちょうど中間の値をテストします。",
+    "tags": [
+      "Math.Round",
+      "MidpointRounding",
+      "切り捨て"
+    ]
+  },
+  "math-clamp": {
+    "title": "Math.Clamp と Min・Max で数値を制限する",
+    "short": "有限値を検証済み区間へ正規化するか、方針に従って拒否します。",
+    "summary": "Math.Clamp は下限、上限、または範囲内の元値を返します。Min と Max で個別の境界を組み合わせても入力検証の代わりにはなりません。",
+    "why": "最小境界が最大境界を超えると Math.Clamp は [[argument-exception|ArgumentException]] を投げます。",
+    "tips": "ドメインが有限値を要求するなら NaN と無限大を拒否します。不正入力のクランプは誤りを隠せるため、正規化と検証を区別します。",
+    "tags": [
+      "Math.Clamp",
+      "範囲",
+      "検証"
+    ]
+  },
+  "random-generation": {
+    "title": "Random で乱数の範囲と再現性を扱う",
+    "short": "上限が排他的であることを守り、再現が必要な例にはシードを使います。",
+    "summary": "Random.Next(min, max) は min を含み max を含みません。固定シードはテストや説明用に決定的な列を再現します。",
+    "why": "要求した範囲が宛先の[[numeric-types|数値型]]と API の境界に収まる必要があります。",
+    "tips": "Random は暗号学的に安全ではありません。秘密やトークンには RandomNumberGenerator を使い、ループ内で繰り返し再シードしないでください。",
+    "tags": [
+      "Random",
+      "シード",
+      "範囲"
+    ]
+  },
+  "random-shuffle-sampling": {
+    "title": "配列をシャッフルして重複なしに抽出する",
+    "short": "所有する配列をシャッフルし、重複しない先頭部分を取ります。",
+    "summary": "Random.Shuffle は渡した Span や配列を変更します。コピーをシャッフルして先頭 k 個を取れば、元データを保ったまま非復元抽出できます。",
+    "why": "独立した[[random-generation|ランダムな添字の生成]]では同じ要素を複数回選べるため、一意な標本を保証しません。",
+    "tips": "Random.Shuffle は .NET 8 で利用できます。k が配列境界内か検証し、予測困難性が安全要件なら暗号学的な設計を使います。",
+    "tags": [
+      "Random.Shuffle",
+      "標本抽出",
+      "配列"
+    ]
+  },
+  "guid": {
+    "title": "Guid で識別子を作成して解析する",
+    "short": "GUID を安定した文字列表現を持つ不透明な識別子として扱います。",
+    "summary": "Guid.NewGuid は識別子を作り、TryParseExact は外部テキストを選択した形式で検証し、同じ形式の ToString が安定した表現を返します。",
+    "why": "Guid は値の等価性とハッシュを持つため、解析した識別子を安定した[[dictionary-update-insert|Dictionary のキー]]にできます。",
+    "tips": "Guid は秘密でも意味のある時系列順でもありません。契約が固定なら寛容な解析に頼らず受け入れる形式を検証します。",
+    "tags": [
+      "Guid",
+      "識別子",
+      "TryParseExact"
+    ]
+  },
+  "biginteger": {
+    "title": "BigInteger で大きな整数を計算する",
+    "short": "固定幅の範囲を超える正確な整数演算を行います。",
+    "summary": "BigInteger は Int32 や Int64 の境界で折り返さず必要に応じて大きくなりますが、大きな値ほどメモリと処理時間が増えます。",
+    "why": "階乗計算は[[integer-overflow|整数オーバーフロー]]を起こす固定幅の制限を避けます。",
+    "tips": "固定幅型へ戻す変換には境界があり OverflowException を投げられます。任意精度は資源が無制限という意味ではありません。",
+    "tags": [
+      "BigInteger",
+      "整数",
+      "オーバーフロー"
+    ]
+  },
+  "decimal-calculations": {
+    "title": "decimal で十進の計算と丸めを明示する",
+    "short": "十進量を decimal のまま保ち、決めた境界で一度丸めます。",
+    "summary": "decimal は有限精度の 10 進スケール値を表します。decimal リテラルと中間値を使えば、2 進浮動小数点の近似を計算へ持ち込みません。",
+    "why": "2 進浮動小数点の中間値は、[[floating-equality|浮動小数点の等価性]]で説明される近似により decimal の処理を損なえます。",
+    "tips": "丸める時点と方法を定義し、ドメインが要求するなら丸め前の中間値を保持します。decimal の精度や範囲は無制限ではありません。",
+    "tags": [
+      "decimal",
+      "丸め",
+      "精度"
+    ]
+  },
+  "memory-stream": {
+    "title": "MemoryStream でバイト列を一時的に組み立てる",
+    "short": "メモリ上の可変バイトバッファとして Stream API を使う。",
+    "summary": "MemoryStream はメモリ上にデータを保持する seek 可能な Stream です。Length は書き込まれた長さ、Capacity は確保済み領域で、ToArray は現在の内容を別配列へコピーします。",
+    "why": "書き込み後の Position は末尾にあるため、そのまま読み始めると何も読めません。[[stream-position]] のように読み取り開始位置を明示します。",
+    "tips": "大きなデータを無制限に貯める用途には向きません。所有権とサイズ上限を決め、必要ならファイルや逐次処理を使います。",
+    "tags": [
+      "MemoryStream",
+      "Stream",
+      "バイト列"
+    ]
+  },
+  "binary-reader-writer": {
+    "title": "BinaryReader と BinaryWriter で値を保存する",
+    "short": "型付きの値を決めた順序でバイナリへ書き、同じ契約で読み戻す。",
+    "summary": "BinaryWriter と BinaryReader は Stream 上でプリミティブ値や文字列を読み書きします。書き手と読み手はフィールド順、型、文字列エンコーディングなど同じフォーマット契約を共有する必要があります。",
+    "why": "途中で切れたレコードを型付き読み取りで復元しようとすると [[end-of-stream|EndOfStreamException]] になることがあります。",
+    "tips": "長期保存する形式ではバージョンやマジック値なども設計し、異なる実装との交換では数値のバイト順まで明示します。",
+    "tags": [
+      "BinaryReader",
+      "BinaryWriter",
+      "バイナリ"
+    ]
+  },
+  "json-options-contracts": {
+    "title": "JSON の命名規則とメンバー契約を設定する",
+    "short": "C# の型と外部 JSON の形を JsonSerializerOptions と属性で結び付ける。",
+    "summary": "System.Text.Json では命名ポリシー、JsonPropertyName、JsonIgnore などで JSON 契約を調整できます。C# の内部名と外部データの名前を分けたいときに使います。",
+    "why": "シリアライズ結果は単なる実装詳細ではなく、保存形式や API と共有する契約になります。[[custom-attributes-reflection|属性]]は個別メンバーのメタデータとして利用できます。",
+    "tips": "オプションを場当たり的に変えず、読み書きで同じ契約を共有します。互換性が必要な JSON のプロパティ名変更は慎重に扱います。",
+    "tags": [
+      "System.Text.Json",
+      "JsonSerializerOptions",
+      "JSON"
+    ]
+  },
+  "http-response-status": {
+    "title": "HTTP の状態コードを確認して応答を扱う",
+    "short": "本文を成功データと決めつける前に状態コードを確認する。",
+    "summary": "HttpResponseMessage は成功・失敗の状態コード、ヘッダー、本文をまとめて表します。成功以外を例外へ変換するか、状態ごとに処理するかを呼び出し側の契約として決めます。",
+    "why": "HTTP 通信自体が成立しても 404 や 500 などの応答は返り得ます。必要なら [[http-request-exception|EnsureSuccessStatusCode による例外化]]も選べます。",
+    "tips": "応答本文を使い終えたら HttpResponseMessage を Dispose します。キャンセルや通信失敗は状態コードによる失敗と別に分類します。",
+    "tags": [
+      "HttpClient",
+      "HTTP",
+      "StatusCode"
+    ]
+  },
+  "task-whenall": {
+    "title": "Task.WhenAll で複数の処理を待つ",
+    "short": "独立して開始した複数 Task の完了をまとめて待つ。",
+    "summary": "Task.WhenAll は複数の [[task|Task]] を1つの完了として合成します。Task<T> の配列では結果配列の順序は入力 Task の順序に対応します。",
+    "why": "逐次 await すると独立処理を必要以上に直列化することがあります。WhenAll なら先に処理を開始してからまとめて完了を待てます。",
+    "tips": "失敗が複数ある場合は合成 Task の状態も確認します。await が投げる例外と、Task.Exception に保持される複数例外の観測は区別します。",
+    "tags": [
+      "Task",
+      "WhenAll",
+      "async"
+    ]
+  },
+  "task-run-cpu": {
+    "title": "Task.Run で CPU 処理を分離する",
+    "short": "有限の CPU 計算をスレッドプールへ移し、キャンセルにも協調する。",
+    "summary": "Task.Run は同期的な CPU バウンド処理をスレッドプールで実行する手段です。[[async-await|非同期 I/O]]を Task.Run で包む必要は通常ありません。",
+    "why": "CPU 計算は実際にスレッドを占有しますが、非同期 I/O は待ち時間中にワーカースレッドを保持しなくてよいからです。",
+    "tips": "処理量を制限し、長いループでは CancellationToken を定期的に確認します。大量の Task.Run を無制限に作るのは避けます。",
+    "tags": [
+      "Task.Run",
+      "CPU",
+      "スレッドプール"
+    ]
+  },
+  "interlocked": {
+    "title": "Interlocked で共有カウンターを原子的に更新する",
+    "short": "単一の共有値を競合なしで読み書きする。",
+    "summary": "Interlocked は Increment や CompareExchange など、単一値への原子的な read-modify-write を提供します。単純なカウンターでは lock より直接的です。",
+    "why": "value++ は読み取り・加算・書き込みの複数操作なので、複数スレッドが重なると更新を失う可能性があります。",
+    "tips": "複数フィールドを同時に守る不変条件には十分ではありません。その場合は [[lock-shared-state|lock]] などで一まとまりの操作を保護します。",
+    "tags": [
+      "Interlocked",
+      "atomic",
+      "並行処理"
+    ]
+  },
+  "concurrent-dictionary": {
+    "title": "ConcurrentDictionary で共有マップを更新する",
+    "short": "複数スレッドから共有する辞書を専用の原子的操作で更新する。",
+    "summary": "ConcurrentDictionary<TKey,TValue> は TryAdd、AddOrUpdate、GetOrAdd など並行利用向けの操作を提供します。別々の呼び出しを並べただけで全体が1つのトランザクションになるわけではありません。",
+    "why": "通常の Dictionary を同時に更新すると状態を安全に保てません。[[dict-safe|Dictionary の通常操作]]とは別の契約が必要です。",
+    "tips": "値生成デリゲートは競合時に複数回呼ばれ得ます。不可逆な副作用を入れないようにします。",
+    "tags": [
+      "ConcurrentDictionary",
+      "Dictionary",
+      "並行処理"
+    ]
+  },
+  "semaphore-async": {
+    "title": "SemaphoreSlim で非同期の同時実行数を制限する",
+    "short": "非同期処理へ入れる個数を制限し、取得した許可だけを必ず返す。",
+    "summary": "SemaphoreSlim.WaitAsync はスレッドをブロックせずに許可を待てます。取得後は [[finally-cleanup|finally]] で Release し、キャンセル前に取得できなかった場合は誤って返さないようにします。",
+    "why": "Release の漏れは後続処理を止め、取得していない許可を Release すると上限の意味を壊します。",
+    "tips": "共有データ自体の整合性を守る lock と、同時実行数を制限する semaphore の目的を分けます。",
+    "tags": [
+      "SemaphoreSlim",
+      "async",
+      "同時実行数"
+    ]
+  },
+  "path-combine-normalize": {
+    "title": "基準ディレクトリを明示してパスを組み立てる",
+    "short": "Path.Combine と GetFullPath で相対パスを明示した基準位置に解決する。",
+    "summary": "相対パスを作業ディレクトリ任せにせず、基準ディレクトリと組み合わせて正規化します。場所を取り違えると [[file-not-found|FileNotFoundException]] の原因になります。",
+    "why": "Path.Combine は区切り文字をプラットフォームに合わせ、Path.GetFullPath は . や .. を含むパスを絶対パスへ正規化します。",
+    "tips": "正規化はファイルの存在確認やシンボリックリンク解決ではありません。外部入力では基準外へ出ないことも別に検証します。",
+    "tags": [
+      "Path",
+      "パス",
+      "GetFullPath"
+    ]
+  },
+  "path-metadata-extension": {
+    "title": "パスからファイル名と拡張子を取り出す",
+    "short": "Path API でファイル名・拡張子を取得し、拡張子を変更する。",
+    "summary": "区切り文字を手作業で分割せず、Path.GetFileName や Path.GetExtension を使います。変更後のパスは [[path-combine-normalize|パスの組み立てと正規化]] と同じルールで扱えます。",
+    "why": "Path API は現在のプラットフォームのパス規則を考慮して最後の要素や拡張子を扱います。",
+    "tips": "拡張子は名前の一部にすぎず、実際のファイル形式や内容が正しいことを保証しません。",
+    "tags": [
+      "Path",
+      "拡張子",
+      "ファイル名"
+    ]
+  },
+  "directory-create-move-delete": {
+    "title": "作業用ディレクトリを作成・移動・削除する",
+    "short": "自分で所有する一時ディレクトリのライフサイクルを管理する。",
+    "summary": "Directory.CreateDirectory で作成し、移動後は [[directory-enumerate|Directory.EnumerateFiles]] で内容を確認できます。最後は所有している正確なディレクトリだけを削除します。",
+    "why": "Directory.Move や再帰削除は対象パスの状態に依存するため、作成した場所と移動後の場所を区別して後始末します。",
+    "tips": "再帰削除を外部入力のパスに対して安易に使わず、自分が作成した専用ディレクトリに限定します。",
+    "tags": [
+      "Directory",
+      "一時ディレクトリ",
+      "cleanup"
+    ]
+  },
+  "file-copy-move-delete": {
+    "title": "ファイルをコピー・移動・削除する",
+    "short": "上書き方針を明示してファイルのライフサイクル操作を行う。",
+    "summary": "File.Copy・File.Move・File.Delete を使い、上書きを許すかどうかを呼び出し時に明示します。事前の存在確認をしても [[io-exception|IOException]] などは依然として起こり得ます。",
+    "why": "存在確認と実際の操作の間に状態が変わる可能性があるため、操作そのものの失敗を処理する必要があります。",
+    "tips": "例では新しく作った一時ディレクトリ内だけを操作し、finally で後始末しています。",
+    "tags": [
+      "File",
+      "コピー",
+      "移動"
+    ]
+  },
+  "file-lines-streaming": {
+    "title": "大きなテキストを1行ずつ処理する",
+    "short": "File.ReadLines でファイル全体を一度にメモリへ載せず列挙する。",
+    "summary": "File.ReadLines は行を必要になった時点で読み進めます。つまり [[linq-deferred|遅延実行]] なので、列挙を始めるまで読み込みや例外発生が遅れることがあります。",
+    "why": "全行を配列として返す ReadAllLines と違い、ReadLines は IEnumerable<string> として逐次処理できます。",
+    "tips": "返された IEnumerable を保存しただけではファイルを読み切ったことにはなりません。列挙時の I/O 失敗も考慮します。",
+    "tags": [
+      "File.ReadLines",
+      "ストリーミング",
+      "IEnumerable"
+    ]
+  },
+  "file-async": {
+    "title": "ファイルの読み書きを非同期で行う",
+    "short": "File の非同期 API を await し、キャンセルも伝播させる。",
+    "summary": "ReadAllTextAsync や WriteAllTextAsync の完了を [[async-await|await]] してから結果を使います。CancellationToken も呼び出し先へ渡します。",
+    "why": "非同期 I/O は待機中に呼び出し元をブロックしませんが、ReadAllTextAsync は内容全体を文字列として保持します。",
+    "tips": "非同期であることと省メモリであることは別です。巨大ファイルにはストリームや行単位処理を検討します。",
+    "tags": [
+      "File",
+      "async",
+      "CancellationToken"
+    ]
+  },
+  "streamreader-writer": {
+    "title": "StreamReader と StreamWriter でテキストを扱う",
+    "short": "ストリーム上のバイト列を明示した文字コードでテキストとして読み書きする。",
+    "summary": "StreamReader / StreamWriter はストリームと文字列の間を変換します。その変換規則は [[encoding-text-bytes|文字列とバイト列のエンコーディング]] と同じ契約です。",
+    "why": "テキスト用ラッパーがバッファリングとエンコード・デコードを担当するため、基底ストリームの所有権は leaveOpen で明示できます。",
+    "tips": "書き込み後に同じストリームを読む場合は Writer を Flush/Dispose し、必要なら Position を戻します。",
+    "tags": [
+      "StreamReader",
+      "StreamWriter",
+      "Encoding"
+    ]
+  },
+  "stream-copy": {
+    "title": "ストリーム間でデータを逐次コピーする",
+    "short": "CopyToAsync で全体を中間配列にせず別のストリームへ転送する。",
+    "summary": "CopyToAsync は読み元から書き先へデータを逐次転送できます。長い処理では [[cancellation-token|CancellationToken]] を渡して呼び出し元のキャンセル要求を伝えます。",
+    "why": "ストリームを使うとデータ全体の byte[] を先に構築せず、一定量ずつ読み書きできます。",
+    "tips": "コピー開始時の Position から処理されます。読み元と書き先の所有権・破棄タイミングも呼び出し側で明確にします。",
+    "tags": [
+      "Stream",
+      "CopyToAsync",
+      "CancellationToken"
+    ]
+  },
+  "gzip-stream": {
+    "title": "GZipStream でデータを圧縮・展開する",
+    "short": "ストリームを重ねて GZip 圧縮し、完了後に展開する。",
+    "summary": "GZipStream は別の Stream を包んで圧縮・展開します。圧縮側は [[idisposable|Dispose]] されると末尾情報まで書き終えるため、出力を読む前にスコープを終了させます。",
+    "why": "圧縮形式の確定に必要なデータが Dispose 時に書かれるため、基底ストリームを leaveOpen で残しつつラッパーを先に閉じます。",
+    "tips": "展開後のサイズは圧縮サイズより大きくなり得ます。信頼できない入力では展開量にも上限を設けます。",
+    "tags": [
+      "GZipStream",
+      "圧縮",
+      "Stream"
+    ]
+  },
+  "zip-archive": {
+    "title": "ZipArchive で複数ファイルを1つにまとめる",
+    "short": "ZipArchiveEntry のストリームを使って ZIP 内のエントリを作成・読み取りする。",
+    "summary": "ZipArchive は複数の名前付きエントリを扱えます。作成モードでは [[idisposable|Dispose]] までに中央ディレクトリ情報が確定するため、読み直す前に Archive を閉じます。",
+    "why": "各エントリは独立したストリームとして読み書きでき、ファイルシステムへ展開しなくても内容を処理できます。",
+    "tips": "外部 ZIP を展開する場合はエントリ名によるパストラバーサルや展開サイズ上限を別途検証します。",
+    "tags": [
+      "ZipArchive",
+      "ZIP",
+      "Stream"
+    ]
+  },
+  "json-document": {
+    "title": "JsonDocument で形が一定でない JSON を調べる",
+    "short": "JsonElement の型とプロパティを確認しながら JSON を読み取る。",
+    "summary": "JsonDocument は読み取り専用の JSON ツリーを提供します。JsonElement は Document のバッファを参照するため、所有者である [[idisposable|JsonDocument の寿命]] を意識します。",
+    "why": "RootElement や子要素は Document に結び付いていますが、Clone した JsonElement は独立して保持できます。",
+    "tips": "TryGetProperty と ValueKind を使い、入力 JSON の形を決め打ちせず必要な型を確認してから値を取得します。",
+    "tags": [
+      "JsonDocument",
+      "JsonElement",
+      "JSON"
+    ]
+  },
+  "json-serializer-options": {
+    "title": "JsonSerializerOptions を共有して JSON の契約をそろえる",
+    "short": "シリアライズとデシリアライズで同じ JSON 設定を使う。",
+    "summary": "JsonSerializerOptions にインデントや大文字小文字の扱いなどをまとめると、[[json-read|読み取り]]と[[json-write|書き込み]]で同じ契約を使えます。",
+    "why": "同じ型でもオプションが異なると、プロパティ名や変換方法など JSON との対応関係が変わるためです。",
+    "tips": "設定は処理ごとに場当たり的に作らず、アプリ内で意図した契約単位にまとめて再利用します。",
+    "tags": [
+      "JSON",
+      "JsonSerializerOptions",
+      "契約"
+    ]
+  },
+  "json-naming-policy": {
+    "title": "JSON のプロパティ名を camelCase にする",
+    "short": "JsonNamingPolicy で C# の名前と JSON の名前付け規則を分ける。",
+    "summary": "PropertyNamingPolicy に CamelCase を指定すると、C# 側の PascalCase を JSON 側では camelCase にできます。設定は [[json-serializer-options|JsonSerializerOptions]] にまとめます。",
+    "why": "C# の命名規則と外部 JSON の命名規則が異なっていても、モデルのプロパティ名を崩さず変換できるためです。",
+    "tips": "既存 API と接続するときは、相手側の契約に合わせて命名ポリシーや個別属性を選びます。",
+    "tags": [
+      "JSON",
+      "camelCase",
+      "JsonNamingPolicy"
+    ]
+  },
+  "json-enum-converter": {
+    "title": "enum を JSON の文字列として扱う",
+    "short": "JsonStringEnumConverter で数値ではなく名前を読み書きする。",
+    "summary": "JsonStringEnumConverter を登録すると enum を \"Ready\" のような文字列として表現できます。enum 自体の基本は [[enums-flags|enum と Flags]] と同じです。",
+    "why": "数値表現より読みやすくなる一方、名前の変更が外部 JSON の契約変更になり得ます。",
+    "tips": "保存形式や公開 API では、enum メンバー名の変更も互換性に影響するものとして扱います。",
+    "tags": [
+      "JSON",
+      "enum",
+      "converter"
+    ]
+  },
+  "json-ignore-null": {
+    "title": "JSON 出力から null プロパティを省く",
+    "short": "JsonIgnoreCondition.WhenWritingNull で null の出力方針を設定する。",
+    "summary": "DefaultIgnoreCondition を設定すると、[[nullable|nullable]] な値が null のとき JSON へ書き出すかどうかを一括で制御できます。",
+    "why": "null を明示する契約と、プロパティ自体を省略する契約は意味が異なる場合があるため、意図的に選ぶ必要があります。",
+    "tips": "受信側が「欠落」と「null」を区別する API では、安易に省略しないでください。",
+    "tags": [
+      "JSON",
+      "null",
+      "JsonIgnoreCondition"
+    ]
+  },
+  "httpclient-lifetime": {
+    "title": "HttpClient を繰り返し利用する",
+    "short": "リクエストごとに作り直さず、長寿命の HttpClient を使う。",
+    "summary": "繰り返し通信するクライアントでは HttpClient を再利用し、各レスポンスは必要に応じて破棄します。通信失敗は [[http-request-exception|HttpRequestException]] として扱います。",
+    "why": "HttpClient は複数リクエストを送るためのクライアントで、毎回作成・破棄するより再利用する設計が基本です。",
+    "tips": "長い処理には CancellationToken を渡し、呼び出し側のキャンセル要求を伝播させます。",
+    "tags": [
+      "HttpClient",
+      "HTTP",
+      "lifetime"
+    ]
+  },
+  "http-request-headers": {
+    "title": "HTTP リクエストヘッダーを型付き API で設定する",
+    "short": "User-Agent や Accept を HttpRequestMessage に設定する。",
+    "summary": "HttpRequestMessage.Headers の型付きプロパティを使うと、文字列を手作業で連結せずヘッダーを構築できます。URI の妥当性は [[uri-format|URI の解析]] と別に考えます。",
+    "why": "ヘッダーごとの構文規則を専用 API が検証し、リクエスト本体とメタデータを分けて扱えるためです。",
+    "tips": "Content-Type は request.Headers ではなく、通常 request.Content.Headers に属します。",
+    "tags": [
+      "HTTP",
+      "headers",
+      "HttpRequestMessage"
+    ]
+  },
+  "http-json-request": {
+    "title": "JSON を本文に持つ HTTP リクエストを組み立てる",
+    "short": "JsonContent でオブジェクトから JSON の HTTP Content を作る。",
+    "summary": "JsonContent.Create はオブジェクトを JSON の HttpContent に変換します。シリアライズ自体は [[json-write|JSON 書き込み]]と同じ契約です。",
+    "why": "文字列を自前で組み立てず、Content-Type と JSON 変換を一緒に扱えるためです。",
+    "tips": "例はリクエストを組み立てるだけです。実送信時は HttpClient.SendAsync と CancellationToken を組み合わせます。",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "JsonContent"
+    ]
+  },
+  "http-json-response": {
+    "title": "HTTP レスポンスの JSON を型として読む",
+    "short": "ReadFromJsonAsync で JSON 本文を C# オブジェクトへ変換する。",
+    "summary": "HttpContent.ReadFromJsonAsync を使うと JSON 本文を型へ変換できます。まず [[http-response-status|HTTP ステータス]]を確認してから本文を解釈する設計が重要です。",
+    "why": "成功時とエラー時で本文の形式が異なる API が多く、ステータスと JSON 変換を分けて考える必要があるためです。",
+    "tips": "外部 JSON では null や不足プロパティも想定し、戻り値を無条件に非 null と決めつけないようにします。",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "ReadFromJsonAsync"
+    ]
+  },
+  "uri-builder": {
+    "title": "UriBuilder で URI の各要素を組み立てる",
+    "short": "scheme・host・path・query を構造として扱う。",
+    "summary": "UriBuilder を使うと URI 全体を文字列連結せずに構成できます。入力文字列の解析失敗については [[uri-format|UriFormatException]] も確認します。",
+    "why": "URI の path と query ではエスケープ規則が異なるため、構造を意識して組み立てる方が安全です。",
+    "tips": "クエリ値を埋め込む場合は値単位で適切にエスケープし、完成 URI 全体を二重エスケープしないようにします。",
+    "tags": [
+      "UriBuilder",
+      "URI",
+      "query"
+    ]
+  },
+  "form-url-encoded-content": {
+    "title": "フォーム形式の HTTP 本文を作る",
+    "short": "FormUrlEncodedContent で key-value を application/x-www-form-urlencoded にする。",
+    "summary": "FormUrlEncodedContent は key-value をフォーム URL エンコードされた本文へ変換し、Content-Type も設定します。文字列とバイト列の関係は [[encoding-text-bytes|Encoding]] とも関係します。",
+    "why": "空白や記号を含む値を含め、フォーム形式のエンコードをライブラリに任せられるためです。",
+    "tips": "JSON API へ送る場合はこの形式ではなく、相手の契約に応じて JsonContent などを選びます。",
+    "tags": [
+      "HTTP",
+      "form",
+      "FormUrlEncodedContent"
+    ]
+  },
+  "multipart-form-data": {
+    "title": "multipart/form-data に文字列とファイルを入れる",
+    "short": "MultipartFormDataContent で複数パートの本文を構成する。",
+    "summary": "MultipartFormDataContent は文字列やバイト列など複数の HttpContent を1つの multipart 本文へまとめます。大きなファイルでは [[stream-basics|Stream]] を使う Content も検討します。",
+    "why": "各パートに名前・ファイル名・Content-Type を持たせられ、ファイルアップロード形式を構造的に作れるためです。",
+    "tips": "大容量データを ByteArrayContent に全読み込みするとメモリを使うため、必要なら StreamContent を使います。",
+    "tags": [
+      "HTTP",
+      "multipart",
+      "file upload"
+    ]
+  },
+  "async-enumerable": {
+    "title": "IAsyncEnumerable<T> を await foreach で逐次処理する",
+    "short": "非同期に届く複数の値を await foreach で1件ずつ受け取る。",
+    "summary": "IAsyncEnumerable<T> は値の列を非同期に生成できます。[[async-await|async/await]] と通常の IEnumerable の中間のように、全件が揃う前から処理を始められます。",
+    "why": "MoveNext 相当の待機を非同期化できるため、I/O を伴うストリーミング処理でスレッドをブロックせずに次の値を待てます。",
+    "tips": "キャンセル可能にするなら CancellationToken を列挙処理へ伝播させ、生成側でも待機 API に渡します。",
+    "tags": [
+      "IAsyncEnumerable",
+      "await foreach",
+      "async"
+    ]
+  },
+  "async-disposable": {
+    "title": "await using で非同期リソースを破棄する",
+    "short": "IAsyncDisposable を実装するリソースを await using で確実に後始末する。",
+    "summary": "非同期の後始末を必要とするリソースでは await using を使います。これは [[idisposable|using]] の非同期版で、スコープ終了時に DisposeAsync を待機します。",
+    "why": "バッファのフラッシュや非同期 I/O の終了処理を同期的に待つ代わりに、破棄処理そのものを await できます。",
+    "tips": "await using の外側で別の後始末が必要なら finally と組み合わせ、破棄順序を明確にします。",
+    "tags": [
+      "IAsyncDisposable",
+      "await using",
+      "cleanup"
+    ]
+  },
+  "linked-cancellation-tokens": {
+    "title": "複数のキャンセル条件を1つにまとめる",
+    "short": "CreateLinkedTokenSource で呼び出し元キャンセルとタイムアウトを合成する。",
+    "summary": "呼び出し元の [[cancellation-token|CancellationToken]] と内部タイムアウトのどちらでも止めたい場合、linked token source で1つのトークンにまとめられます。",
+    "why": "リンクされた CancellationTokenSource は元のどれかがキャンセルされると自身もキャンセル状態になります。",
+    "tips": "linked source も IDisposable なので using で破棄し、不要になった登録を残さないようにします。",
+    "tags": [
+      "CancellationTokenSource",
+      "cancellation",
+      "timeout"
+    ]
+  },
+  "cancellation-registration": {
+    "title": "キャンセル時のコールバックを登録する",
+    "short": "CancellationToken.Register でキャンセル通知に処理を結び付ける。",
+    "summary": "ポーリングだけでなく CancellationToken.Register でキャンセル時の処理を登録できます。通常の [[cancellation-token|CancellationToken]] と同じ協調キャンセルの仕組みです。",
+    "why": "Register はキャンセル要求を受けたタイミングでコールバックを呼び出すため、待機中の外部状態へ通知したい場合に使えます。",
+    "tips": "登録は CancellationTokenRegistration として破棄できるので、長寿命トークンへ不要なコールバックを残さないようにします。",
+    "tags": [
+      "CancellationToken",
+      "Register",
+      "callback"
+    ]
+  },
+  "task-completion-source": {
+    "title": "TaskCompletionSource で外部イベントを Task に変換する",
+    "short": "自分で Task の完了・失敗・キャンセルを通知する。",
+    "summary": "TaskCompletionSource<T> はコールバック型 API などの完了通知を [[task|Task]] として公開したいときに使います。呼び出し側は通常どおり await できます。",
+    "why": "Task の状態を外部イベントから明示的に遷移させる橋渡し役になり、待つ側と完了させる側を分離できます。",
+    "tips": "ライブラリコードでは RunContinuationsAsynchronously を使うと、完了通知を行ったスレッド上で継続処理が直接走るリスクを減らせます。",
+    "tags": [
+      "TaskCompletionSource",
+      "Task",
+      "async"
+    ]
+  },
+  "value-task": {
+    "title": "ValueTask<T> を必要な場面だけ使う",
+    "short": "同期完了が非常に多い非同期 API で ValueTask<T> を検討する。",
+    "summary": "ValueTask<T> は結果が同期的に得られることが多い高頻度 API で割り当てを減らせる場合がありますが、通常は [[task|Task<T>]] の方が単純です。",
+    "why": "ValueTask<T> 自体が値型なので、常に新しい Task オブジェクトを必要としないケースがあります。",
+    "tips": "同じ ValueTask を複数回 await するなど Task と同じ感覚で保存・再利用しないでください。性能上の根拠がある場合に限定します。",
+    "tags": [
+      "ValueTask",
+      "Task",
+      "performance"
+    ]
+  },
+  "channel-producer-consumer": {
+    "title": "Channel<T> で producer / consumer をつなぐ",
+    "short": "非同期で安全なキューを使い、生成側と消費側を分離する。",
+    "summary": "System.Threading.Channels の Channel<T> は非同期 producer / consumer 用のキューです。Reader.ReadAllAsync は [[async-enumerable|IAsyncEnumerable<T>]] として読み取れます。",
+    "why": "bounded channel では容量上限に達した producer を非同期に待機させられ、共有 List を自前ロックするより契約を明確にできます。",
+    "tips": "producer が終了したら Writer.Complete を呼び、consumer が終端を検出できるようにします。",
+    "tags": [
+      "Channel",
+      "producer consumer",
+      "async"
+    ]
+  },
+  "parallel-for-each-async": {
+    "title": "Parallel.ForEachAsync で複数の非同期処理を並行実行する",
+    "short": "複数要素への非同期処理を並行化し、キャンセルも伝播させる。",
+    "summary": "Parallel.ForEachAsync は要素ごとの非同期処理を並行実行します。各処理へ [[cancellation-token|CancellationToken]] が渡されるので待機 API に伝播できます。",
+    "why": "単純な foreach + await は逐次処理ですが、この API は並行度を管理しながら複数要素を進められます。",
+    "tips": "並行化すれば必ず速くなるわけではありません。共有状態・外部サービスの制限・処理コストを確認して使います。",
+    "tags": [
+      "Parallel.ForEachAsync",
+      "concurrency",
+      "async"
+    ]
+  },
+  "periodic-timer": {
+    "title": "PeriodicTimer で一定間隔の非同期処理を行う",
+    "short": "次の時刻を非同期に待ち、キャンセル可能な周期処理を作る。",
+    "summary": "PeriodicTimer は次の tick を await できるタイマーです。[[task-delay|Task.Delay]] を自前ループするより周期処理の意図を表しやすくなります。",
+    "why": "WaitForNextTickAsync が非同期待機を提供し、CancellationToken と組み合わせて終了条件を明示できます。",
+    "tips": "処理時間が周期より長い場合の挙動を理解し、厳密なリアルタイムスケジューラとしては扱わないでください。",
+    "tags": [
+      "PeriodicTimer",
+      "timer",
+      "async"
+    ]
+  },
+  "reader-writer-lock-slim": {
+    "title": "ReaderWriterLockSlim で読み取りと書き込みを分ける",
+    "short": "読み取り共有・書き込み排他のロックを try/finally で扱う。",
+    "summary": "ReaderWriterLockSlim は複数 reader を許しつつ writer を排他にできます。単純な共有状態ならまず [[lock-shared-state|lock]] を検討し、必要性がある場合に使います。",
+    "why": "読み取りの多いワークロードでは reader 同士を同時実行できますが、ロック管理は通常の lock より複雑です。",
+    "tips": "Enter 系を呼んだら必ず try/finally で対応する Exit を呼びます。ロックを保持したまま await しないでください。",
+    "tags": [
+      "ReaderWriterLockSlim",
+      "lock",
+      "concurrency"
+    ]
+  },
+  "debug-assert": {
+    "title": "Debug.Assert で開発中の前提条件を検査する",
+    "short": "プログラム内部で常に成り立つはずの条件をデバッグ時に確認する。",
+    "summary": "Debug.Assert は開発中の不変条件を確認するための診断手段です。外部入力の検証や [[argument-out-of-range|ArgumentOutOfRangeException]] の代わりにはなりません。",
+    "why": "assert は「ここに来た時点で成立しているはず」という内部前提の破れを開発時に見つける用途に向いています。",
+    "tips": "利用者が起こし得る入力エラーには通常の条件分岐と例外を使い、Debug.Assert に依存して安全性を保たないでください。",
+    "tags": [
+      "Debug.Assert",
+      "diagnostics",
+      "invariant"
+    ]
   }
 }

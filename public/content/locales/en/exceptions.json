@@ -6,12 +6,8 @@
     "why": "Continuing with a null argument would make the operation invalid, so the method fails early.",
     "tips": "In your own methods, ArgumentNullException.ThrowIfNull provides a concise guard.",
     "tags": ["ArgumentNullException", "null", "argument"],
-    "badNotes": {
-      "7": "null is passed to a parameter that does not allow it"
-    },
-    "goodNotes": {
-      "2": "Call the method only when the value is not null"
-    }
+    "badNotes": {"7": "null is passed to a parameter that does not allow it"},
+    "goodNotes": {"2": "Call the method only when the value is not null"}
   },
   "argument-exception": {
     "title": "ArgumentException",
@@ -20,12 +16,8 @@
     "why": "The method is enforcing a constraint that cannot be expressed by the parameter type alone.",
     "tips": "Use ArgumentOutOfRangeException for range errors and ArgumentNullException for null when those communicate the cause more precisely.",
     "tags": ["ArgumentException", "argument", "exception"],
-    "badNotes": {
-      "7": "An empty string does not satisfy this method's requirement"
-    },
-    "goodNotes": {
-      "1": "Provide a value that satisfies the requirement"
-    }
+    "badNotes": {"7": "An empty string does not satisfy this method's requirement"},
+    "goodNotes": {"1": "Provide a value that satisfies the requirement"}
   },
   "argument-out-of-range": {
     "title": "ArgumentOutOfRangeException",
@@ -34,12 +26,8 @@
     "why": "The requested range extends beyond the actual range of the collection.",
     "tips": "Start by checking the argument name and actual value reported in the exception message.",
     "tags": ["ArgumentOutOfRangeException", "range", "argument"],
-    "badNotes": {
-      "2": "This requests 3 elements from a List containing only 2"
-    },
-    "goodNotes": {
-      "2": "Request a count within the actual range"
-    }
+    "badNotes": {"2": "This requests 3 elements from a List containing only 2"},
+    "goodNotes": {"2": "Request a count within the actual range"}
   },
   "invalid-operation": {
     "title": "InvalidOperationException",
@@ -48,12 +36,8 @@
     "why": "An empty sequence has no element that First can return.",
     "tips": "With LINQ, FirstOrDefault or SingleOrDefault may be appropriate depending on the intended behavior.",
     "tags": ["InvalidOperationException", "LINQ", "state"],
-    "badNotes": {
-      "2": "First() is called on an empty sequence"
-    },
-    "goodNotes": {
-      "2": "Retrieve the value while accounting for an empty sequence"
-    }
+    "badNotes": {"2": "First() is called on an empty sequence"},
+    "goodNotes": {"2": "Retrieve the value while accounting for an empty sequence"}
   },
   "invalid-cast": {
     "title": "InvalidCastException",
@@ -62,12 +46,8 @@
     "why": "The object contains a string, and a string object cannot be treated directly as an int.",
     "tips": "Use an is pattern to verify the runtime type before using it.",
     "tags": ["InvalidCastException", "cast", "type"],
-    "badNotes": {
-      "2": "The object contains a string, so it cannot be cast directly to int"
-    },
-    "goodNotes": {
-      "2": "Check the type and convert from text when needed"
-    }
+    "badNotes": {"2": "The object contains a string, so it cannot be cast directly to int"},
+    "goodNotes": {"2": "Check the type and convert from text when needed"}
   },
   "divide-by-zero": {
     "title": "DivideByZeroException",
@@ -76,12 +56,8 @@
     "why": "There is no integer result that represents division by zero.",
     "tips": "For double, division by zero does not produce this same exception and may result in Infinity or NaN.",
     "tags": ["DivideByZeroException", "division", "0"],
-    "badNotes": {
-      "3": "The divisor y is still zero"
-    },
-    "goodNotes": {
-      "3": "Verify that the divisor is nonzero before dividing"
-    }
+    "badNotes": {"3": "The divisor y is still zero"},
+    "goodNotes": {"3": "Verify that the divisor is nonzero before dividing"}
   },
   "overflow-exception": {
     "title": "OverflowException",
@@ -90,12 +66,8 @@
     "why": "The code is trying to store a result larger than the maximum value representable by int.",
     "tips": "Unchecked integer arithmetic may wrap instead of throwing, so also watch for silent logic errors.",
     "tags": ["OverflowException", "checked", "integer"],
-    "badNotes": {
-      "2": "This calculation exceeds the maximum int value"
-    },
-    "goodNotes": {
-      "1": "Use long when the required range is larger"
-    }
+    "badNotes": {"2": "This calculation exceeds the maximum int value"},
+    "goodNotes": {"1": "Use long when the required range is larger"}
   },
   "io-exception": {
     "title": "IOException",
@@ -104,12 +76,8 @@
     "why": "Depending on file-sharing settings, the same file may not be openable a second time at the same moment.",
     "tips": "Because IOException covers many causes, inspect both the exception message and InnerException when available.",
     "tags": ["IOException", "File", "stream"],
-    "badNotes": {
-      "2": "The same file is opened again while it is still in use"
-    },
-    "goodNotes": {
-      "1": "Use using to make the file lifetime explicit"
-    }
+    "badNotes": {"2": "The same file is opened again while it is still in use"},
+    "goodNotes": {"1": "Use using to make the file lifetime explicit"}
   },
   "directory-not-found": {
     "title": "DirectoryNotFoundException",
@@ -118,12 +86,8 @@
     "why": "WriteAllText does not automatically create missing parent directories.",
     "tips": "Directory.CreateDirectory is safe to call even when the directory already exists.",
     "tags": ["DirectoryNotFoundException", "Directory", "path"],
-    "badNotes": {
-      "1": "This writes into a parent directory that does not exist"
-    },
-    "goodNotes": {
-      "1": "Create the parent directory first"
-    }
+    "badNotes": {"1": "This writes into a parent directory that does not exist"},
+    "goodNotes": {"1": "Create the parent directory first"}
   },
   "unauthorized-access": {
     "title": "UnauthorizedAccessException",
@@ -132,12 +96,8 @@
     "why": "The user running the process may not have write permission for the target location.",
     "tips": "Before forcing a fix with administrator privileges, check whether the application is writing to an appropriate location.",
     "tags": ["UnauthorizedAccessException", "permission", "file"],
-    "badNotes": {
-      "1": "This location may not be writable by the current user"
-    },
-    "goodNotes": {
-      "1": "Choose a writable application data location"
-    }
+    "badNotes": {"1": "This location may not be writable by the current user"},
+    "goodNotes": {"1": "Choose a writable application data location"}
   },
   "object-disposed": {
     "title": "ObjectDisposedException",
@@ -146,12 +106,8 @@
     "why": "Dispose has already released the resources owned by the object.",
     "tips": "Check whether an IDisposable object is being used outside the using scope that owns it.",
     "tags": ["ObjectDisposedException", "Dispose", "using"],
-    "badNotes": {
-      "3": "stream is used after Dispose"
-    },
-    "goodNotes": {
-      "1": "Use using to manage the valid lifetime"
-    }
+    "badNotes": {"3": "stream is used after Dispose"},
+    "goodNotes": {"1": "Use using to manage the valid lifetime"}
   },
   "not-supported": {
     "title": "NotSupportedException",
@@ -160,12 +116,8 @@
     "why": "A read-only collection can implement ICollection<T> while still rejecting Add operations.",
     "tips": "When a type exposes capability properties such as CanRead, CanWrite, or IsReadOnly, check them before performing the operation.",
     "tags": ["NotSupportedException", "collection", "read-only"],
-    "badNotes": {
-      "2": "Add is called on a read-only collection"
-    },
-    "goodNotes": {
-      "1": "Use a mutable List when modification is required"
-    }
+    "badNotes": {"2": "Add is called on a read-only collection"},
+    "goodNotes": {"1": "Use a mutable List when modification is required"}
   },
   "operation-canceled": {
     "title": "OperationCanceledException",
@@ -174,12 +126,8 @@
     "why": "Operations that accept CancellationToken may report a cancellation request by throwing this exception.",
     "tips": "Cancellation is not necessarily an error, so handle it separately from ordinary failures.",
     "tags": ["OperationCanceledException", "CancellationToken", "async"],
-    "badNotes": {
-      "3": "Passing an already-canceled token reports cancellation"
-    },
-    "goodNotes": {
-      "5": "Handle cancellation separately from ordinary failure"
-    }
+    "badNotes": {"3": "Passing an already-canceled token reports cancellation"},
+    "goodNotes": {"5": "Handle cancellation separately from ordinary failure"}
   },
   "task-canceled": {
     "title": "TaskCanceledException",
@@ -188,12 +136,8 @@
     "why": "The Task entered the Canceled state instead of completing successfully.",
     "tips": "In many cases, catching OperationCanceledException is more useful than handling only TaskCanceledException.",
     "tags": ["TaskCanceledException", "Task", "cancellation"],
-    "badNotes": {
-      "2": "The Task is canceled before completion"
-    },
-    "goodNotes": {
-      "5": "Handle the cancellation exception"
-    }
+    "badNotes": {"2": "The Task is canceled before completion"},
+    "goodNotes": {"5": "Handle the cancellation exception"}
   },
   "timeout-exception": {
     "title": "TimeoutException",
@@ -202,12 +146,8 @@
     "why": "The operation took longer to finish than the duration supplied to WaitAsync.",
     "tips": "Do not only increase the timeout; also investigate why the operation is slow and decide how retries should work.",
     "tags": ["TimeoutException", "Task", "timeout"],
-    "badNotes": {
-      "1": "A timeout that is too short can produce TimeoutException"
-    },
-    "goodNotes": {
-      "5": "Define what should happen when a timeout occurs"
-    }
+    "badNotes": {"1": "A timeout that is too short can produce TimeoutException"},
+    "goodNotes": {"5": "Define what should happen when a timeout occurs"}
   },
   "uri-format": {
     "title": "UriFormatException",
@@ -216,11 +156,47 @@
     "why": "The string does not satisfy the structure required for the requested URI.",
     "tips": "For external input, Uri.TryCreate validates the value without using an exception for control flow.",
     "tags": ["UriFormatException", "Uri", "URL"],
-    "badNotes": {
-      "1": "An invalid URI string is passed directly to new Uri"
-    },
-    "goodNotes": {
-      "1": "Use TryCreate to verify that the URI is valid"
-    }
+    "badNotes": {"1": "An invalid URI string is passed directly to new Uri"},
+    "goodNotes": {"1": "Use TryCreate to verify that the URI is valid"}
+  },
+  "regex-timeout-exception": {
+    "title": "RegexMatchTimeoutException and bounded matching time",
+    "short": "Bound regex work and fix patterns that backtrack excessively.",
+    "summary": "RegexMatchTimeoutException reports that matching exceeded a finite timeout. Nested ambiguous quantifiers can cause excessive backtracking on near-matching input.",
+    "why": "The timeout bounds the runtime of the [[regex-basic|pattern search]] so one input cannot monopolize execution indefinitely.",
+    "tips": "Reject the current input, inspect its size and the pattern, and simplify or use NonBacktracking where supported. Retrying the same work indefinitely does not solve the cause.",
+    "tags": ["RegexMatchTimeoutException", "regex", "timeout"]
+  },
+  "decoder-fallback": {
+    "title": "DecoderFallbackException and malformed byte sequences",
+    "short": "Detect malformed input with a strict text decoder.",
+    "summary": "Configure strict decoding to reject malformed bytes instead of silently replacing them with fallback characters.",
+    "why": "Silent replacement can hide damaged or incorrectly encoded input when exact text recovery matters.",
+    "tips": "Choose the Encoding and the rejection-versus-replacement policy explicitly when performing [[encoding-text-bytes|text/byte conversion]].",
+    "tags": ["DecoderFallbackException", "Encoding", "UTF-8"]
+  },
+  "end-of-stream": {
+    "title": "EndOfStreamException and truncated data",
+    "short": "Handle a stream ending before a complete value can be read.",
+    "summary": "EndOfStreamException can occur when a typed reader reaches the end before enough bytes are available to reconstruct the requested value.",
+    "why": "A partially available fixed-size record cannot safely be treated as a complete value.",
+    "tips": "For raw Stream.Read calls, also account for [[stream-short-reads|short reads]] and verify a complete record before decoding it.",
+    "tags": ["EndOfStreamException", "Stream", "BinaryReader"]
+  },
+  "http-request-exception": {
+    "title": "HttpRequestException and HTTP request failures",
+    "short": "Separate transport failure from an HTTP status response.",
+    "summary": "HttpRequestException represents transport failures and can also represent HTTP responses explicitly converted into exceptions.",
+    "why": "Receiving a 404 response is operationally different from failing to receive an HTTP response at all.",
+    "tips": "Classify [[operation-canceled|cancellation]] and deadlines separately from transport failure so the caller retains the reason the operation stopped.",
+    "tags": ["HttpRequestException", "HttpClient", "HTTP"]
+  },
+  "aggregate-exception": {
+    "title": "AggregateException and observing multiple failures",
+    "short": "Inspect failures from several tasks combined into one operation.",
+    "summary": "Inspect all exceptions stored on a faulted combined Task and distinguish them from the exception rethrown directly by await.",
+    "why": "Several independent operations may fail, so observing only the first surfaced failure can omit useful diagnostic information.",
+    "tips": "Keep the Task returned by [[task-whenall|Task.WhenAll]] so Exception.InnerExceptions remains available after the await fails.",
+    "tags": ["AggregateException", "Task", "exception"]
   }
 }

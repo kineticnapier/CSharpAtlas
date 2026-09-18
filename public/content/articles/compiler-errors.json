@@ -228,5 +228,35 @@
     ],
     "badHighlight": [2],
     "goodHighlight": [2]
+  },
+  {
+    "id": "cs0131",
+    "type": "compiler-error",
+    "bad": "int left = 2;\nint right = 3;\n(left + right) = 10;",
+    "good": "int left = 2;\nint right = 3;\nint sum = left + right;\nsum = 10;",
+    "code": null,
+    "related": ["variables-assignment", "properties"],
+    "badHighlight": [3],
+    "goodHighlight": [3, 4]
+  },
+  {
+    "id": "cs0104",
+    "type": "compiler-error",
+    "bad": "using First;\nusing Second;\n\nWidget item = new();\n\nnamespace First { public class Widget { } }\nnamespace Second { public class Widget { } }",
+    "good": "using FirstWidget = First.Widget;\n\nFirstWidget item = new();\n\nnamespace First { public class Widget { } }\nnamespace Second { public class Widget { } }",
+    "code": null,
+    "related": ["using-directive", "scope"],
+    "badHighlight": [4],
+    "goodHighlight": [1, 3]
+  },
+  {
+    "id": "cs0051",
+    "type": "compiler-error",
+    "bad": "internal class Request { }\n\npublic class Api\n{\n    public void Send(Request request) { }\n}",
+    "good": "public class Request { }\n\npublic class Api\n{\n    public void Send(Request request) { }\n}",
+    "code": null,
+    "related": ["access-modifiers", "interfaces", "methods-parameters-returns"],
+    "badHighlight": [1, 5],
+    "goodHighlight": [1, 5]
   }
 ]

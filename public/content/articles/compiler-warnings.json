@@ -5,9 +5,15 @@
     "bad": "int unused;\nConsole.WriteLine(\"Hello\");",
     "good": "int value = 10;\nConsole.WriteLine(value);",
     "code": null,
-    "related": ["cs0219"],
-    "badHighlight": [1],
-    "goodHighlight": [2]
+    "related": [
+      "cs0219"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      2
+    ]
   },
   {
     "id": "cs0219",
@@ -15,9 +21,15 @@
     "bad": "int answer = 42;\nConsole.WriteLine(\"done\");",
     "good": "int answer = 42;\nConsole.WriteLine(answer);",
     "code": null,
-    "related": ["cs0168"],
-    "badHighlight": [1],
-    "goodHighlight": [2]
+    "related": [
+      "cs0168"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      2
+    ]
   },
   {
     "id": "cs0618",
@@ -25,9 +37,15 @@
     "bad": "[Obsolete(\"Use NewMethod instead\")]\nstatic void OldMethod() { }\n\nOldMethod();",
     "good": "static void NewMethod() { }\n\nNewMethod();",
     "code": null,
-    "related": ["cs1061"],
-    "badHighlight": [4],
-    "goodHighlight": [3]
+    "related": [
+      "cs1061"
+    ],
+    "badHighlight": [
+      4
+    ],
+    "goodHighlight": [
+      3
+    ]
   },
   {
     "id": "cs1998",
@@ -39,8 +57,12 @@
       "async-await",
       "task"
     ],
-    "badHighlight": [1],
-    "goodHighlight": [3]
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      3
+    ]
   },
   {
     "id": "cs4014",
@@ -48,9 +70,15 @@
     "bad": "SaveAsync();\nConsole.WriteLine(\"保存完了\");",
     "good": "await SaveAsync();\nConsole.WriteLine(\"保存完了\");",
     "code": null,
-    "related": ["async-await"],
-    "badHighlight": [1],
-    "goodHighlight": [1]
+    "related": [
+      "async-await"
+    ],
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
   },
   {
     "id": "cs8600",
@@ -62,8 +90,12 @@
       "nullable",
       "cs8602"
     ],
-    "badHighlight": [2],
-    "goodHighlight": [2]
+    "badHighlight": [
+      2
+    ],
+    "goodHighlight": [
+      2
+    ]
   },
   {
     "id": "cs8618",
@@ -75,8 +107,12 @@
       "nullable",
       "properties"
     ],
-    "badHighlight": [3],
-    "goodHighlight": [3]
+    "badHighlight": [
+      3
+    ],
+    "goodHighlight": [
+      3
+    ]
   },
   {
     "id": "cs8625",
@@ -88,7 +124,76 @@
       "nullable",
       "cs8600"
     ],
-    "badHighlight": [1],
-    "goodHighlight": [1]
+    "badHighlight": [
+      1
+    ],
+    "goodHighlight": [
+      1
+    ]
+  },
+  {
+    "id": "cs0108",
+    "type": "compiler-warning",
+    "bad": "class BasePrinter\n{\n    public void Print() => Console.WriteLine(\"base\");\n}\n\nclass ReportPrinter : BasePrinter\n{\n    public void Print() => Console.WriteLine(\"report\");\n}",
+    "good": "class BasePrinter\n{\n    public void Print() => Console.WriteLine(\"base\");\n}\n\nclass ReportPrinter : BasePrinter\n{\n    public new void Print() => Console.WriteLine(\"report\");\n}",
+    "code": null,
+    "related": [
+      "inheritance-polymorphism",
+      "methods-parameters-returns"
+    ],
+    "badHighlight": [
+      8
+    ],
+    "goodHighlight": [
+      8
+    ]
+  },
+  {
+    "id": "cs0162",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "static int ParseOrDefault(string text)\n{\n    if (int.TryParse(text, out int value))\n        return value;\n\n    return 0;\n    Console.WriteLine(\"unreachable\"); // CS0162\n}",
+    "related": [
+      "if-else",
+      "break-continue",
+      "cs0161"
+    ]
+  },
+  {
+    "id": "cs8604",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "#nullable enable\nstatic void PrintLength(string text) => Console.WriteLine(text.Length);\n\nstring? maybe = DateTime.Now.Ticks > 0 ? null : \"value\";\nPrintLength(maybe); // CS8604\n\nif (maybe is not null)\n    PrintLength(maybe);",
+    "related": [
+      "nullable",
+      "argument-null",
+      "methods-parameters-returns"
+    ]
+  },
+  {
+    "id": "cs8603",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "#nullable enable\nstatic string FindName(bool found)\n{\n    if (found)\n        return \"Ada\";\n\n    return null; // CS8603\n}",
+    "related": [
+      "nullable",
+      "methods-parameters-returns",
+      "cs0161"
+    ]
+  },
+  {
+    "id": "cs8509",
+    "type": "compiler-warning",
+    "bad": null,
+    "good": null,
+    "code": "static string Sign(int value) => value switch\n{\n    < 0 => \"negative\",\n    0 => \"zero\"\n    // positive integers are not covered -> CS8509\n};",
+    "related": [
+      "switch-expressions",
+      "pattern-matching",
+      "enums-flags"
+    ]
   }
 ]

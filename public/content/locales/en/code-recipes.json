@@ -5,7 +5,11 @@
     "summary": "List<T> is commonly used for array-like data whose number of elements can change.",
     "why": "List<T> manages its internal capacity and lets Add and Remove change the element count.",
     "tips": "Index access is fast, but still make sure the index is within range.",
-    "tags": ["List", "collection", "Add"]
+    "tags": [
+      "List",
+      "collection",
+      "Add"
+    ]
   },
   "list-filter": {
     "title": "Filter a List by condition",
@@ -13,7 +17,11 @@
     "summary": "LINQ Where creates a sequence of matching elements without modifying the original collection.",
     "why": "Where applies the predicate to each element and enumerates only the elements for which it returns true.",
     "tips": "Without ToList, remember that the result usually uses deferred execution.",
-    "tags": ["List", "Where", "LINQ"]
+    "tags": [
+      "List",
+      "Where",
+      "LINQ"
+    ]
   },
   "list-sort": {
     "title": "Sort a List",
@@ -21,7 +29,11 @@
     "summary": "List.Sort modifies the original List, while OrderBy returns a newly ordered sequence.",
     "why": "Choose based on whether you want to mutate the original data or obtain a separate ordered view.",
     "tips": "For multiple sort keys, chain OrderBy(...).ThenBy(...).",
-    "tags": ["List", "Sort", "OrderBy"]
+    "tags": [
+      "List",
+      "Sort",
+      "OrderBy"
+    ]
   },
   "hashset-basic": {
     "title": "Remove duplicates with HashSet<T>",
@@ -29,7 +41,11 @@
     "summary": "HashSet<T> is useful when duplicates are not allowed and fast membership tests are important.",
     "why": "HashSet<T> does not store multiple elements that are equal according to its comparer.",
     "tips": "If you need stable ordering or index access, another structure such as List<T> may be more appropriate.",
-    "tags": ["HashSet", "set", "duplicates"]
+    "tags": [
+      "HashSet",
+      "set",
+      "duplicates"
+    ]
   },
   "string-split-join": {
     "title": "Split and join strings",
@@ -37,7 +53,11 @@
     "summary": "These operations are common for simple delimited text and competitive-programming input processing.",
     "why": "Split turns a string into pieces, while Join combines multiple values with a separator.",
     "tips": "Real CSV with quoted fields cannot be parsed correctly with a simple Split alone.",
-    "tags": ["string", "Split", "Join"]
+    "tags": [
+      "string",
+      "Split",
+      "Join"
+    ]
   },
   "string-interpolation": {
     "title": "String interpolation",
@@ -45,7 +65,11 @@
     "summary": "String interpolation inserts values and expressions without long chains of string concatenation.",
     "why": "Expressions inside braces are evaluated and their results are formatted into the string.",
     "tips": "Format specifiers are supported too, for example {value:N2}.",
-    "tags": ["string", "interpolation", "$"]
+    "tags": [
+      "string",
+      "interpolation",
+      "$"
+    ]
   },
   "date-format": {
     "title": "Format a DateTime for display",
@@ -53,7 +77,11 @@
     "summary": "You can convert year, month, day, time, and other components into the exact display format you need.",
     "why": "Format tokens such as yyyy, MM, and dd are replaced with the corresponding DateTime components.",
     "tips": "MM means month while mm means minutes, so letter case matters.",
-    "tags": ["DateTime", "ToString", "format"]
+    "tags": [
+      "DateTime",
+      "ToString",
+      "format"
+    ]
   },
   "file-write": {
     "title": "Write a text file",
@@ -61,7 +89,11 @@
     "summary": "This is the simplest way to save a small amount of text to a file in one operation.",
     "why": "File.WriteAllText handles opening, writing, and closing the file for you.",
     "tips": "Use File.AppendAllText when you want to add to existing content instead of replacing it.",
-    "tags": ["File", "WriteAllText", "file"]
+    "tags": [
+      "File",
+      "WriteAllText",
+      "file"
+    ]
   },
   "directory-enumerate": {
     "title": "Enumerate files in a directory",
@@ -69,7 +101,11 @@
     "summary": "This is useful when processing many files from a folder.",
     "why": "EnumerateFiles yields paths as they are enumerated, which is convenient for directories containing many files.",
     "tips": "Pass a SearchOption when subdirectories should be included.",
-    "tags": ["Directory", "EnumerateFiles", "file"]
+    "tags": [
+      "Directory",
+      "EnumerateFiles",
+      "file"
+    ]
   },
   "json-write": {
     "title": "Convert an object to JSON",
@@ -77,7 +113,11 @@
     "summary": "System.Text.Json can serialize objects into JSON.",
     "why": "The serializer inspects public properties and other configured members and converts them to JSON values and objects.",
     "tips": "Combine this with File.WriteAllText when the JSON should be saved to disk.",
-    "tags": ["JSON", "JsonSerializer", "Serialize"]
+    "tags": [
+      "JSON",
+      "JsonSerializer",
+      "Serialize"
+    ]
   },
   "http-get": {
     "title": "Send a GET request with HttpClient",
@@ -85,7 +125,11 @@
     "summary": "HttpClient methods such as GetStringAsync can retrieve HTTP resources asynchronously.",
     "why": "Network operations involve waiting, so these APIs are exposed asynchronously.",
     "tips": "Real applications should also consider HttpClient lifetime, unsuccessful status codes, and cancellation.",
-    "tags": ["HttpClient", "HTTP", "GET"]
+    "tags": [
+      "HttpClient",
+      "HTTP",
+      "GET"
+    ]
   },
   "regex-basic": {
     "title": "Search text with a regular expression",
@@ -93,7 +137,11 @@
     "summary": "Regular expressions describe patterns for validating string formats or finding substrings.",
     "why": "The pattern \\d+ matches a sequence of one or more digits.",
     "tips": "Very complicated regular expressions can become difficult to maintain; ordinary string operations may be clearer for simple cases.",
-    "tags": ["Regex", "regular expression", "string"]
+    "tags": [
+      "Regex",
+      "regular expression",
+      "string"
+    ]
   },
   "task-delay": {
     "title": "Wait asynchronously for a duration",
@@ -101,7 +149,11 @@
     "summary": "Task.Delay waits asynchronously without occupying a thread with Thread.Sleep for the entire delay.",
     "why": "Task.Delay returns a Task that completes after the requested duration.",
     "tips": "Pass a CancellationToken when the delay should be cancellable.",
-    "tags": ["Task.Delay", "async", "delay"]
+    "tags": [
+      "Task.Delay",
+      "async",
+      "delay"
+    ]
   },
   "cancellation-token": {
     "title": "Cancel work with CancellationToken",
@@ -109,7 +161,11 @@
     "summary": "CancellationToken is the standard mechanism for telling an operation that its result is no longer needed.",
     "why": "Cancellation is cooperative rather than forced: the operation checks the token at safe points and stops cleanly.",
     "tips": "When a library method accepts a token, usually pass along the token you received instead of creating an unrelated one.",
-    "tags": ["CancellationToken", "cancellation", "Task"]
+    "tags": [
+      "CancellationToken",
+      "cancellation",
+      "Task"
+    ]
   },
   "linq-select": {
     "title": "Transform values with LINQ Select",
@@ -117,7 +173,11 @@
     "summary": "Select applies the same transformation to every element of a sequence.",
     "why": "For each x, the selector evaluates x * x and enumerates the resulting values in order.",
     "tips": "Where filters elements; Select transforms them. They can be chained together.",
-    "tags": ["LINQ", "Select", "transformation"]
+    "tags": [
+      "LINQ",
+      "Select",
+      "transformation"
+    ]
   },
   "linq-groupby": {
     "title": "Group values with LINQ GroupBy",
@@ -125,7 +185,11 @@
     "summary": "GroupBy is useful for organizing data by values such as category, grade, or another key.",
     "why": "Elements are grouped by the value returned from the key selector and exposed through IGrouping sequences.",
     "tips": "For aggregation, combine GroupBy with Count, Sum, Select, and similar operators.",
-    "tags": ["LINQ", "GroupBy", "aggregation"]
+    "tags": [
+      "LINQ",
+      "GroupBy",
+      "aggregation"
+    ]
   },
   "linq-distinct": {
     "title": "Remove duplicates with Distinct",
@@ -133,7 +197,11 @@
     "summary": "LINQ Distinct removes duplicate elements according to equality rules.",
     "why": "Elements equal to values already seen are omitted from the result.",
     "tips": "If you need to maintain a duplicate-free set over time, HashSet<T> may express the intent more directly.",
-    "tags": ["LINQ", "Distinct", "duplicates"]
+    "tags": [
+      "LINQ",
+      "Distinct",
+      "duplicates"
+    ]
   },
   "try-catch": {
     "title": "Handle exceptions with try / catch",
@@ -141,6 +209,1066 @@
     "summary": "Put code that may throw in try and handle specific recoverable exception types in catch.",
     "why": "When an exception is thrown, normal control flow stops and execution transfers to a matching catch block.",
     "tips": "Avoid swallowing every failure with catch (Exception); handle concrete exceptions only when you can respond meaningfully.",
-    "tags": ["try", "catch", "exception"]
+    "tags": [
+      "try",
+      "catch",
+      "exception"
+    ]
+  },
+  "event-data-pattern": {
+    "title": "Passing notification data with EventHandler<T>",
+    "short": "Publish typed event data together with the object that raised the notification.",
+    "summary": "EventHandler<TEventArgs> standardizes a sender and event-data pair. The publisher raises the event, while subscribers attach and detach handlers without being able to invoke it directly.",
+    "why": "Download supplies itself as sender and a ProgressEventArgs instance as data. Keeping the handler in a named variable makes -= remove the exact delegate that += added.",
+    "tips": "The [[events|event]] boundary permits subscription but reserves notification for Download. Long-lived subscriptions should be removed or owned by an IDisposable lifetime when they are no longer needed.",
+    "tags": [
+      "EventHandler",
+      "event data",
+      "unsubscribe"
+    ]
+  },
+  "queue-stack": {
+    "title": "Managing order with Queue<T> and Stack<T>",
+    "short": "Choose FIFO or LIFO removal and handle an empty collection safely.",
+    "summary": "Queue<T> removes the earliest enqueued item, while Stack<T> removes the most recently pushed item. TryDequeue and TryPop report an empty collection without throwing.",
+    "why": "The queue prints Ada first and the stack prints second first, making the retrieval policy explicit.",
+    "tips": "Viewing contents through [[ienumerable|IEnumerable]] only enumerates them; Dequeue, TryDequeue, Pop, and TryPop remove the next item.",
+    "tags": [
+      "Queue",
+      "Stack",
+      "FIFO"
+    ]
+  },
+  "priority-queue": {
+    "title": "Retrieving work with PriorityQueue<TElement,TPriority>",
+    "short": "Remove the element whose independent priority compares smallest.",
+    "summary": "PriorityQueue stores an element and priority separately. By default, the smallest priority is dequeued first, and equal priorities have no guaranteed relative order.",
+    "why": "The alert has priority 5, so it leaves before both priority-20 jobs regardless of insertion order.",
+    "tips": "A supplied [[custom-ordering|priority comparison]] controls removal order; add a tie-break component to the priority when equal-priority stability matters.",
+    "tags": [
+      "PriorityQueue",
+      "priority",
+      "TryDequeue"
+    ]
+  },
+  "linked-list": {
+    "title": "Inserting around nodes with LinkedList<T>",
+    "short": "Retain a node to update adjacent positions without an index.",
+    "summary": "LinkedList<T> can insert or remove next to a known node in constant time, but finding a node by value or position still requires traversal.",
+    "why": "Keeping the Central node lets AddBefore, AddAfter, and Remove operate directly on its links.",
+    "tips": "Unlike [[list-basic|indexed List<T> operations]], linked nodes do not provide fast arbitrary index lookup; retain a node only while it belongs to that list.",
+    "tags": [
+      "LinkedList",
+      "node",
+      "insertion"
+    ]
+  },
+  "immutable-collections": {
+    "title": "Keeping immutable snapshots with ImmutableArray<T>",
+    "short": "Derive a changed sequence without modifying the earlier value.",
+    "summary": "ImmutableArray<T> keeps a stable container snapshot. Add returns a new value, so first remains unchanged while second includes green.",
+    "why": "The immutable container cannot have its slots replaced, although a reference stored in a slot may still point to a mutable object.",
+    "tips": "This stable container differs from a live [[readonly-collection-views|read-only view]], which can reflect mutations performed by another owner.",
+    "tags": [
+      "ImmutableArray",
+      "immutable",
+      "snapshot"
+    ]
+  },
+  "dictionary-update-insert": {
+    "title": "Inserting, updating, and removing Dictionary entries",
+    "short": "Select an operation whose duplicate-key policy matches the requirement.",
+    "summary": "Add rejects a duplicate by throwing, TryAdd reports false, indexer assignment inserts or replaces, and Remove can report both success and the removed value.",
+    "why": "Each operation makes a different policy visible instead of accidentally overwriting or rejecting data.",
+    "tips": "Insertion policy is separate from [[dict-safe|safe key lookup]]; use TryGetValue when absence during reading is expected.",
+    "tags": [
+      "Dictionary",
+      "TryAdd",
+      "Remove"
+    ]
+  },
+  "dictionary-comparers": {
+    "title": "Choosing Dictionary key comparers",
+    "short": "Apply one explicit equality policy to every key operation.",
+    "summary": "A comparer passed to the Dictionary constructor governs insertion, lookup, replacement, and removal for the lifetime of that dictionary.",
+    "why": "OrdinalIgnoreCase makes the three spellings of Content-Type the same key, so lookup succeeds and the duplicate TryAdd returns false.",
+    "tips": "A supplied comparer must obey the [[custom-equality-hashing|equality and hash-code contract]] so equal keys always receive compatible hash codes.",
+    "tags": [
+      "Dictionary",
+      "StringComparer",
+      "key equality"
+    ]
+  },
+  "hashset-set-operations": {
+    "title": "Computing set unions, intersections, and differences",
+    "short": "Combine membership sets and test their relationships.",
+    "summary": "UnionWith, IntersectWith, and ExceptWith mutate their receiver. Copy the source first when the original set must remain unchanged.",
+    "why": "The three copied sets independently compute all members, common members, and members found only in first.",
+    "tips": "The [[hashset-basic|HashSet membership model]] uses its equality comparer for both operations and tests such as IsSubsetOf and Overlaps.",
+    "tags": [
+      "HashSet",
+      "union",
+      "intersection"
+    ]
+  },
+  "array-copy-clear": {
+    "title": "Copying and clearing array segments",
+    "short": "Copy a bounded range and reset slots to their default values.",
+    "summary": "Array.Copy copies a selected segment and correctly handles overlapping source and destination ranges. Array.Clear assigns default to each selected slot.",
+    "why": "Copying an array of objects is shallow: target receives references to the same Box instances, while clearing target slots sets those references to null.",
+    "tips": "Under [[value-reference-types|reference-type copying]], changing a copied object's state is visible through every reference to that object.",
+    "tags": [
+      "Array.Copy",
+      "Array.Clear",
+      "shallow copy"
+    ]
+  },
+  "array-binary-search": {
+    "title": "Binary search in a sorted array",
+    "short": "Search ordered data and decode a missing value's insertion point.",
+    "summary": "Array.BinarySearch returns an index for a match. For a missing value it returns the bitwise complement of the index where that value could be inserted.",
+    "why": "Applying ~ to the negative result recovers the insertion index without performing a second scan.",
+    "tips": "The sort and search must use the same [[custom-ordering|comparison policy]]; otherwise binary search results are undefined.",
+    "tags": [
+      "Array",
+      "BinarySearch",
+      "insertion point"
+    ]
+  },
+  "list-removeall": {
+    "title": "Removing matching elements from a List<T>",
+    "short": "Mutate a list with a predicate and receive the removed count.",
+    "summary": "RemoveAll traverses the list, removes every matching element in place, and returns how many elements were removed.",
+    "why": "The even values disappear from numbers itself, and removed records that three elements matched.",
+    "tips": "Use [[list-filter|Where filtering]] when you need a separate filtered sequence instead of changing the original list.",
+    "tags": [
+      "List",
+      "RemoveAll",
+      "predicate"
+    ]
+  },
+  "linq-any-all": {
+    "title": "Testing sequence conditions with Any and All",
+    "short": "Test whether some or every element satisfies a predicate.",
+    "summary": "Any stops after the first success; All stops after the first failure. On an empty sequence Any is false, while All with a predicate is vacuously true.",
+    "why": "Neither operator needs to inspect later elements after its result has become certain.",
+    "tips": "Their short-circuit behavior follows the same idea as [[boolean-operators|short-circuit Boolean operators]], which skip work once the outcome is known.",
+    "tags": [
+      "LINQ",
+      "Any",
+      "All"
+    ]
+  },
+  "linq-first-single": {
+    "title": "Expressing cardinality with First and Single",
+    "short": "Choose the operator that states how many matches are valid.",
+    "summary": "First accepts one or more matches and returns the first. Single requires exactly one; the non-OrDefault forms fail on no match, and Single also fails on multiple matches.",
+    "why": "Single expresses the unique-user contract, while SingleOrDefault permits absence but can be ambiguous when default(T) is itself a valid value.",
+    "tips": "A violated cardinality contract raises [[invalid-operation|InvalidOperationException]]; use nullable results, Any, or an explicit sentinel when default-value ambiguity matters.",
+    "tags": [
+      "LINQ",
+      "First",
+      "Single"
+    ]
+  },
+  "linq-aggregate": {
+    "title": "Custom reductions with Aggregate",
+    "short": "Fold sequence elements into an explicitly seeded accumulator.",
+    "summary": "Aggregate passes the accumulated state and current element to a function, then uses its result as the state for the next element.",
+    "why": "Because Topics: is an explicit seed, even an empty input has a defined result instead of requiring a first element.",
+    "tips": "The [[lambda|accumulator function]] receives previous state first and the current element second; keep it free of surprising mutation when possible.",
+    "tags": [
+      "LINQ",
+      "Aggregate",
+      "fold"
+    ]
+  },
+  "linq-sum-average": {
+    "title": "Computing sums and averages with LINQ",
+    "short": "Aggregate numeric values directly or through a selector.",
+    "summary": "Sum and Average have numeric overloads and selector overloads. Non-nullable Average throws on empty input, while nullable Average returns null when no values exist; nullable aggregates ignore null values.",
+    "why": "The selector extracts each quantity. The nullable example excludes the missing value, producing 30 and an average of 15.",
+    "tips": "Nullable inputs follow [[nullable-value-types|missing-value semantics]]. Sum of an empty numeric sequence is zero, and checked integer Sum overloads can throw OverflowException when the total is outside range.",
+    "tags": [
+      "LINQ",
+      "Sum",
+      "Average"
+    ]
+  },
+  "linq-minby-maxby": {
+    "title": "Selecting extreme elements with MinBy and MaxBy",
+    "short": "Return the element with the smallest or largest selected key.",
+    "summary": "MinBy and MaxBy scan the sequence without sorting it and return a source element, not merely the selected key.",
+    "why": "Price supplies the ordering key, so the complete Pen and Bag objects are returned in one pass.",
+    "tips": "The selected key uses its default or supplied [[custom-ordering|ordering]]. Empty reference-type sources return null; empty non-nullable value-type sources throw InvalidOperationException.",
+    "tags": [
+      "LINQ",
+      "MinBy",
+      "MaxBy"
+    ]
+  },
+  "linq-selectmany": {
+    "title": "Flattening nested sequences with SelectMany",
+    "short": "Emit every child while optionally retaining its parent.",
+    "summary": "Select produces one result for each input. SelectMany enumerates a child sequence for each input and flattens all child results into one sequence.",
+    "why": "The result selector receives both the Department and each member, preserving the department name in every flattened result.",
+    "tips": "Compare this with [[linq-select|Select's one-output-per-input transformation]] when choosing whether the result should remain nested or become flat.",
+    "tags": [
+      "LINQ",
+      "SelectMany",
+      "flatten"
+    ]
+  },
+  "linq-join": {
+    "title": "Joining sequences by matching keys",
+    "short": "Build in-memory inner-join rows for equal keys.",
+    "summary": "Join matches outer and inner keys. Unmatched elements produce no row, while one outer element can produce multiple rows when several inner elements share its key.",
+    "why": "Ada produces Book and Pen rows; Grace and the customer-3 order are omitted because an inner join has no match for them.",
+    "tips": "The result selector creates an [[anonymous-types|anonymous combined shape]] containing exactly the fields needed by later query stages.",
+    "tags": [
+      "LINQ",
+      "Join",
+      "inner join"
+    ]
+  },
+  "linq-groupjoin": {
+    "title": "Grouping matches per parent with GroupJoin",
+    "short": "Associate every outer element with all matching inner elements.",
+    "summary": "GroupJoin returns one result for each outer element, including an empty group when no inner elements match. Flattening that group can implement a left join.",
+    "why": "DefaultIfEmpty contributes one null order for Grace's empty group, so SelectMany still emits the parent with a fallback item.",
+    "tips": "Use [[linq-defaultifempty|DefaultIfEmpty]] while flattening to retain unmatched parents; without it, an empty group contributes no row.",
+    "tags": [
+      "LINQ",
+      "GroupJoin",
+      "left join"
+    ]
+  },
+  "linq-pagination": {
+    "title": "Selecting pages with Skip and Take",
+    "short": "Validate a page request, compute its offset, and take a bounded slice.",
+    "summary": "Skip discards the requested prefix and Take emits at most the page size. The example rejects invalid values and uses checked arithmetic for the offset.",
+    "why": "A deterministic OrderBy makes page two consistently contain values 4 through 6, even if the source's original order changes.",
+    "tips": "Pagination needs a stable [[list-sort|ordering policy]]. On a general deferred IEnumerable, reaching a later page may still enumerate every preceding element.",
+    "tags": [
+      "LINQ",
+      "Skip",
+      "Take"
+    ]
+  },
+  "linq-chunk": {
+    "title": "Batching sequence elements with Chunk",
+    "short": "Process source elements in arrays up to a chosen size.",
+    "summary": "Chunk enumerates the source into separate arrays whose maximum length is the requested chunk size. The final array can be shorter.",
+    "why": "Eight values with a size of three produce arrays of lengths three, three, and two.",
+    "tips": "Each result is an independent [[arrays-basics|array]] whose Length is its actual element count, not always the requested maximum.",
+    "tags": [
+      "LINQ",
+      "Chunk",
+      "batch"
+    ]
+  },
+  "linq-zip": {
+    "title": "Combining sequences positionally with Zip",
+    "short": "Pair elements that occupy the same position.",
+    "summary": "Zip advances its inputs together and stops as soon as the shortest input ends, so extra elements in longer inputs are omitted.",
+    "why": "Only Ada and Grace receive scores because scores has two elements; Linus is never paired.",
+    "tips": "Zip is positional, unlike a [[linq-join|key-based Join]]; choose Join when elements should match by identity rather than index.",
+    "tags": [
+      "LINQ",
+      "Zip",
+      "tuple"
+    ]
+  },
+  "linq-set-operators": {
+    "title": "Comparing sequences with LINQ set operators",
+    "short": "Create duplicate-free unions, intersections, and differences.",
+    "summary": "Union, Intersect, and Except return new deferred sequences and suppress duplicate members according to the supplied equality comparer.",
+    "why": "OrdinalIgnoreCase treats Ada and ada as the same member consistently across all three operations.",
+    "tips": "The comparer defines the [[equality|element equality contract]] that decides whether two values represent one set member.",
+    "tags": [
+      "LINQ",
+      "Union",
+      "Except"
+    ]
+  },
+  "linq-tolookup": {
+    "title": "Building a multi-value index with ToLookup",
+    "short": "Materialize reusable groups addressable by key.",
+    "summary": "ToLookup immediately builds a one-to-many index. Indexing a missing key returns an empty sequence rather than throwing.",
+    "why": "Customer 1 can retrieve both orders repeatedly, while customer 99 produces a group with count zero.",
+    "tips": "Unlike deferred [[linq-groupby|GroupBy enumeration]], ToLookup materializes now and is convenient for repeated keyed access to the captured data.",
+    "tags": [
+      "LINQ",
+      "ToLookup",
+      "index"
+    ]
+  },
+  "linq-cast-oftype": {
+    "title": "Producing typed sequences with Cast and OfType",
+    "short": "Choose strict conversion or type-based filtering for mixed elements.",
+    "summary": "Cast<T> attempts to cast every element, and Cast<string?> preserves compatible nulls. OfType<T> filters null for every T, including nullable and reference targets, and emits only non-null elements assignable to T.",
+    "why": "OfType<int> keeps 1 and 3. The compatible Cast example accepts strings and null, but adding an int would fail when enumeration reaches it.",
+    "tips": "Because Cast is deferred, an incompatible element raises [[invalid-cast|InvalidCastException]] during enumeration rather than when the query is created.",
+    "tags": [
+      "LINQ",
+      "Cast",
+      "OfType"
+    ]
+  },
+  "linq-sequenceequal": {
+    "title": "Comparing ordered contents with SequenceEqual",
+    "short": "Compare element values and positions under one equality policy.",
+    "summary": "SequenceEqual advances both sequences together and requires equal lengths and equal elements in the same order.",
+    "why": "The case-insensitive comparer makes the ordered contents equal even though the two array objects have different identities.",
+    "tips": "SequenceEqual consumes an [[equality|element equality contract]]; it differs from set equality because duplicates and order remain significant.",
+    "tags": [
+      "LINQ",
+      "SequenceEqual",
+      "ordered equality"
+    ]
+  },
+  "linq-defaultifempty": {
+    "title": "Supplying an element for an empty sequence with DefaultIfEmpty",
+    "short": "Yield one fallback only when the source has no elements.",
+    "summary": "DefaultIfEmpty passes through a nonempty source unchanged. For an empty source it yields either the explicit fallback or default(T) exactly once.",
+    "why": "The empty integer array produces -1 when supplied and zero when no explicit value is given; a source containing 5 keeps 5.",
+    "tips": "The implicit fallback follows [[default-values|default(T)]]. One fallback row supports left joins and can deliberately change how downstream aggregation treats emptiness.",
+    "tags": [
+      "LINQ",
+      "DefaultIfEmpty",
+      "fallback"
+    ]
+  },
+  "string-search-replace": {
+    "title": "Searching and replacing string content",
+    "short": "Find literal tokens and replace text under an explicit comparison rule.",
+    "summary": "IndexOf returns -1 when a literal is absent, and Replace returns a new string because strings are immutable. Both operations can state how text is compared.",
+    "why": "The token is an identifier, so [[string-comparison|an ordinal comparison policy]] is explicit rather than culture-dependent.",
+    "tips": "Check the not-found result before slicing. Use regular expressions only when the search requirement is actually pattern-based.",
+    "tags": [
+      "string",
+      "IndexOf",
+      "Replace"
+    ]
+  },
+  "string-trim-validation": {
+    "title": "Distinguishing empty and whitespace text when normalizing input",
+    "short": "Validate missing content before trimming the permitted boundaries.",
+    "summary": "IsNullOrWhiteSpace handles null, empty, and all-whitespace input. Trim then removes whitespace only from the beginning and end, leaving interior content unchanged.",
+    "why": "The [[nullable|null case]] must be handled before calling an instance string method.",
+    "tips": "Define the input contract: Trim() recognizes Unicode whitespace, while Trim with selected characters is appropriate when only specific boundary characters are allowed.",
+    "tags": [
+      "string",
+      "Trim",
+      "validation"
+    ]
+  },
+  "stringbuilder": {
+    "title": "Building text incrementally with StringBuilder",
+    "short": "Accumulate many fragments without creating a new string at each step.",
+    "summary": "StringBuilder keeps a mutable character buffer for repeated appends, and ToString creates the final immutable string.",
+    "why": "A loop can append separators and values efficiently, while [[string-interpolation|ordinary interpolation]] remains clearer for one small formatted message.",
+    "tips": "Do not introduce StringBuilder for a handful of fixed concatenations. Call ToString at the boundary where an actual string is required.",
+    "tags": [
+      "StringBuilder",
+      "string",
+      "performance"
+    ]
+  },
+  "unicode-normalization": {
+    "title": "Normalizing equivalent Unicode representations",
+    "short": "Align canonically equivalent scalar sequences before comparison.",
+    "summary": "Normalization Form C composes canonically equivalent sequences into a consistent representation, allowing a suitable comparison policy to recognize equivalent text.",
+    "why": "The same visible text can contain different [[unicode-runes|Unicode scalar sequences]], such as one precomposed scalar or a base scalar followed by a combining mark.",
+    "tips": "Normalization does not remove accents and does not make unrelated lookalike characters equal. Normalize at a documented boundary and then apply the intended comparison rule.",
+    "tags": [
+      "Unicode",
+      "normalization",
+      "FormC"
+    ]
+  },
+  "span-parse": {
+    "title": "Parsing text spans without substring allocation",
+    "short": "Pass a bounded view directly to a span-aware parser.",
+    "summary": "AsSpan creates a ReadOnlySpan<char> over part of the original string, and numeric TryParse overloads can consume that view without allocating a temporary substring.",
+    "why": "The token [[span-memory|shares the original text storage]], so its valid lifetime is tied to that source.",
+    "tips": "Validate slice boundaries and state NumberStyles and culture. Prefer clarity over allocation avoidance unless parsing is a measured hot path.",
+    "tags": [
+      "ReadOnlySpan",
+      "TryParse",
+      "allocation"
+    ]
+  },
+  "base64": {
+    "title": "Representing binary data as Base64 text",
+    "short": "Round-trip bytes through a text-safe representation and reject malformed input.",
+    "summary": "Base64 maps arbitrary bytes to printable text and back. FromBase64String throws FormatException for invalid alphabet, padding, or length.",
+    "why": "After decoding, arbitrary binary remains bytes. Only if the original producer encoded text should the recovered bytes be decoded with that same [[encoding-text-bytes|text encoding]].",
+    "tips": "Base64 is encoding, not encryption or integrity protection, and usually increases size by roughly one third.",
+    "tags": [
+      "Base64",
+      "bytes",
+      "FormatException"
+    ]
+  },
+  "regex-groups": {
+    "title": "Extracting fields with named regular-expression groups",
+    "short": "Read structured fields by name after confirming a bounded match succeeded.",
+    "summary": "Named captures make fields explicit. Match.Success says the entire pattern matched, while Group.Success distinguishes an optional group that did not participate from one that captured an empty value.",
+    "why": "Check [[regex-basic|match success]] before consuming any captured fields.",
+    "tips": "Keep parsing separate from matching: validate or TryParse captured numeric text after extraction, and always use a finite timeout.",
+    "tags": [
+      "regex",
+      "group",
+      "capture"
+    ]
+  },
+  "regex-replace": {
+    "title": "Replacing text with regular-expression transformations",
+    "short": "Transform repeated matches with captures or a MatchEvaluator.",
+    "summary": "Regex.Replace can substitute capture references in replacement text or invoke a MatchEvaluator for computed output. Replacement syntax is distinct from pattern syntax.",
+    "why": "The evaluator receives each Match and can read the values exposed by [[regex-groups|named capture groups]].",
+    "tips": "Use a literal string Replace for literal work. When replacement text comes from users, do not assume pattern escaping also makes replacement syntax literal.",
+    "tags": [
+      "regex",
+      "Replace",
+      "MatchEvaluator"
+    ]
+  },
+  "date-parse-exact": {
+    "title": "Parsing dates with an exact format",
+    "short": "Accept one documented date-time shape with explicit culture and styles.",
+    "summary": "TryParseExact succeeds only when input conforms to the supplied format, culture, and DateTimeStyles, avoiding the ambiguity of broad culture-dependent parsing.",
+    "why": "The [[date-format|format tokens]] used for output must match the intended input contract; yyyy-MM-dd differs from culture-specific short-date patterns.",
+    "tips": "A parsed wall-clock value with no offset remains Unspecified. Choose a zone or offset explicitly before treating it as an instant.",
+    "tags": [
+      "DateTime",
+      "TryParseExact",
+      "culture"
+    ]
+  },
+  "time-zone-conversion": {
+    "title": "Converting time zones with TimeZoneInfo",
+    "short": "Convert a known instant and validate local wall-clock times at transitions.",
+    "summary": "ConvertTime maps an unambiguous instant into a selected zone. A local wall-clock input can be invalid during a forward jump or ambiguous during a backward transition and needs an application policy.",
+    "why": "A [[datetimeoffset|DateTimeOffset input]] supplies the unambiguous instant used for zone conversion.",
+    "tips": "Time-zone identifiers and installed rule data vary by environment; configure and validate the intended zone instead of claiming one arbitrary ID is universally portable.",
+    "tags": [
+      "TimeZoneInfo",
+      "DST",
+      "DateTimeOffset"
+    ]
+  },
+  "timespan-arithmetic": {
+    "title": "Calculating durations with TimeSpan",
+    "short": "Construct, combine, and subtract elapsed quantities in a stated time basis.",
+    "summary": "TimeSpan represents a duration. Compatible timestamps can be subtracted to obtain one, and durations can be added or subtracted without implying calendar rules.",
+    "why": "Two [[datetimeoffset|DateTimeOffset values]] identify instants suitable for elapsed-time subtraction after their basis is understood.",
+    "tips": "A month or local calendar day is not a fixed TimeSpan. Apply calendar arithmetic to the calendar type and zone rules instead.",
+    "tags": [
+      "TimeSpan",
+      "duration",
+      "DateTimeOffset"
+    ]
+  },
+  "stopwatch": {
+    "title": "Measuring execution time with Stopwatch",
+    "short": "Measure elapsed work with a monotonic timing source.",
+    "summary": "Stopwatch is designed for elapsed measurement and avoids civil-clock adjustments that can affect DateTime.Now subtraction.",
+    "why": "Elapsed is returned as a [[timespan-arithmetic|TimeSpan duration]], with TotalMilliseconds available for reporting.",
+    "tips": "Warm-up, scheduling, runtime optimization, and noise affect small samples. Repeat measurements and report only precision the experiment supports.",
+    "tags": [
+      "Stopwatch",
+      "elapsed",
+      "measurement"
+    ]
+  },
+  "math-rounding": {
+    "title": "Choosing rounding, floor, ceiling, and truncation",
+    "short": "Select a boundary rule explicitly for both positive and negative values.",
+    "summary": "Round applies a midpoint policy, Floor moves toward negative infinity, Ceiling toward positive infinity, and Truncate toward zero.",
+    "why": "A cast performs a [[numeric-conversions|numeric conversion]] that truncates floating or decimal values toward zero; it is not a substitute for every rounding policy.",
+    "tips": "State MidpointRounding at domain boundaries. Test negative values and exact midpoints because intuitive positive-only examples hide important differences.",
+    "tags": [
+      "Math.Round",
+      "MidpointRounding",
+      "floor"
+    ]
+  },
+  "math-clamp": {
+    "title": "Bounding values with Math.Clamp, Min, and Max",
+    "short": "Normalize finite values to a validated interval or reject them by policy.",
+    "summary": "Math.Clamp returns the lower bound, upper bound, or original in-range value. Min and Max combine individual bounds but do not replace validation.",
+    "why": "Math.Clamp throws [[argument-exception|ArgumentException]] when the minimum bound exceeds the maximum bound.",
+    "tips": "Reject NaN or infinity when the domain requires finite values. Clamping invalid user input can conceal an error, so distinguish normalization from validation.",
+    "tags": [
+      "Math.Clamp",
+      "range",
+      "validation"
+    ]
+  },
+  "random-generation": {
+    "title": "Controlling random ranges and reproducibility",
+    "short": "Respect exclusive upper bounds and seed examples that must replay.",
+    "summary": "Random.Next(min, max) includes min and excludes max. A fixed seed reproduces a deterministic sequence for tests and demonstrations.",
+    "why": "The requested range must fit the destination [[numeric-types|numeric type]] and its API bounds.",
+    "tips": "Random is not cryptographically secure. Use RandomNumberGenerator for secrets, tokens, or adversarial settings, and do not reseed repeatedly inside a loop.",
+    "tags": [
+      "Random",
+      "seed",
+      "range"
+    ]
+  },
+  "random-shuffle-sampling": {
+    "title": "Shuffling arrays and sampling without replacement",
+    "short": "Shuffle an owned array and take a unique prefix.",
+    "summary": "Random.Shuffle mutates the supplied span or array. Shuffling a copy and taking its first k elements samples without replacement while preserving the source.",
+    "why": "Independent [[random-generation|random index draws]] can select the same element more than once, so they do not guarantee a unique sample.",
+    "tips": "Random.Shuffle is available in .NET 8. Validate that k is within the array bounds and use a cryptographic design when unpredictability is a security requirement.",
+    "tags": [
+      "Random.Shuffle",
+      "sampling",
+      "array"
+    ]
+  },
+  "guid": {
+    "title": "Creating and parsing identifiers with Guid",
+    "short": "Treat GUIDs as opaque identifiers with a stable textual format.",
+    "summary": "Guid.NewGuid creates an identifier, TryParseExact validates external text against a chosen format, and ToString with the same format gives a stable representation.",
+    "why": "A parsed identifier can be a stable [[dictionary-update-insert|dictionary key]] because Guid has value equality and hashing.",
+    "tips": "A Guid is neither a secret nor a meaningful chronological ordering. Validate the accepted format rather than relying on permissive parsing when the contract is fixed.",
+    "tags": [
+      "Guid",
+      "identifier",
+      "TryParseExact"
+    ]
+  },
+  "biginteger": {
+    "title": "Calculating large integers with BigInteger",
+    "short": "Perform exact integer arithmetic beyond fixed-width ranges.",
+    "summary": "BigInteger grows as needed instead of wrapping at Int32 or Int64 boundaries, but larger values consume increasing memory and processing time.",
+    "why": "The factorial avoids the fixed-width limit that causes [[integer-overflow|integer overflow]].",
+    "tips": "Conversions back to fixed-width types still have boundaries and can throw OverflowException. BigInteger is arbitrary precision, not unlimited resources.",
+    "tags": [
+      "BigInteger",
+      "integer",
+      "overflow"
+    ]
+  },
+  "decimal-calculations": {
+    "title": "Making decimal arithmetic and rounding explicit",
+    "short": "Keep decimal quantities decimal and round once at a defined boundary.",
+    "summary": "decimal represents base-10-scaled values with finite precision. Decimal literals and intermediates avoid introducing binary floating-point approximations into the calculation.",
+    "why": "A binary floating-point intermediate can undermine a decimal workflow through the approximation behavior described by [[floating-equality|floating-point equality]].",
+    "tips": "Define when and how to round, retain unrounded intermediates when the domain requires it, and do not claim decimal has unlimited precision or range.",
+    "tags": [
+      "decimal",
+      "rounding",
+      "precision"
+    ]
+  },
+  "memory-stream": {
+    "title": "Building temporary binary data with MemoryStream",
+    "short": "Use a seekable in-memory Stream as a growable byte buffer.",
+    "summary": "MemoryStream stores data in memory. Length is the amount written, Capacity is reserved storage, and ToArray returns a separate copy of the current contents.",
+    "why": "After writing, Position is at the end, so reading immediately can appear empty. Reposition deliberately as described in [[stream-position]].",
+    "tips": "Do not use an unbounded MemoryStream for arbitrarily large data. Define ownership and size limits, and prefer streaming or files when appropriate.",
+    "tags": [
+      "MemoryStream",
+      "Stream",
+      "bytes"
+    ]
+  },
+  "binary-reader-writer": {
+    "title": "Persisting values with BinaryReader and BinaryWriter",
+    "short": "Write typed values in a defined order and read them back with the same binary contract.",
+    "summary": "BinaryWriter and BinaryReader encode primitive values and strings over a Stream. Writer and reader must agree on field order, types, and string encoding.",
+    "why": "A typed read from a truncated record can reach [[end-of-stream|EndOfStreamException]] before the requested value is complete.",
+    "tips": "For durable formats, define versioning or magic values as needed, and document byte order when exchanging numeric data with other implementations.",
+    "tags": [
+      "BinaryReader",
+      "BinaryWriter",
+      "binary"
+    ]
+  },
+  "json-options-contracts": {
+    "title": "Configuring JSON names and member contracts",
+    "short": "Map a C# type to a stable external JSON shape with options and attributes.",
+    "summary": "System.Text.Json supports naming policies, JsonPropertyName, JsonIgnore, and related metadata for controlling the serialized contract.",
+    "why": "Serialized names become part of stored data or an API contract. [[custom-attributes-reflection|Attributes]] can attach member-specific serialization metadata.",
+    "tips": "Share compatible options between readers and writers. Rename externally visible JSON properties only with deliberate compatibility planning.",
+    "tags": [
+      "System.Text.Json",
+      "JsonSerializerOptions",
+      "JSON"
+    ]
+  },
+  "http-response-status": {
+    "title": "Handling HTTP responses according to status codes",
+    "short": "Inspect the status before treating the response body as successful data.",
+    "summary": "HttpResponseMessage carries the status code, headers, and content. Decide whether non-success statuses are handled explicitly or converted to exceptions.",
+    "why": "A request can complete at the transport layer and still return 404, 500, or another application-level failure. [[http-request-exception|EnsureSuccessStatusCode]] is one possible policy.",
+    "tips": "Dispose the response after consuming it. Classify cancellation and transport failures separately from HTTP status failures.",
+    "tags": [
+      "HttpClient",
+      "HTTP",
+      "status code"
+    ]
+  },
+  "task-whenall": {
+    "title": "Waiting for multiple operations with Task.WhenAll",
+    "short": "Combine independently started Tasks and await their shared completion.",
+    "summary": "Task.WhenAll combines multiple [[task|Task]] instances. For Task<T> inputs, the returned result array follows the input task order.",
+    "why": "Awaiting independent operations one by one can serialize work unnecessarily; starting them first and awaiting WhenAll allows their waits to overlap.",
+    "tips": "When several operations fail, distinguish the exception rethrown by await from the set of exceptions recorded by the combined Task.",
+    "tags": [
+      "Task",
+      "WhenAll",
+      "async"
+    ]
+  },
+  "task-run-cpu": {
+    "title": "Offloading CPU work with Task.Run",
+    "short": "Move a bounded synchronous CPU calculation to the thread pool and cooperate with cancellation.",
+    "summary": "Task.Run is useful for synchronous CPU-bound work. Already asynchronous I/O generally does not need to be wrapped in Task.Run because [[async-await|asynchronous I/O]] need not occupy a worker thread while waiting.",
+    "why": "CPU calculations consume a thread while computing, whereas asynchronous I/O can suspend until completion.",
+    "tips": "Keep work bounded, observe CancellationToken in long loops, and avoid creating unbounded numbers of Task.Run operations.",
+    "tags": [
+      "Task.Run",
+      "CPU",
+      "thread pool"
+    ]
+  },
+  "interlocked": {
+    "title": "Updating shared counters atomically with Interlocked",
+    "short": "Use atomic read-modify-write operations for a single shared value.",
+    "summary": "Interlocked provides atomic operations such as Increment and CompareExchange. It is a direct fit for simple counters and flags.",
+    "why": "value++ is a read, calculation, and write, so concurrent executions can lose updates.",
+    "tips": "Atomic single-value operations do not protect a multi-field invariant. Use [[lock-shared-state|lock]] when several pieces of state must change together.",
+    "tags": [
+      "Interlocked",
+      "atomic",
+      "concurrency"
+    ]
+  },
+  "concurrent-dictionary": {
+    "title": "Updating shared maps with ConcurrentDictionary",
+    "short": "Use map operations designed for concurrent callers.",
+    "summary": "ConcurrentDictionary<TKey,TValue> provides TryAdd, AddOrUpdate, GetOrAdd, and other operations for concurrent access. A sequence of separate calls is not automatically one transaction.",
+    "why": "Mutating an ordinary Dictionary concurrently does not preserve its required state. The contract differs from normal [[dict-safe|Dictionary access]].",
+    "tips": "Value factories may run more than once under contention, so keep irreversible side effects out of them.",
+    "tags": [
+      "ConcurrentDictionary",
+      "Dictionary",
+      "concurrency"
+    ]
+  },
+  "semaphore-async": {
+    "title": "Limiting asynchronous concurrency with SemaphoreSlim",
+    "short": "Bound entry to an asynchronous section and release only permits that were acquired.",
+    "summary": "SemaphoreSlim.WaitAsync waits for a permit without blocking a thread. After successful acquisition, release in [[finally-cleanup|finally]], and do not release when cancellation happened before entry.",
+    "why": "A missing Release can stall later callers, while releasing an unacquired permit breaks the concurrency bound.",
+    "tips": "Use locks to protect shared-state invariants and semaphores to bound concurrency; they solve different problems.",
+    "tags": [
+      "SemaphoreSlim",
+      "async",
+      "concurrency limit"
+    ]
+  },
+  "path-combine-normalize": {
+    "title": "Combining paths with an explicit base directory",
+    "short": "Resolve a relative path against an explicit base with Path.Combine and GetFullPath.",
+    "summary": "Do not let a relative path depend silently on the current working directory. Resolve it against a known base; otherwise the wrong location can surface as [[file-not-found|FileNotFoundException]].",
+    "why": "Path.Combine uses platform path separators, while Path.GetFullPath normalizes . and .. segments into an absolute path.",
+    "tips": "Normalization does not prove that a file exists or resolve every symbolic-link concern. Validate that external input stays within the intended base separately.",
+    "tags": [
+      "Path",
+      "GetFullPath",
+      "filesystem"
+    ]
+  },
+  "path-metadata-extension": {
+    "title": "Extracting file names and extensions from paths",
+    "short": "Use Path APIs to inspect and replace the final path component or extension.",
+    "summary": "Use Path.GetFileName and Path.GetExtension instead of splitting separators by hand. Rebuild changed paths using the same rules as [[path-combine-normalize|path combination and normalization]].",
+    "why": "Path APIs understand the current platform path syntax and operate on path components rather than arbitrary string delimiters.",
+    "tips": "An extension is only part of a name; it does not validate the actual file format or contents.",
+    "tags": [
+      "Path",
+      "extension",
+      "filename"
+    ]
+  },
+  "directory-create-move-delete": {
+    "title": "Creating, moving, and deleting working directories",
+    "short": "Manage the lifecycle of a directory that the program explicitly owns.",
+    "summary": "Create a dedicated temporary directory, move it, inspect owned contents with [[directory-enumerate|Directory.EnumerateFiles]], and clean up only the exact directories you created.",
+    "why": "Move and recursive-delete operations depend on the current path state, so cleanup must distinguish the original location from the moved location.",
+    "tips": "Do not point recursive deletion at arbitrary external input. Restrict it to a fresh directory whose ownership is clear.",
+    "tags": [
+      "Directory",
+      "temporary directory",
+      "cleanup"
+    ]
+  },
+  "file-copy-move-delete": {
+    "title": "Copying, moving, and deleting files",
+    "short": "Perform file lifecycle operations with an explicit overwrite policy.",
+    "summary": "File.Copy, File.Move, and File.Delete perform the actual operation. Even after a preflight existence check, [[io-exception|IOException]] and other failures can still occur.",
+    "why": "Filesystem state can change between a check and the operation, so the operation itself is the authority and its failures must be handled.",
+    "tips": "The example confines all operations to a freshly created temporary directory and removes that directory in finally.",
+    "tags": [
+      "File",
+      "copy",
+      "move"
+    ]
+  },
+  "file-lines-streaming": {
+    "title": "Processing large text files one line at a time",
+    "short": "Use File.ReadLines to enumerate text without loading every line up front.",
+    "summary": "File.ReadLines reads as enumeration proceeds. Because this is [[linq-deferred|deferred execution]], opening and I/O failures can occur when enumeration starts rather than when the enumerable is created.",
+    "why": "Unlike ReadAllLines, ReadLines exposes IEnumerable<string> and can process a large file incrementally.",
+    "tips": "Storing the enumerable is not the same as having read the file. Handle I/O failures at enumeration time too.",
+    "tags": [
+      "File.ReadLines",
+      "streaming",
+      "IEnumerable"
+    ]
+  },
+  "file-async": {
+    "title": "Reading and writing files asynchronously",
+    "short": "Await asynchronous File APIs and propagate cancellation.",
+    "summary": "Await ReadAllTextAsync and WriteAllTextAsync through [[async-await|async/await]] before using their results, and pass the caller cancellation token to the operation.",
+    "why": "Asynchronous I/O avoids blocking the caller while waiting, but ReadAllTextAsync still buffers the whole file as one string.",
+    "tips": "Asynchronous does not automatically mean memory-efficient. Use streams or line-based processing for very large data.",
+    "tags": [
+      "File",
+      "async",
+      "CancellationToken"
+    ]
+  },
+  "streamreader-writer": {
+    "title": "Reading and writing text with StreamReader and StreamWriter",
+    "short": "Translate between text and stream bytes with an explicit encoding.",
+    "summary": "StreamReader and StreamWriter convert characters to and from a byte-oriented stream. That conversion follows the same contract described by [[encoding-text-bytes|text encodings and bytes]].",
+    "why": "The wrappers handle buffering and encoding while leaveOpen makes ownership of the underlying stream explicit.",
+    "tips": "Before reading from a stream you just wrote, flush or dispose the writer and reposition a seekable stream when necessary.",
+    "tags": [
+      "StreamReader",
+      "StreamWriter",
+      "Encoding"
+    ]
+  },
+  "stream-copy": {
+    "title": "Copying data incrementally between streams",
+    "short": "Use CopyToAsync to transfer data without first building one whole intermediate buffer.",
+    "summary": "CopyToAsync moves data incrementally from the current source position to the destination. Pass [[cancellation-token|CancellationToken]] so long transfers can cooperate with caller cancellation.",
+    "why": "Stream copying bounds the size of each read/write operation rather than requiring all bytes to exist in one array first.",
+    "tips": "Copying starts at the current Position. Keep ownership and disposal of both streams explicit.",
+    "tags": [
+      "Stream",
+      "CopyToAsync",
+      "CancellationToken"
+    ]
+  },
+  "gzip-stream": {
+    "title": "Compressing and decompressing data with GZipStream",
+    "short": "Layer GZip compression over a stream and finish the compressor before reading its output.",
+    "summary": "GZipStream wraps another Stream for compression or decompression. Disposing the compressor through [[idisposable|IDisposable]] finishes format metadata before the compressed bytes are consumed.",
+    "why": "Final compressed output can be emitted during Dispose, so leave the underlying stream open while closing the compression wrapper first.",
+    "tips": "Decompressed output may be much larger than the compressed input. Bound decompression when processing untrusted data.",
+    "tags": [
+      "GZipStream",
+      "compression",
+      "Stream"
+    ]
+  },
+  "zip-archive": {
+    "title": "Packaging multiple entries with ZipArchive",
+    "short": "Create and read named ZIP entries through streams without extracting them to disk.",
+    "summary": "ZipArchive exposes each archive entry as a stream. In create mode, [[idisposable|Dispose]] finalizes directory metadata, so finish the archive before reopening its bytes for reading.",
+    "why": "Entries can be handled independently through streams, which allows inspection or generation without requiring filesystem extraction.",
+    "tips": "When extracting an external archive, separately validate entry paths and bound total expanded data.",
+    "tags": [
+      "ZipArchive",
+      "ZIP",
+      "Stream"
+    ]
+  },
+  "json-document": {
+    "title": "Inspecting variable JSON shapes with JsonDocument",
+    "short": "Check JsonElement kinds and optional properties while reading JSON dynamically.",
+    "summary": "JsonDocument provides a read-only JSON tree. Its JsonElement values normally borrow document-owned storage, so keep the [[idisposable|JsonDocument lifetime]] explicit.",
+    "why": "Elements are tied to their document unless Clone creates an independent JsonElement that may outlive the owner.",
+    "tips": "Use TryGetProperty and ValueKind before reading a value instead of assuming every input has one fixed shape.",
+    "tags": [
+      "JsonDocument",
+      "JsonElement",
+      "JSON"
+    ]
+  },
+  "json-serializer-options": {
+    "title": "Sharing JsonSerializerOptions for one JSON contract",
+    "short": "Use the same JSON settings for serialization and deserialization.",
+    "summary": "JsonSerializerOptions collects indentation, name matching, and other behavior so [[json-read|reading]] and [[json-write|writing]] follow the same contract.",
+    "why": "Different options can change how the same C# type maps to property names and values in JSON.",
+    "tips": "Create options around intentional contracts instead of constructing unrelated settings at each call site.",
+    "tags": [
+      "JSON",
+      "JsonSerializerOptions",
+      "contract"
+    ]
+  },
+  "json-naming-policy": {
+    "title": "Writing JSON property names in camelCase",
+    "short": "Use JsonNamingPolicy to separate C# naming from JSON naming.",
+    "summary": "PropertyNamingPolicy can map PascalCase C# properties to camelCase JSON while remaining part of the shared [[json-serializer-options|JsonSerializerOptions]] contract.",
+    "why": "The C# model can follow C# naming conventions while external JSON follows a different naming convention.",
+    "tips": "When integrating with an existing API, match its documented contract with a naming policy or explicit attributes.",
+    "tags": [
+      "JSON",
+      "camelCase",
+      "JsonNamingPolicy"
+    ]
+  },
+  "json-enum-converter": {
+    "title": "Representing enums as JSON strings",
+    "short": "Use JsonStringEnumConverter to read and write enum names instead of numbers.",
+    "summary": "JsonStringEnumConverter represents values such as Ready by name. The underlying type behavior is still the same as [[enums-flags|C# enums]].",
+    "why": "String values are easier to inspect, but renaming an enum member can become a breaking change to persisted or public JSON.",
+    "tips": "Treat enum member names as part of the external contract when they are serialized as strings.",
+    "tags": [
+      "JSON",
+      "enum",
+      "converter"
+    ]
+  },
+  "json-ignore-null": {
+    "title": "Omitting null properties from JSON output",
+    "short": "Use JsonIgnoreCondition.WhenWritingNull to define null output behavior.",
+    "summary": "DefaultIgnoreCondition controls whether [[nullable|nullable]] properties with null values are written or omitted from JSON.",
+    "why": "A missing property and an explicitly present null can mean different things to another system.",
+    "tips": "Do not omit nulls blindly when the receiving API distinguishes between missing and null values.",
+    "tags": [
+      "JSON",
+      "null",
+      "JsonIgnoreCondition"
+    ]
+  },
+  "httpclient-lifetime": {
+    "title": "Reusing HttpClient across requests",
+    "short": "Keep a long-lived HttpClient instead of recreating one for every request.",
+    "summary": "Clients that perform repeated HTTP calls should reuse HttpClient while disposing per-request responses as appropriate. Transport failures surface through [[http-request-exception|HttpRequestException]].",
+    "why": "HttpClient is designed to send many requests and is normally better treated as a reusable client than a per-request object.",
+    "tips": "Pass CancellationToken through long-running calls so cancellation remains cooperative.",
+    "tags": [
+      "HttpClient",
+      "HTTP",
+      "lifetime"
+    ]
+  },
+  "http-request-headers": {
+    "title": "Setting HTTP request headers with typed APIs",
+    "short": "Configure User-Agent and Accept on HttpRequestMessage.",
+    "summary": "Typed HttpRequestMessage.Headers APIs avoid manually concatenating header syntax. URI parsing remains a separate concern covered by [[uri-format|URI validation]].",
+    "why": "Dedicated header APIs validate header-specific syntax and keep request metadata separate from the body.",
+    "tips": "Content-Type usually belongs to request.Content.Headers rather than request.Headers.",
+    "tags": [
+      "HTTP",
+      "headers",
+      "HttpRequestMessage"
+    ]
+  },
+  "http-json-request": {
+    "title": "Building an HTTP request with a JSON body",
+    "short": "Create JSON HttpContent from an object with JsonContent.",
+    "summary": "JsonContent.Create turns an object into JSON HttpContent using the same serialization ideas as [[json-write|writing JSON]].",
+    "why": "It avoids hand-building JSON strings while pairing the payload with an appropriate media type.",
+    "tips": "The example only constructs a request. Real sending should use HttpClient.SendAsync with an appropriate CancellationToken.",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "JsonContent"
+    ]
+  },
+  "http-json-response": {
+    "title": "Reading a JSON HTTP response into a type",
+    "short": "Deserialize a response body with ReadFromJsonAsync.",
+    "summary": "HttpContent.ReadFromJsonAsync converts JSON response content into a C# type. Check [[http-response-status|HTTP status]] before assuming the body has the success shape.",
+    "why": "Many APIs return different body schemas for success and error responses, so status handling and deserialization are separate concerns.",
+    "tips": "Treat external JSON as nullable or incomplete unless the contract guarantees otherwise.",
+    "tags": [
+      "HTTP",
+      "JSON",
+      "ReadFromJsonAsync"
+    ]
+  },
+  "uri-builder": {
+    "title": "Composing URI components with UriBuilder",
+    "short": "Treat scheme, host, path, and query as URI structure instead of one concatenated string.",
+    "summary": "UriBuilder constructs URI components without manually concatenating the entire URI. Invalid source text is still related to [[uri-format|UriFormatException]].",
+    "why": "Paths and query values follow different escaping rules, so preserving URI structure helps avoid malformed strings.",
+    "tips": "Escape individual query values where appropriate and avoid double-escaping the completed URI.",
+    "tags": [
+      "UriBuilder",
+      "URI",
+      "query"
+    ]
+  },
+  "form-url-encoded-content": {
+    "title": "Creating form-urlencoded HTTP content",
+    "short": "Encode key-value fields as application/x-www-form-urlencoded.",
+    "summary": "FormUrlEncodedContent converts key-value pairs into form URL encoded content and supplies the content type. The underlying text-to-byte conversion also relates to [[encoding-text-bytes|encoding]].",
+    "why": "The library handles spaces and reserved characters according to the form encoding rules.",
+    "tips": "Use this only when the endpoint expects form content; JSON endpoints should use a JSON content contract instead.",
+    "tags": [
+      "HTTP",
+      "form",
+      "FormUrlEncodedContent"
+    ]
+  },
+  "multipart-form-data": {
+    "title": "Combining fields and files as multipart/form-data",
+    "short": "Use MultipartFormDataContent to assemble multiple content parts.",
+    "summary": "MultipartFormDataContent combines strings, bytes, or other HttpContent values into one multipart body. For large files, consider a [[stream-basics|stream-backed]] content source.",
+    "why": "Each part can carry its own name, filename, and Content-Type without manually constructing multipart boundaries.",
+    "tips": "ByteArrayContent holds all bytes in memory; use StreamContent when the payload should remain streamed.",
+    "tags": [
+      "HTTP",
+      "multipart",
+      "file upload"
+    ]
+  },
+  "async-enumerable": {
+    "title": "Streaming asynchronous values with IAsyncEnumerable<T>",
+    "short": "Consume values one at a time with await foreach as they arrive asynchronously.",
+    "summary": "IAsyncEnumerable<T> produces a sequence asynchronously. It combines [[async-await|async/await]] style waiting with sequence processing so work can start before every value exists.",
+    "why": "Advancing the sequence can await I/O instead of blocking a thread while the next item is unavailable.",
+    "tips": "For cooperative cancellation, propagate a CancellationToken through enumeration and into the awaited operations in the producer.",
+    "tags": [
+      "IAsyncEnumerable",
+      "await foreach",
+      "async"
+    ]
+  },
+  "async-disposable": {
+    "title": "Disposing asynchronous resources with await using",
+    "short": "Use await using when cleanup itself may need asynchronous work.",
+    "summary": "await using is the asynchronous counterpart of [[idisposable|using]]. It awaits DisposeAsync when the scope exits.",
+    "why": "Resources that flush buffers or finish asynchronous I/O during cleanup can release them without synchronously blocking the caller.",
+    "tips": "Combine await using with finally when additional cleanup outside the resource lifetime is required, and keep disposal order explicit.",
+    "tags": [
+      "IAsyncDisposable",
+      "await using",
+      "cleanup"
+    ]
+  },
+  "linked-cancellation-tokens": {
+    "title": "Combining multiple cancellation conditions",
+    "short": "Link caller cancellation and an internal timeout into one token source.",
+    "summary": "When an operation should stop for either caller cancellation or an internal timeout, CreateLinkedTokenSource combines both with the normal [[cancellation-token|CancellationToken]] model.",
+    "why": "The linked CancellationTokenSource becomes canceled when any of its source tokens is canceled.",
+    "tips": "Dispose the linked source with using so registrations against longer-lived source tokens do not remain unnecessarily.",
+    "tags": [
+      "CancellationTokenSource",
+      "cancellation",
+      "timeout"
+    ]
+  },
+  "cancellation-registration": {
+    "title": "Registering callbacks for cancellation",
+    "short": "Use CancellationToken.Register when another component must be notified on cancellation.",
+    "summary": "CancellationToken.Register attaches a callback to the same cooperative cancellation signal used by [[cancellation-token|CancellationToken]] checks and cancellable waits.",
+    "why": "The callback runs when cancellation is requested, which can bridge cancellation into an API that needs explicit notification.",
+    "tips": "Dispose the returned CancellationTokenRegistration when it is no longer needed, especially when the source token is long-lived.",
+    "tags": [
+      "CancellationToken",
+      "Register",
+      "callback"
+    ]
+  },
+  "task-completion-source": {
+    "title": "Bridging external completion into Task with TaskCompletionSource",
+    "short": "Expose callback or event completion as an awaitable Task.",
+    "summary": "TaskCompletionSource<T> lets one side control completion while callers observe an ordinary [[task|Task<T>]] and await it.",
+    "why": "It separates the producer of a completion signal from consumers that want the Task-based asynchronous model.",
+    "tips": "For library code, RunContinuationsAsynchronously can reduce surprises from continuations running inline on the thread that completes the source.",
+    "tags": [
+      "TaskCompletionSource",
+      "Task",
+      "async"
+    ]
+  },
+  "value-task": {
+    "title": "Using ValueTask<T> only when it is justified",
+    "short": "Consider ValueTask<T> for very hot APIs that complete synchronously most of the time.",
+    "summary": "ValueTask<T> can avoid some allocations when results are often immediately available, but ordinary [[task|Task<T>]] is simpler and should remain the default.",
+    "why": "Because ValueTask<T> is a value type, some successful synchronous paths do not require allocating a new Task object.",
+    "tips": "Do not casually store or await the same ValueTask multiple times. Use it only with a measured reason and understand the consumption rules.",
+    "tags": [
+      "ValueTask",
+      "Task",
+      "performance"
+    ]
+  },
+  "channel-producer-consumer": {
+    "title": "Connecting producers and consumers with Channel<T>",
+    "short": "Use an asynchronous queue to decouple producers from consumers safely.",
+    "summary": "System.Threading.Channels provides queues designed for asynchronous producer/consumer flows. Reader.ReadAllAsync exposes items as an [[async-enumerable|IAsyncEnumerable<T>]].",
+    "why": "A bounded channel can asynchronously apply backpressure when capacity is full instead of requiring a manually locked shared List.",
+    "tips": "Complete the writer when production is finished so consumers can observe the end of the stream.",
+    "tags": [
+      "Channel",
+      "producer consumer",
+      "async"
+    ]
+  },
+  "parallel-for-each-async": {
+    "title": "Running asynchronous per-item work with Parallel.ForEachAsync",
+    "short": "Process multiple items concurrently while propagating cancellation.",
+    "summary": "Parallel.ForEachAsync can run asynchronous work for several elements concurrently and supplies a [[cancellation-token|CancellationToken]] to each iteration.",
+    "why": "A plain foreach with await is sequential, while this API manages concurrent iterations for workloads that benefit from overlap.",
+    "tips": "Concurrency is not automatically faster. Account for shared state, service rate limits, and the actual cost of each operation.",
+    "tags": [
+      "Parallel.ForEachAsync",
+      "concurrency",
+      "async"
+    ]
+  },
+  "periodic-timer": {
+    "title": "Running periodic asynchronous work with PeriodicTimer",
+    "short": "Await timer ticks instead of blocking a thread for recurring work.",
+    "summary": "PeriodicTimer provides an awaitable next-tick operation. It expresses periodic work more directly than a hand-written [[task-delay|Task.Delay]] loop.",
+    "why": "WaitForNextTickAsync supports asynchronous waiting and cancellation without dedicating a blocked thread to the timer.",
+    "tips": "Understand what happens when the work takes longer than the period; this is not a hard real-time scheduler.",
+    "tags": [
+      "PeriodicTimer",
+      "timer",
+      "async"
+    ]
+  },
+  "reader-writer-lock-slim": {
+    "title": "Separating read and write locking with ReaderWriterLockSlim",
+    "short": "Allow concurrent readers while keeping writers exclusive, with explicit try/finally cleanup.",
+    "summary": "ReaderWriterLockSlim can allow multiple readers while excluding writers. Prefer simpler [[lock-shared-state|lock]] for ordinary shared state unless the extra complexity has a clear benefit.",
+    "why": "Read-heavy workloads may permit reader concurrency, but lock management is more complex than a normal monitor lock.",
+    "tips": "Pair every successful Enter call with Exit in finally, and do not hold this lock across await.",
+    "tags": [
+      "ReaderWriterLockSlim",
+      "lock",
+      "concurrency"
+    ]
+  },
+  "debug-assert": {
+    "title": "Checking development-time invariants with Debug.Assert",
+    "short": "Document and detect conditions that should already be true inside the program.",
+    "summary": "Debug.Assert is a diagnostic tool for internal invariants. It is not a replacement for validating external input or throwing [[argument-out-of-range|ArgumentOutOfRangeException]].",
+    "why": "Assertions are useful for detecting violations of assumptions that indicate a programming defect rather than an expected user error.",
+    "tips": "Use normal checks and exceptions for invalid input that callers can produce; do not rely on Debug.Assert for runtime safety.",
+    "tags": [
+      "Debug.Assert",
+      "diagnostics",
+      "invariant"
+    ]
   }
 }

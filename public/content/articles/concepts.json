@@ -5,7 +5,10 @@
     "bad": null,
     "good": null,
     "code": "int a = 10;\nint b = a;\nb = 20;\n// a は 10 のまま\n\nvar x = new List<int> { 1 };\nvar y = x;\ny.Add(2);\n// x からも 2 が見える",
-    "related": ["boxing-unboxing", "equality"]
+    "related": [
+      "boxing-unboxing",
+      "equality"
+    ]
   },
   {
     "id": "boxing-unboxing",
@@ -13,7 +16,11 @@
     "bad": null,
     "good": null,
     "code": "int n = 42;\nobject boxed = n;      // boxing\nint value = (int)boxed; // unboxing",
-    "related": ["value-reference-types", "invalid-cast", "generics"]
+    "related": [
+      "value-reference-types",
+      "invalid-cast",
+      "generics"
+    ]
   },
   {
     "id": "var-keyword",
@@ -21,7 +28,10 @@
     "bad": null,
     "good": null,
     "code": "var count = 10;        // int\nvar name = \"Alice\";   // string\nvar users = new List<string>();",
-    "related": ["generics", "cs0411"]
+    "related": [
+      "generics",
+      "cs0411"
+    ]
   },
   {
     "id": "const-readonly",
@@ -29,7 +39,10 @@
     "bad": null,
     "good": null,
     "code": "const int MaxCount = 100;\n\nclass App\n{\n    private readonly DateTime startedAt = DateTime.Now;\n}",
-    "related": ["properties", "cs0200"]
+    "related": [
+      "properties",
+      "cs0200"
+    ]
   },
   {
     "id": "properties",
@@ -37,7 +50,11 @@
     "bad": null,
     "good": null,
     "code": "class User\n{\n    public string Name { get; set; } = string.Empty;\n    public int NameLength => Name.Length;\n}",
-    "related": ["cs0200", "records", "cs8618"]
+    "related": [
+      "cs0200",
+      "records",
+      "cs8618"
+    ]
   },
   {
     "id": "records",
@@ -45,7 +62,10 @@
     "bad": null,
     "good": null,
     "code": "public record User(string Name, int Age);\n\nvar a = new User(\"Alice\", 15);\nvar b = new User(\"Alice\", 15);\nConsole.WriteLine(a == b); // True",
-    "related": ["equality", "properties"]
+    "related": [
+      "equality",
+      "properties"
+    ]
   },
   {
     "id": "interfaces",
@@ -53,7 +73,11 @@
     "bad": null,
     "good": null,
     "code": "interface IGreeter\n{\n    string Greet();\n}\n\nclass Greeter : IGreeter\n{\n    public string Greet() => \"Hello\";\n}",
-    "related": ["ienumerable", "idisposable", "generics"]
+    "related": [
+      "ienumerable",
+      "idisposable",
+      "generics"
+    ]
   },
   {
     "id": "generics",
@@ -61,7 +85,11 @@
     "bad": null,
     "good": null,
     "code": "static T First<T>(T[] values)\n{\n    return values[0];\n}\n\nint n = First(new[] { 10, 20 });",
-    "related": ["cs0411", "interfaces", "boxing-unboxing"]
+    "related": [
+      "cs0411",
+      "interfaces",
+      "boxing-unboxing"
+    ]
   },
   {
     "id": "delegates",
@@ -69,7 +97,10 @@
     "bad": null,
     "good": null,
     "code": "Func<int, int> twice = x => x * 2;\nConsole.WriteLine(twice(5)); // 10",
-    "related": ["lambda", "events"]
+    "related": [
+      "lambda",
+      "events"
+    ]
   },
   {
     "id": "events",
@@ -77,7 +108,10 @@
     "bad": null,
     "good": null,
     "code": "class Counter\n{\n    public event Action? Changed;\n    public void Increment() => Changed?.Invoke();\n}\n\nvar counter = new Counter();\ncounter.Changed += () => Console.WriteLine(\"changed\");",
-    "related": ["delegates", "lambda"]
+    "related": [
+      "delegates",
+      "lambda"
+    ]
   },
   {
     "id": "lambda",
@@ -85,7 +119,11 @@
     "bad": null,
     "good": null,
     "code": "var numbers = new[] { 1, 2, 3, 4 };\nvar even = numbers.Where(x => x % 2 == 0);",
-    "related": ["delegates", "linq-deferred", "list-filter"]
+    "related": [
+      "delegates",
+      "linq-deferred",
+      "list-filter"
+    ]
   },
   {
     "id": "linq-deferred",
@@ -93,7 +131,11 @@
     "bad": null,
     "good": null,
     "code": "var numbers = new List<int> { 1, 2, 3 };\nvar query = numbers.Where(x => x >= 2);\nnumbers.Add(4);\n\nConsole.WriteLine(string.Join(\", \", query)); // 2, 3, 4",
-    "related": ["ienumerable", "deferred-enumeration", "list-filter"]
+    "related": [
+      "ienumerable",
+      "deferred-enumeration",
+      "list-filter"
+    ]
   },
   {
     "id": "ienumerable",
@@ -101,7 +143,10 @@
     "bad": null,
     "good": null,
     "code": "IEnumerable<int> GetNumbers()\n{\n    yield return 1;\n    yield return 2;\n    yield return 3;\n}\n\nforeach (int n in GetNumbers())\n    Console.WriteLine(n);",
-    "related": ["interfaces", "linq-deferred"]
+    "related": [
+      "interfaces",
+      "linq-deferred"
+    ]
   },
   {
     "id": "async-await",
@@ -109,7 +154,11 @@
     "bad": null,
     "good": null,
     "code": "static async Task WorkAsync()\n{\n    await Task.Delay(1000);\n    Console.WriteLine(\"done\");\n}\n\nawait WorkAsync();",
-    "related": ["task", "cs1998", "cs4014"]
+    "related": [
+      "task",
+      "cs1998",
+      "cs4014"
+    ]
   },
   {
     "id": "task",
@@ -117,7 +166,11 @@
     "bad": null,
     "good": null,
     "code": "Task<int> task = Task.Run(() => 21 * 2);\nint answer = await task;\nConsole.WriteLine(answer);",
-    "related": ["async-await", "operation-canceled", "task-delay"]
+    "related": [
+      "async-await",
+      "operation-canceled",
+      "task-delay"
+    ]
   },
   {
     "id": "idisposable",
@@ -125,7 +178,11 @@
     "bad": "var stream = File.OpenRead(\"data.txt\");\n// Dispose を忘れる可能性がある",
     "good": "using var stream = File.OpenRead(\"data.txt\");\n// スコープを抜けると Dispose される",
     "code": null,
-    "related": ["object-disposed", "using-directive", "io-exception"]
+    "related": [
+      "object-disposed",
+      "using-directive",
+      "io-exception"
+    ]
   },
   {
     "id": "equality",
@@ -133,7 +190,11 @@
     "bad": null,
     "good": null,
     "code": "string a = new string(new[] { 'h', 'i' });\nstring b = \"hi\";\nConsole.WriteLine(a == b); // True\nConsole.WriteLine(a.Equals(b)); // True",
-    "related": ["records", "reference-equality", "floating-equality"]
+    "related": [
+      "records",
+      "reference-equality",
+      "floating-equality"
+    ]
   },
   {
     "id": "pattern-matching",
@@ -141,6 +202,883 @@
     "bad": null,
     "good": null,
     "code": "object value = \"hello\";\n\nif (value is string text && text.Length > 0)\n{\n    Console.WriteLine(text);\n}",
-    "related": ["invalid-cast", "boxing-unboxing", "value-reference-types"]
+    "related": [
+      "invalid-cast",
+      "boxing-unboxing",
+      "value-reference-types"
+    ]
+  },
+  {
+    "id": "program-entry",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Console.WriteLine($\"Argument count: {args.Length}\");\nforeach (string argument in args)\n{\n    Console.WriteLine(argument);\n}",
+    "related": [
+      "methods-parameters-returns",
+      "scope"
+    ]
+  },
+  {
+    "id": "variables-assignment",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int score;\nscore = 10;\nscore = score + 5;\n\nvar label = \"total\";",
+    "related": [
+      "var-keyword",
+      "cs0165"
+    ]
+  },
+  {
+    "id": "numeric-types",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int itemCount = 120_000;\nlong worldPopulation = 8_100_000_000L;\ndouble measurement = 0.1 + 0.2;\ndecimal price = 19.95m;\n\nConsole.WriteLine($\"{measurement:R} / {price}\");",
+    "related": [
+      "numeric-conversions",
+      "integer-overflow"
+    ]
+  },
+  {
+    "id": "numeric-conversions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int count = 42;\nlong widened = count;\n\ndouble source = 3.75;\nint truncated = (int)source;       // 3\nint rounded = Convert.ToInt32(source); // 4",
+    "related": [
+      "numeric-types",
+      "cs0266"
+    ]
+  },
+  {
+    "id": "boolean-operators",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string? name = GetName();\nbool usable = name is not null && name.Length >= 3;\nbool rejected = !usable || name == \"admin\";\n\nConsole.WriteLine($\"{usable}, {rejected}\");\n\nstatic string? GetName() => \"Ada\";",
+    "related": [
+      "if-else",
+      "operator-precedence",
+      "nullable"
+    ]
+  },
+  {
+    "id": "if-else",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int score = 82;\nstring grade;\n\nif (score >= 90)\n{\n    grade = \"A\";\n}\nelse if (score >= 80)\n{\n    grade = \"B\";\n}\nelse\n{\n    grade = \"C\";\n}\n\nConsole.WriteLine(grade);",
+    "related": [
+      "boolean-operators",
+      "conditional-operator",
+      "scope"
+    ]
+  },
+  {
+    "id": "switch-statement",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "ConsoleColor color = ConsoleColor.Green;\n\nswitch (color)\n{\n    case ConsoleColor.Red:\n        Console.WriteLine(\"Stop\");\n        break;\n    case ConsoleColor.Green:\n        Console.WriteLine(\"Go\");\n        break;\n    default:\n        Console.WriteLine(\"Unknown signal\");\n        break;\n}",
+    "related": [
+      "switch-expressions",
+      "break-continue",
+      "enums-flags"
+    ]
+  },
+  {
+    "id": "while-do-loops",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int remaining = 3;\nwhile (remaining > 0)\n{\n    Console.WriteLine(remaining);\n    remaining--;\n}\n\nint attempts = 0;\ndo\n{\n    attempts++;\n} while (attempts < 1);",
+    "related": [
+      "break-continue",
+      "boolean-operators",
+      "for-loop"
+    ]
+  },
+  {
+    "id": "break-continue",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "for (int i = 0; i < 10; i++)\n{\n    if (i % 2 == 0)\n        continue;\n\n    if (i > 5)\n        break;\n\n    Console.WriteLine(i); // 1, 3, 5\n}",
+    "related": [
+      "while-do-loops",
+      "for-loop",
+      "switch-statement"
+    ]
+  },
+  {
+    "id": "methods-parameters-returns",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static int Add(int left, int right)\n{\n    return left + right;\n}\n\nint first = 2;\nint result = Add(first, 3);\nConsole.WriteLine($\"{first}, {result}\"); // 2, 5",
+    "related": [
+      "ref-out-in",
+      "cs0161",
+      "cs1503"
+    ]
+  },
+  {
+    "id": "optional-named-arguments",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static string FormatName(string first, string last, string separator = \" \" )\n    => first + separator + last;\n\nConsole.WriteLine(FormatName(\"Ada\", \"Lovelace\"));\nConsole.WriteLine(FormatName(last: \"Hopper\", first: \"Grace\", separator: \", \"));",
+    "related": [
+      "methods-parameters-returns",
+      "cs7036",
+      "params-arrays"
+    ]
+  },
+  {
+    "id": "params-arrays",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static int Sum(params int[] values)\n{\n    int total = 0;\n    foreach (int value in values) total += value;\n    return total;\n}\n\nConsole.WriteLine(Sum());\nConsole.WriteLine(Sum(1, 2, 3));\nConsole.WriteLine(Sum(new[] { 4, 5 }));",
+    "related": [
+      "methods-parameters-returns",
+      "arrays-basics",
+      "optional-named-arguments"
+    ]
+  },
+  {
+    "id": "ref-out-in",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static void Increment(ref int value) => value++;\nstatic void Create(out int value) => value = 10;\nstatic int Read(in int value) => value;\n\nint number = 1;\nIncrement(ref number);\nCreate(out int created);\nConsole.WriteLine(Read(in created));",
+    "related": [
+      "value-reference-types",
+      "methods-parameters-returns",
+      "cs0165"
+    ]
+  },
+  {
+    "id": "tuples-deconstruction",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static (int Min, int Max) Limits(int[] values)\n    => (values.Min(), values.Max());\n\nvar limits = Limits(new[] { 7, 2, 9 });\nConsole.WriteLine(limits.Min);\n\n(int minimum, _) = limits;\nConsole.WriteLine(minimum);",
+    "related": [
+      "methods-parameters-returns",
+      "records",
+      "positional-patterns"
+    ]
+  },
+  {
+    "id": "enums-flags",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Access granted = Access.Read | Access.Write;\nbool canWrite = (granted & Access.Write) != 0;\nAccess known = Access.Read | Access.Write | Access.Execute;\nbool valid = (granted & ~known) == Access.None;\nConsole.WriteLine($\"{canWrite}, {valid}\");\n\n[Flags]\nenum Access\n{\n    None = 0, Read = 1, Write = 2, Execute = 4\n}",
+    "related": [
+      "switch-statement",
+      "bitwise-operations"
+    ]
+  },
+  {
+    "id": "nullable-value-types",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int? measurement = null;\nint displayed = measurement ?? 0;\n\nif (measurement is int value)\n{\n    Console.WriteLine(value);\n}\n\nConsole.WriteLine(displayed);",
+    "related": [
+      "nullable",
+      "default-values",
+      "invalid-operation"
+    ]
+  },
+  {
+    "id": "default-values",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Console.WriteLine(default(int));       // 0\nConsole.WriteLine(default(bool));      // False\n\nint[] values = new int[2];\nConsole.WriteLine(values[0]);           // 0\n\nvar holder = new Holder();\nConsole.WriteLine(holder.Count);        // 0\n\nclass Holder { public int Count; }",
+    "related": [
+      "cs0165",
+      "nullable-value-types",
+      "arrays-basics"
+    ]
+  },
+  {
+    "id": "arrays-basics",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[] scores = { 70, 80, 90 };\nscores[1] = 85;\n\nforeach (int score in scores)\n{\n    Console.WriteLine(score);\n}\n\nConsole.WriteLine(scores.Length); // 3",
+    "related": [
+      "list-basic",
+      "index-out-of-range",
+      "multidimensional-jagged-arrays"
+    ]
+  },
+  {
+    "id": "multidimensional-jagged-arrays",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[,] grid = { { 1, 2 }, { 3, 4 } };\nfor (int row = 0; row < grid.GetLength(0); row++)\n    for (int col = 0; col < grid.GetLength(1); col++)\n        Console.WriteLine(grid[row, col]);\n\nint[][] jagged = { new[] { 1 }, new[] { 2, 3 } };\nforeach (int[] row in jagged)\n    foreach (int value in row) Console.WriteLine(value);",
+    "related": [
+      "arrays-basics",
+      "index-out-of-range"
+    ]
+  },
+  {
+    "id": "indices-ranges",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[] values = { 10, 20, 30, 40 };\nint last = values[^1];\nint[] copy = values[1..^1];\nSpan<int> view = values.AsSpan()[1..^1];\nview[0] = 99;\n\nConsole.WriteLine($\"{last}, {values[1]}, {copy[0]}\");",
+    "related": [
+      "arrays-basics",
+      "index-out-of-range"
+    ]
+  },
+  {
+    "id": "string-literals",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string ordinary = \"C:\\\\temp\\\\file.txt\";\nstring verbatim = @\"C:\\temp\\file.txt\";\nstring raw = \"\"\"\nHe said \"hello\".\nC:\\temp\\file.txt\n\"\"\";\n\nConsole.WriteLine($\"Path: {verbatim}\");",
+    "related": [
+      "string-interpolation",
+      "regex-basic"
+    ]
+  },
+  {
+    "id": "operator-precedence",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int value = 2 + 3 * 4;          // 14\nint grouped = (2 + 3) * 4;      // 20\n\nbool allowed = (value > 10 && grouped > 10) || value == 0;\nConsole.WriteLine($\"{value}, {grouped}, {allowed}\");",
+    "related": [
+      "boolean-operators",
+      "numeric-conversions",
+      "conditional-operator"
+    ]
+  },
+  {
+    "id": "switch-expressions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int score = 92;\nbool honors = true;\nstring grade = score switch\n{\n    >= 90 when honors => \"A+\",\n    >= 90 => \"A\",\n    >= 80 => \"B\",\n    >= 0 => \"C\",\n    _ => throw new ArgumentOutOfRangeException(nameof(score))\n};\n\nConsole.WriteLine(grade);",
+    "related": [
+      "pattern-matching",
+      "relational-logical-patterns"
+    ]
+  },
+  {
+    "id": "property-patterns",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Order? order = new(new Customer(\"Ada\"), 120m);\n\nif (order is { Customer.Name: \"Ada\", Total: >= 100m })\n{\n    Console.WriteLine(\"Priority order\");\n}\n\nrecord Customer(string Name);\nrecord Order(Customer Customer, decimal Total);",
+    "related": [
+      "pattern-matching",
+      "properties",
+      "nullable"
+    ]
+  },
+  {
+    "id": "relational-logical-patterns",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static string Classify(int value) => value switch\n{\n    < 0 => \"negative\",\n    >= 0 and <= 9 => \"one digit\",\n    10 or 20 => \"ten or twenty\",\n    not 100 => \"other\",\n    _ => \"one hundred\"\n};\n\nConsole.WriteLine(Classify(7));",
+    "related": [
+      "pattern-matching",
+      "switch-expressions",
+      "boolean-operators"
+    ]
+  },
+  {
+    "id": "positional-patterns",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Point point = new(3, 0);\nstring location = point switch\n{\n    (0, 0) => \"origin\",\n    (var x, 0) => $\"x-axis at {x}\",\n    _ => \"elsewhere\"\n};\n\nConsole.WriteLine(location);\n\nrecord Point(int X, int Y);",
+    "related": [
+      "tuples-deconstruction",
+      "records",
+      "pattern-matching"
+    ]
+  },
+  {
+    "id": "list-patterns",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[] values = { 1, 2, 3, 9 };\n\nstring shape = values switch\n{\n    [] => \"empty\",\n    [1, .. var middle, 9] => $\"bounded; middle length {middle.Length}\",\n    [var only] => $\"single {only}\",\n    _ => \"other\"\n};\n\nConsole.WriteLine(shape);",
+    "related": [
+      "arrays-basics",
+      "indices-ranges",
+      "pattern-matching"
+    ]
+  },
+  {
+    "id": "conditional-operator",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int temperature = 28;\nstring label = temperature >= 25 ? \"warm\" : \"cool\";\n\nint divisor = 0;\nint result = divisor == 0 ? 0 : 100 / divisor;\nConsole.WriteLine($\"{label}: {result}\");",
+    "related": [
+      "if-else",
+      "operator-precedence",
+      "cs0029"
+    ]
+  },
+  {
+    "id": "bitwise-operations",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "const byte Read = 1 << 0;  // 0000_0001\nconst byte Write = 1 << 1; // 0000_0010\n\nbyte permissions = (byte)(Read | Write);\nbool canWrite = (permissions & Write) != 0;\nbyte withoutRead = (byte)(permissions & ~Read);\n\nConsole.WriteLine($\"{canWrite}, {withoutRead}\");",
+    "related": [
+      "enums-flags",
+      "numeric-types",
+      "integer-overflow"
+    ]
+  },
+  {
+    "id": "class-constructors",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var account = new Account(\"Ada\", 10m);\nConsole.WriteLine(account.Owner);\n\nclass Account\n{\n    private decimal balance;\n    public string Owner { get; }\n\n    public Account(string owner, decimal openingBalance)\n    {\n        if (string.IsNullOrWhiteSpace(owner))\n            throw new ArgumentException(\"Owner is required.\", nameof(owner));\n        if (openingBalance < 0)\n            throw new ArgumentOutOfRangeException(nameof(openingBalance));\n\n        Owner = owner;\n        balance = openingBalance;\n    }\n}",
+    "related": [
+      "properties",
+      "value-reference-types",
+      "cs8618"
+    ]
+  },
+  {
+    "id": "constructor-chaining",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var account = new PremiumAccount(\"Ada\");\n\nclass Account\n{\n    private readonly string baseField = Trace.Mark(\"Account field\");\n    public string Owner { get; }\n    protected Account(string owner)\n    {\n        Owner = owner;\n        Console.WriteLine(\"Account constructor\");\n    }\n}\n\nclass PremiumAccount : Account\n{\n    private readonly string derivedField = Trace.Mark(\"PremiumAccount field\");\n    public int Level { get; }\n\n    public PremiumAccount(string owner) : this(owner, 1) { }\n    public PremiumAccount(string owner, int level) : base(owner)\n    {\n        Level = level;\n        Console.WriteLine(\"PremiumAccount constructor\");\n    }\n}\n\nstatic class Trace\n{\n    public static string Mark(string text)\n    {\n        Console.WriteLine(text);\n        return text;\n    }\n}",
+    "related": [
+      "class-constructors",
+      "inheritance-polymorphism",
+      "const-readonly"
+    ]
+  },
+  {
+    "id": "access-modifiers",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "public interface IClock\n{\n    DateTime Now { get; }\n}\n\npublic sealed class SystemClock : IClock\n{\n    public DateTime Now => ReadNow();\n    private static DateTime ReadNow() => DateTime.Now;\n}\n\ninternal sealed class FakeClock : IClock\n{\n    public DateTime Now { get; init; }\n}",
+    "related": [
+      "class-constructors",
+      "interfaces",
+      "cs0051"
+    ]
+  },
+  {
+    "id": "static-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var first = new Ticket();\nvar second = new Ticket();\nConsole.WriteLine($\"{first.Id}, {second.Id}, {Ticket.CreatedCount}\");\n\nclass Ticket\n{\n    private static int nextId;\n    public static int CreatedCount { get; private set; }\n    public int Id { get; }\n\n    public Ticket()\n    {\n        Id = ++nextId;\n        CreatedCount++;\n    }\n}",
+    "related": [
+      "cs0120",
+      "class-constructors"
+    ]
+  },
+  {
+    "id": "inheritance-polymorphism",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Animal animal = new Dog();\nConsole.WriteLine(animal.Speak()); // Woof\n\nclass Animal\n{\n    public virtual string Speak() => \"...\";\n}\n\nclass Dog : Animal\n{\n    public override string Speak() => \"Woof\";\n}",
+    "related": [
+      "abstract-sealed-classes",
+      "interfaces",
+      "cs0108"
+    ]
+  },
+  {
+    "id": "abstract-sealed-classes",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Shape shape = new Circle(2);\nConsole.WriteLine(shape.Area());\n\nabstract class Shape\n{\n    public abstract double Area();\n    public virtual string Label() => GetType().Name;\n}\n\nsealed class Circle(double radius) : Shape\n{\n    public override double Area() => Math.PI * radius * radius;\n    public sealed override string Label() => \"circle\";\n}",
+    "related": [
+      "inheritance-polymorphism",
+      "interfaces"
+    ]
+  },
+  {
+    "id": "struct-design",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Temperature room = new(21.5);\nTemperature copy = room;\nConsole.WriteLine($\"{copy.Celsius:F1} °C\");\nConsole.WriteLine(default(Temperature).Celsius); // 0\n\nreadonly struct Temperature\n{\n    public double Celsius { get; }\n    public Temperature(double celsius) => Celsius = celsius;\n}",
+    "related": [
+      "value-reference-types",
+      "default-values",
+      "readonly-struct-members"
+    ]
+  },
+  {
+    "id": "record-structs",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Point first = new(3, 4);\nPoint second = first with { X = 5 };\nConsole.WriteLine(first == new Point(3, 4)); // True\nConsole.WriteLine($\"{first} / {second}\");\n\npublic readonly record struct Point(int X, int Y);",
+    "related": [
+      "records",
+      "struct-design",
+      "custom-equality-hashing"
+    ]
+  },
+  {
+    "id": "init-required-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var user = new User\n{\n    Name = \"Ada\",\n    Email = \"ada@example.test\"\n};\nuser.Validate();\n\nclass User\n{\n    public required string Name { get; init; }\n    public required string Email { get; init; }\n\n    public void Validate()\n    {\n        ArgumentException.ThrowIfNullOrWhiteSpace(Name);\n        ArgumentException.ThrowIfNullOrWhiteSpace(Email);\n    }\n}",
+    "related": [
+      "properties",
+      "class-constructors",
+      "cs8618"
+    ]
+  },
+  {
+    "id": "object-collection-initializers",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var project = new Project(42)\n{\n    Name = \"Atlas\",\n    Tags = { \"csharp\", \"docs\" }\n};\n\nclass Project\n{\n    public int Id { get; }\n    public string Name { get; set; } = string.Empty;\n    public List<string> Tags { get; } = new();\n    public Project(int id) => Id = id;\n}",
+    "related": [
+      "properties",
+      "class-constructors"
+    ]
+  },
+  {
+    "id": "indexers",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var row = new ScoreRow(3);\nrow[1] = 90;\nConsole.WriteLine(row[1]);\n\nclass ScoreRow\n{\n    private readonly int[] scores;\n    public ScoreRow(int length) => scores = new int[length];\n\n    public int this[int index]\n    {\n        get => scores[Check(index)];\n        set => scores[Check(index)] = value;\n    }\n\n    private int Check(int index)\n        => index >= 0 && index < scores.Length\n            ? index\n            : throw new ArgumentOutOfRangeException(nameof(index));\n}",
+    "related": [
+      "properties",
+      "cs0021",
+      "argument-out-of-range"
+    ]
+  },
+  {
+    "id": "extension-methods",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "using TextTools;\n\nConsole.WriteLine(\"atlas\".Surround(\"[\", \"]\"));\n\nnamespace TextTools\n{\n    public static class StringExtensions\n    {\n        public static string Surround(this string value, string left, string right)\n            => left + value + right;\n    }\n}",
+    "related": [
+      "using-directive",
+      "cs1061",
+      "interfaces"
+    ]
+  },
+  {
+    "id": "generic-constraints",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "ResetAndRun<Job>();\nDescribe(new Job());\nConsole.WriteLine(EchoValue(42));\nConsole.WriteLine(EchoReference(\"Atlas\"));\n\nstatic void ResetAndRun<T>() where T : WorkItem, IResettable, new()\n{\n    T item = new();\n    item.Reset();\n}\n\nstatic void Describe<T>(T item) where T : WorkItem => Console.WriteLine(item.Name);\nstatic T EchoValue<T>(T value) where T : struct => value;\nstatic T EchoReference<T>(T value) where T : class => value;\n\ninterface IResettable { void Reset(); }\nabstract class WorkItem { public abstract string Name { get; } }\nsealed class Job : WorkItem, IResettable\n{\n    public override string Name => \"job\";\n    public void Reset() => Console.WriteLine(\"reset\");\n}",
+    "related": [
+      "generics",
+      "interfaces",
+      "nullable"
+    ]
+  },
+  {
+    "id": "generic-variance",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "IEnumerable<string> names = new[] { \"Ada\", \"Grace\" };\nIEnumerable<object> objects = names; // covariance\n\nAction<object> showObject = value => Console.WriteLine(value);\nAction<string> showString = showObject; // contravariance\nshowString(\"Atlas\");",
+    "related": [
+      "generics",
+      "interfaces",
+      "delegates"
+    ]
+  },
+  {
+    "id": "explicit-interface-implementation",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var report = new Report();\nConsole.WriteLine(((IPlainText)report).Render());\nConsole.WriteLine(((IHtml)report).Render());\n\ninterface IPlainText { string Render(); }\ninterface IHtml { string Render(); }\n\nclass Report : IPlainText, IHtml\n{\n    string IPlainText.Render() => \"plain\";\n    string IHtml.Render() => \"<p>html</p>\";\n}",
+    "related": [
+      "interfaces",
+      "access-modifiers",
+      "inheritance-polymorphism"
+    ]
+  },
+  {
+    "id": "default-interface-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "IGreeter greeter = new FriendlyGreeter();\nConsole.WriteLine(greeter.Greet(\"Ada\"));\n\ninterface IGreeter\n{\n    string Greet(string name) => $\"Hello, {name}\";\n}\n\nclass FriendlyGreeter : IGreeter\n{\n    public string Greet(string name) => $\"Welcome, {name}!\";\n}",
+    "related": [
+      "interfaces",
+      "explicit-interface-implementation",
+      "inheritance-polymorphism"
+    ]
+  },
+  {
+    "id": "local-functions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Console.WriteLine(FormatTotal(new[] { 2, 3, 5 }));\n\nstatic string FormatTotal(int[] values)\n{\n    int total = Sum(values);\n    return $\"Total: {total}\";\n\n    static int Sum(int[] source)\n    {\n        int result = 0;\n        foreach (int value in source) result += value;\n        return result;\n    }\n}",
+    "related": [
+      "methods-parameters-returns",
+      "scope",
+      "closures"
+    ]
+  },
+  {
+    "id": "closures",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Func<int> next = CreateCounter();\nConsole.WriteLine(next()); // 1\nConsole.WriteLine(next()); // 2\n\nstatic Func<int> CreateCounter()\n{\n    int count = 0;\n    return () => ++count;\n}",
+    "related": [
+      "lambda",
+      "delegates",
+      "closure-loop-capture"
+    ]
+  },
+  {
+    "id": "multicast-delegates",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Func<int> first = () => { Console.WriteLine(\"first\"); return 1; };\nFunc<int> second = () => { Console.WriteLine(\"second\"); return 2; };\nFunc<int> combined = first + second;\n\nint result = combined();\nConsole.WriteLine(result); // 2",
+    "related": [
+      "delegates",
+      "events",
+      "try-catch"
+    ]
+  },
+  {
+    "id": "custom-attributes-reflection",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "using System.Reflection;\n\nPropertyInfo property = typeof(Product).GetProperty(nameof(Product.Name))!;\nvar label = property.GetCustomAttribute<LabelAttribute>();\nConsole.WriteLine(label?.Text);\n\n[AttributeUsage(AttributeTargets.Property)]\nsealed class LabelAttribute(string text) : Attribute\n{\n    public string Text { get; } = text;\n}\n\nclass Product\n{\n    [Label(\"Display name\")]\n    public string Name { get; init; } = string.Empty;\n}",
+    "related": [
+      "class-constructors",
+      "properties"
+    ]
+  },
+  {
+    "id": "custom-equality-hashing",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var set = new HashSet<ProductCode> { new(\"abc\") };\nConsole.WriteLine(set.Contains(new ProductCode(\"ABC\"))); // True\n\nsealed class ProductCode : IEquatable<ProductCode>\n{\n    public string Value { get; }\n    public ProductCode(string value) => Value = value;\n\n    public bool Equals(ProductCode? other)\n        => other is not null && StringComparer.OrdinalIgnoreCase.Equals(Value, other.Value);\n    public override bool Equals(object? obj) => Equals(obj as ProductCode);\n    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);\n}",
+    "related": [
+      "equality",
+      "hashset-basic"
+    ]
+  },
+  {
+    "id": "custom-ordering",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var jobs = new List<Job> { new(2, \"build\"), new(1, \"test\"), new(1, \"analyze\") };\njobs.Sort();\njobs.Sort(Comparer<Job>.Create((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal)));\n\nsealed record Job(int Priority, string Name) : IComparable<Job>\n{\n    public int CompareTo(Job? other)\n    {\n        if (other is null) return 1;\n        int byPriority = Priority.CompareTo(other.Priority);\n        return byPriority != 0 ? byPriority : string.Compare(Name, other.Name, StringComparison.Ordinal);\n    }\n}",
+    "related": [
+      "list-sort",
+      "equality"
+    ]
+  },
+  {
+    "id": "operator-overloading",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Distance total = new(120) + new Distance(30);\nConsole.WriteLine(total == new Distance(150));\n\nreadonly struct Distance\n{\n    public int Meters { get; }\n    public Distance(int meters) => Meters = meters;\n\n    public static Distance operator +(Distance left, Distance right) => new(left.Meters + right.Meters);\n    public static bool operator ==(Distance left, Distance right) => left.Meters == right.Meters;\n    public static bool operator !=(Distance left, Distance right) => !(left == right);\n    public override bool Equals(object? obj) => obj is Distance other && this == other;\n    public override int GetHashCode() => Meters;\n}",
+    "related": [
+      "struct-design",
+      "numeric-types",
+      "equality"
+    ]
+  },
+  {
+    "id": "user-defined-conversions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "Digit digit = (Digit)7;\nint value = digit;\n\nreadonly struct Digit\n{\n    private readonly int value;\n    private Digit(int value) => this.value = value;\n\n    public static explicit operator Digit(int value)\n        => value is >= 0 and <= 9 ? new Digit(value) : throw new OverflowException();\n    public static implicit operator int(Digit digit) => digit.value;\n}",
+    "related": [
+      "numeric-conversions",
+      "struct-design",
+      "cs0029"
+    ]
+  },
+  {
+    "id": "partial-types",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var order = new Order();\norder.Submit();\n\n// Order.Core.cs\npartial class Order\n{\n    partial void OnSubmitted();\n    public void Submit()\n    {\n        Console.WriteLine(\"submitted\");\n        OnSubmitted();\n    }\n}\n\n// Order.Logging.cs\npartial class Order\n{\n    partial void OnSubmitted() => Console.WriteLine(\"logged\");\n}",
+    "related": [
+      "class-constructors",
+      "access-modifiers",
+      "methods-parameters-returns"
+    ]
+  },
+  {
+    "id": "dynamic-binding",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var inferred = \"Atlas\";          // statically string\nobject asObject = \"Atlas\";     // statically object\ndynamic lateBound = \"Atlas\";  // member lookup at run time\n\nConsole.WriteLine(inferred.Length);\nConsole.WriteLine(((string)asObject).Length);\nConsole.WriteLine(lateBound.Length);",
+    "related": [
+      "var-keyword",
+      "boxing-unboxing",
+      "cs1061"
+    ]
+  },
+  {
+    "id": "anonymous-types",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var products = new[]\n{\n    new Product(\"Book\", 20m),\n    new Product(\"Pen\", 3m)\n};\n\nvar labels = products.Select(p => new { p.Name, WithTax = p.Price * 1.1m });\nforeach (var label in labels)\n    Console.WriteLine($\"{label.Name}: {label.WithTax:C}\");\n\nrecord Product(string Name, decimal Price);",
+    "related": [
+      "var-keyword",
+      "linq-select",
+      "tuples-deconstruction"
+    ]
+  },
+  {
+    "id": "readonly-struct-members",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var counter = new Counter { Value = 1 };\nTryIncrement(in counter);\nConsole.WriteLine(counter.Value); // 1\n\nstatic void TryIncrement(in Counter value)\n{\n    value.Increment(); // mutates a defensive copy\n}\n\nstruct Counter\n{\n    public int Value;\n    public void Increment() => Value++;\n    public readonly int Read() => Value;\n}\n\nreadonly struct Point(int x, int y)\n{\n    public int X { get; } = x;\n    public int Y { get; } = y;\n}",
+    "related": [
+      "struct-design",
+      "ref-out-in",
+      "mutable-struct-copy"
+    ]
+  },
+  {
+    "id": "sorted-collections",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var prices = new SortedDictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)\n{\n    [\"book\"] = 20m,\n    [\"Pen\"] = 3m\n};\nvar names = new SortedSet<string>(StringComparer.OrdinalIgnoreCase)\n{\n    \"Ada\", \"ada\", \"Grace\"\n};\n\nConsole.WriteLine(string.Join(\", \", prices.Keys));\nConsole.WriteLine(names.Count); // 2",
+    "related": [
+      "custom-ordering",
+      "dict-safe",
+      "hashset-basic"
+    ]
+  },
+  {
+    "id": "readonly-collection-views",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var owner = new List<string> { \"red\", \"blue\" };\nIReadOnlyList<string> interfaceView = owner;\nIReadOnlyList<string> wrapper = owner.AsReadOnly();\n\nowner.Add(\"green\");\nConsole.WriteLine(interfaceView.Count); // 3\nConsole.WriteLine(wrapper.Count);       // 3",
+    "related": [
+      "interfaces",
+      "not-supported",
+      "immutable-collections"
+    ]
+  },
+  {
+    "id": "list-capacity",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var items = new List<int>(capacity: 100);\nConsole.WriteLine(items.Count);    // 0\nConsole.WriteLine(items.Capacity); // at least 100\n\nitems.Add(42);\nConsole.WriteLine(items.Count);    // 1\nitems.TrimExcess();",
+    "related": [
+      "list-basic",
+      "arrays-basics",
+      "index-out-of-range"
+    ]
+  },
+  {
+    "id": "collection-expressions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[] middle = [2, 3];\nint[] values = [1, .. middle, 4];\nList<int> list = [.. values, 5];\n\nConsole.WriteLine(string.Join(\", \", values));\nConsole.WriteLine(list.Count);",
+    "related": [
+      "arrays-basics",
+      "object-collection-initializers",
+      "ienumerable"
+    ]
+  },
+  {
+    "id": "string-comparison",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string firstId = \"file\";\nstring secondId = \"FILE\";\nbool sameId = string.Equals(firstId, secondId, StringComparison.OrdinalIgnoreCase);\n\nvar culture = CultureInfo.GetCultureInfo(\"ja-JP\");\nint displayOrder = culture.CompareInfo.Compare(\n    \"あ\", \"ア\", CompareOptions.StringSort);",
+    "related": [
+      "equality",
+      "dictionary-comparers",
+      "culture-sensitive-numbers"
+    ]
+  },
+  {
+    "id": "unicode-runes",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string text = \"A😀e\\u0301\";\nint codeUnits = text.Length;\nint scalars = text.EnumerateRunes().Count();\nint graphemes = StringInfo.ParseCombiningCharacters(text).Length;\n\nConsole.WriteLine($\"{codeUnits}, {scalars}, {graphemes}\"); // 5, 4, 3\nforeach (Rune rune in text.EnumerateRunes())\n    Console.WriteLine($\"U+{rune.Value:X}\");",
+    "related": [
+      "encoding-text-bytes",
+      "unicode-normalization",
+      "indices-ranges"
+    ]
+  },
+  {
+    "id": "span-memory",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "int[] owner = [10, 20, 30, 40];\nSpan<int> slice = owner.AsSpan(1, 2);\nslice[0] = 99;\nConsole.WriteLine(owner[1]); // 99\n\nMemory<int> storedView = owner.AsMemory(2, 2);\nUseLater(storedView);\n\nstatic void UseLater(Memory<int> memory)\n{\n    Console.WriteLine(memory.Span[0]);\n}",
+    "related": [
+      "arrays-basics",
+      "indices-ranges",
+      "ref-out-in"
+    ]
+  },
+  {
+    "id": "encoding-text-bytes",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);\nstring text = \"日本語😀\";\nbyte[] bytes = utf8.GetBytes(text);\nstring restored = utf8.GetString(bytes);\n\nConsole.WriteLine(text.Length);       // UTF-16 code units\nConsole.WriteLine(bytes.Length);      // encoded bytes\nConsole.WriteLine(utf8.Preamble.Length); // 0: no BOM emitted",
+    "related": [
+      "unicode-runes",
+      "base64",
+      "file-read"
+    ]
+  },
+  {
+    "id": "regex-options-anchors",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "string input = \"ABC\\nDEF\";\nvar timeout = TimeSpan.FromMilliseconds(100);\n\nbool wholeInput = Regex.IsMatch(input, @\"\\A[A-Z]+\\z\", RegexOptions.None, timeout);\nbool eachLine = Regex.IsMatch(input, @\"^[A-Z]+$\", RegexOptions.Multiline, timeout);\nbool dotCrossesNewline = Regex.IsMatch(input, @\"A.*F\", RegexOptions.Singleline, timeout);\n\nConsole.WriteLine($\"{wholeInput}, {eachLine}, {dotCrossesNewline}\");",
+    "related": [
+      "regex-basic",
+      "regex-groups",
+      "regex-escaping"
+    ]
+  },
+  {
+    "id": "datetime-kind",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var clockReading = new DateTime(2026, 1, 15, 9, 0, 0, DateTimeKind.Unspecified);\nDateTime labeledUtc = DateTime.SpecifyKind(clockReading, DateTimeKind.Utc); // labels only\nDateTime convertedLocal = labeledUtc.ToLocalTime();                       // converts\n\nConsole.WriteLine(clockReading.Kind);\nConsole.WriteLine(labeledUtc.Kind);\nConsole.WriteLine(convertedLocal.Kind);",
+    "related": [
+      "datetimeoffset",
+      "time-zone-conversion",
+      "date-parse-exact"
+    ]
+  },
+  {
+    "id": "datetimeoffset",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var observed = new DateTimeOffset(2026, 1, 15, 9, 0, 0, TimeSpan.FromHours(9));\nDateTimeOffset sameInstantUtc = observed.ToUniversalTime();\n\nConsole.WriteLine(observed.ToString(\"O\"));\nConsole.WriteLine(sameInstantUtc.ToString(\"O\"));\nConsole.WriteLine(observed.UtcDateTime == sameInstantUtc.UtcDateTime); // True",
+    "related": [
+      "datetime-kind",
+      "time-zone-conversion",
+      "timespan-arithmetic"
+    ]
+  },
+  {
+    "id": "dateonly-timeonly",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "DateOnly date = new(2026, 4, 1);\nTimeOnly time = new(9, 30);\nDateTime wallClock = date.ToDateTime(time, DateTimeKind.Unspecified);\n\nConsole.WriteLine(date);\nConsole.WriteLine(time);\nConsole.WriteLine(wallClock.Kind); // Unspecified until a zone or offset is chosen",
+    "related": [
+      "datetime-kind",
+      "time-zone-conversion",
+      "date-parse-exact"
+    ]
+  },
+  {
+    "id": "stream-basics",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "using var stream = new MemoryStream(new byte[] { 1, 2, 3 });\nConsole.WriteLine($\"read={stream.CanRead}, write={stream.CanWrite}, seek={stream.CanSeek}\");\n\nbyte[] buffer = new byte[2];\nint read = stream.Read(buffer, 0, buffer.Length);\nConsole.WriteLine($\"read {read}, position {stream.Position}, length {stream.Length}\");",
+    "related": [
+      "idisposable",
+      "not-supported",
+      "stream-short-reads"
+    ]
+  },
+  {
+    "id": "lock-shared-state",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var counter = new Counter();\nParallel.For(0, 1_000, _ => counter.Increment());\nConsole.WriteLine(counter.Value);\n\nsealed class Counter\n{\n    private readonly object gate = new();\n    private int value;\n\n    public void Increment()\n    {\n        lock (gate)\n            value++;\n    }\n\n    public int Value\n    {\n        get { lock (gate) return value; }\n    }\n}",
+    "related": [
+      "static-members",
+      "interlocked",
+      "deadlock-lock-order"
+    ]
+  },
+  {
+    "id": "lazy-initialization",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var value = new Lazy<string>(\n    () => Load(),\n    LazyThreadSafetyMode.ExecutionAndPublication);\n\nConsole.WriteLine(value.IsValueCreated); // False\nConsole.WriteLine(value.Value);\nConsole.WriteLine(value.IsValueCreated); // True\n\nstatic string Load() => \"Atlas\";",
+    "related": [
+      "static-members",
+      "lock-shared-state",
+      "try-catch"
+    ]
+  },
+  {
+    "id": "custom-exceptions",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "static void Import()\n{\n    try\n    {\n        throw new IOException(\"source read failed\");\n    }\n    catch (IOException ex)\n    {\n        throw new DataImportException(\"Could not import the document.\", ex);\n    }\n}\n\nsealed class DataImportException : Exception\n{\n    public DataImportException(string message, Exception innerException)\n        : base(message, innerException) { }\n}",
+    "related": [
+      "try-catch",
+      "argument-exception",
+      "exception-rethrow"
+    ]
+  },
+  {
+    "id": "finally-cleanup",
+    "type": "concept",
+    "bad": null,
+    "good": null,
+    "code": "var gate = new SemaphoreSlim(1);\nawait gate.WaitAsync();\ntry\n{\n    Console.WriteLine(\"protected work\");\n}\nfinally\n{\n    gate.Release();\n    gate.Dispose();\n}",
+    "related": [
+      "try-catch",
+      "idisposable",
+      "semaphore-async"
+    ]
   }
 ]

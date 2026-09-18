@@ -269,5 +269,64 @@
     "goodHighlight": [
       1
     ]
+  },
+  {
+    "id": "regex-timeout-exception",
+    "type": "exception",
+    "bad": "string input = new string('a', 5_000) + \"!\";\nvar regex = new Regex(\n    @\"^(a+)+$\",\n    RegexOptions.None,\n    TimeSpan.FromMilliseconds(100));\nbool matched = regex.IsMatch(input); // may throw RegexMatchTimeoutException",
+    "good": "string input = new string('a', 5_000) + \"!\";\nvar regex = new Regex(\n    @\"\\Aa+\\z\",\n    RegexOptions.NonBacktracking | RegexOptions.CultureInvariant,\n    TimeSpan.FromMilliseconds(100));\n\ntry\n{\n    Console.WriteLine(regex.IsMatch(input));\n}\ncatch (RegexMatchTimeoutException)\n{\n    Console.WriteLine(\"Reject the input and revise the pattern or input limit.\");\n}",
+    "code": null,
+    "related": [
+      "regex-basic",
+      "regex-options-anchors"
+    ]
+  },
+  {
+    "id": "decoder-fallback",
+    "type": "exception",
+    "bad": null,
+    "good": null,
+    "code": "byte[] invalidUtf8 = [0xC3, 0x28];\nvar strictUtf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);\n\ntry\n{\n    Console.WriteLine(strictUtf8.GetString(invalidUtf8));\n}\ncatch (DecoderFallbackException ex)\n{\n    Console.WriteLine($\"Invalid bytes near index {ex.Index}.\");\n}",
+    "related": [
+      "encoding-text-bytes",
+      "encoding-mismatch",
+      "try-catch"
+    ]
+  },
+  {
+    "id": "end-of-stream",
+    "type": "exception",
+    "bad": null,
+    "good": null,
+    "code": "using var stream = new MemoryStream([1, 2]);\nusing var reader = new BinaryReader(stream);\n\ntry\n{\n    Console.WriteLine(reader.ReadInt32()); // needs 4 bytes\n}\ncatch (EndOfStreamException)\n{\n    Console.WriteLine(\"The record was truncated.\");\n}",
+    "related": [
+      "stream-short-reads",
+      "binary-reader-writer",
+      "io-exception"
+    ]
+  },
+  {
+    "id": "http-request-exception",
+    "type": "exception",
+    "bad": null,
+    "good": null,
+    "code": "using var request = new HttpRequestMessage(\n    HttpMethod.Get,\n    \"https://example.test/\");\nusing var response = new HttpResponseMessage(System.Net.HttpStatusCode.ServiceUnavailable)\n{\n    RequestMessage = request\n};\n\ntry\n{\n    response.EnsureSuccessStatusCode(); // 503 -> HttpRequestException\n}\ncatch (HttpRequestException ex)\n{\n    Console.WriteLine(ex.StatusCode); // ServiceUnavailable\n}",
+    "related": [
+      "http-response-status",
+      "http-get",
+      "operation-canceled"
+    ]
+  },
+  {
+    "id": "aggregate-exception",
+    "type": "exception",
+    "bad": null,
+    "good": null,
+    "code": "Task first = Task.FromException(new InvalidOperationException(\"first\"));\nTask second = Task.FromException(new ArgumentException(\"second\"));\nTask combined = Task.WhenAll(first, second);\n\ntry\n{\n    await combined;\n}\ncatch\n{\n    foreach (Exception error in combined.Exception!.InnerExceptions)\n        Console.WriteLine(error.Message);\n}",
+    "related": [
+      "task-whenall",
+      "try-catch",
+      "exception-rethrow"
+    ]
   }
 ]
