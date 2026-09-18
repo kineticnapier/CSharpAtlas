@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { buildArticleGraph, extractWikiLinkIds } from '../src/article-graph.js';
 import {
   cardDetailLevel,
+  cardScreenSize,
   cardWorldSize,
   resolveCardCollisions,
   worldToScreen
@@ -80,11 +81,20 @@ test('edge mode filters related and wiki links independently', () => {
   );
 });
 
-test('article cards progressively reveal detail as the user zooms in', () => {
+test('article cards use semantic zoom from shell to full detail', () => {
+  assert.equal(cardDetailLevel(0.1, false), 'shell');
   assert.equal(cardDetailLevel(0.3, false), 'title');
-  assert.equal(cardDetailLevel(0.8, false), 'summary');
-  assert.equal(cardDetailLevel(1.4, false), 'full');
-  assert.equal(cardDetailLevel(0.2, true), 'full');
+  assert.equal(cardDetailLevel(0.7, false), 'summary');
+  assert.equal(cardDetailLevel(1.2, false), 'full');
+  assert.equal(cardDetailLevel(0.1, true), 'full');
+});
+
+test('overview cards shrink with zoom instead of clamping to large screen boxes', () => {
+  const tiny = cardScreenSize(0.05, false);
+  const normal = cardScreenSize(1, false);
+  assert.ok(tiny.width < 30);
+  assert.ok(tiny.height < 20);
+  assert.deepEqual(normal, cardWorldSize(false));
 });
 
 test('selected cards are larger than ordinary floating cards', () => {
@@ -98,22 +108,15 @@ test('selected cards are larger than ordinary floating cards', () => {
 
 test('worldToScreen transforms plain coordinates without node animation metadata', () => {
   assert.deepEqual(
-    worldToScreen(
-      { x: 10, y: 20 },
-      { width: 800, height: 600, panX: 5, panY: -4, scale: 2 }
-    ),
-    { x: 425, y: 336 }
+    worldToScreen({ x: 10, y: -5 }, { width: 800, height: 600, panX: 20, panY: -10, scale: 2 }),
+    { x: 440, y: 280 }
   );
 });
 
-test('resolveCardCollisions separates overlapping article cards with padding', () => {
-  const nodes = [
-    { id: 'a', x: 0, y: 0 },
-    { id: 'b', x: 60, y: 20 }
-  ];
-  resolveCardCollisions(nodes, { width: 188, height: 92, padding: 18, iterations: 8 });
-
+test('resolveCardCollisions leaves generous default breathing room', () => {
+  const nodes = [{ x: 0, y: 0 }, { x: 10, y: 10 }];
+  resolveCardCollisions(nodes, { iterations: 30 });
   const dx = Math.abs(nodes[1].x - nodes[0].x);
   const dy = Math.abs(nodes[1].y - nodes[0].y);
-  assert.ok(dx >= 206 || dy >= 110, `cards still overlap: dx=${dx}, dy=${dy}`);
+  assert.ok(dx >= 250 || dy >= 154, `cards remained too close: dx=${dx}, dy=${dy}`);
 });
