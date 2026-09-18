@@ -10,6 +10,8 @@ export const GRAPH_TYPE_COLORS = {
 const TYPE_ORDER = ['code', 'exception', 'compiler-error', 'compiler-warning', 'logic', 'concept'];
 const BASE_CARD = { width: 188, height: 92 };
 const SELECTED_CARD = { width: 232, height: 122 };
+const COLLISION_PADDING = 22;
+const FRAME_INTERVAL = 1000 / 24;
 
 export function cardWorldSize(selected = false) {
   return selected ? { ...SELECTED_CARD } : { ...BASE_CARD };
@@ -20,6 +22,58 @@ export function cardDetailLevel(scale, selected = false) {
   if (scale < 0.55) return 'title';
   if (scale < 1.1) return 'summary';
   return 'full';
+}
+
+export function worldToScreen(point, { width, height, panX = 0, panY = 0, scale = 1 }) {
+  return {
+    x: width / 2 + panX + point.x * scale,
+    y: height / 2 + panY + point.y * scale
+  };
+}
+
+export function resolveCardCollisions(
+  nodes,
+  { width = BASE_CARD.width, height = BASE_CARD.height, padding = COLLISION_PADDING, iterations = 12 } = {}
+) {
+  const minDx = width + padding;
+  const minDy = height + padding;
+
+  for (let pass = 0; pass < iterations; pass++) {
+    let moved = false;
+    for (let i = 0; i < nodes.length; i++) {
+      const a = nodes[i];
+      for (let j = i + 1; j < nodes.length; j++) {
+        const b = nodes[j];
+        let dx = b.x - a.x;
+        let dy = b.y - a.y;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        if (absX >= minDx || absY >= minDy) continue;
+
+        if (dx === 0 && dy === 0) {
+          dx = i % 2 === 0 ? 0.01 : -0.01;
+          dy = j % 2 === 0 ? 0.01 : -0.01;
+        }
+
+        const overlapX = minDx - Math.abs(dx);
+        const overlapY = minDy - Math.abs(dy);
+        if (overlapX < overlapY) {
+          const push = overlapX / 2 + 0.05;
+          const sign = dx >= 0 ? 1 : -1;
+          a.x -= push * sign;
+          b.x += push * sign;
+        } else {
+          const push = overlapY / 2 + 0.05;
+          const sign = dy >= 0 ? 1 : -1;
+          a.y -= push * sign;
+          b.y += push * sign;
+        }
+        moved = true;
+      }
+    }
+    if (!moved) break;
+  }
+  return nodes;
 }
 
 function hashString(value) {
@@ -33,14 +87,11 @@ function hashString(value) {
 
 function categoryCenters(nodes) {
   const present = TYPE_ORDER.filter(type => nodes.some(node => node.type === type));
-  const radius = present.length <= 2 ? 420 : 820;
+  const radius = present.length <= 2 ? 620 : 1180;
   const centers = new Map();
   present.forEach((type, index) => {
     const angle = (Math.PI * 2 * index) / Math.max(present.length, 1) - Math.PI / 2;
-    centers.set(type, {
-      x: Math.cos(angle) * radius,
-      y: Math.sin(angle) * radius
-    });
+    centers.set(type, { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
   });
   return centers;
 }
@@ -51,7 +102,7 @@ function layoutGraph(graph) {
     const center = centers.get(node.type) ?? { x: 0, y: 0 };
     const seed = hashString(node.id);
     const angle = ((seed % 3600) / 3600) * Math.PI * 2;
-    const ring = 70 + ((seed >>> 8) % 260);
+    const ring = 120 + ((seed >>> 8) % 520);
     return {
       ...node,
       x: center.x + Math.cos(angle) * ring,
@@ -59,16 +110,17 @@ function layoutGraph(graph) {
       vx: 0,
       vy: 0,
       floatPhase: ((seed >>> 4) % 628) / 100,
-      floatSpeed: 0.00022 + ((seed >>> 16) % 9) * 0.000012,
+      floatSpeed: 0.00018 + ((seed >>> 16) % 7) * 0.00001,
       index
     };
   });
+
   const byId = new Map(nodes.map(node => [node.id, node]));
   const edges = graph.edges
     .map(edge => ({ ...edge, a: byId.get(edge.source), b: byId.get(edge.target) }))
     .filter(edge => edge.a && edge.b);
 
-  const iterations = nodes.length > 220 ? 150 : 190;
+  const iterations = nodes.length > 220 ? 70 : 110;
   for (let step = 0; step < iterations; step++) {
     const heat = 1 - step / iterations;
 
@@ -85,7 +137,7 @@ function layoutGraph(graph) {
           d2 = dx * dx + dy * dy;
         }
         const dist = Math.sqrt(d2);
-        const force = Math.min(10, 11000 / d2) * heat;
+        const force = Math.min(8, 8500 / d2) * heat;
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
         a.vx -= fx;
@@ -99,8 +151,8 @@ function layoutGraph(graph) {
       const dx = edge.b.x - edge.a.x;
       const dy = edge.b.y - edge.a.y;
       const dist = Math.max(1, Math.hypot(dx, dy));
-      const target = edge.a.ghost || edge.b.ghost ? 300 : 245;
-      const force = (dist - target) * 0.012 * heat;
+      const target = edge.a.ghost || edge.b.ghost ? 390 : 330;
+      const force = (dist - target) * 0.008 * heat;
       const fx = (dx / dist) * force;
       const fy = (dy / dist) * force;
       edge.a.vx += fx;
@@ -111,16 +163,21 @@ function layoutGraph(graph) {
 
     for (const node of nodes) {
       const center = centers.get(node.type) ?? { x: 0, y: 0 };
-      const attraction = node.ghost ? 0.0016 : 0.0034;
+      const attraction = node.ghost ? 0.0009 : 0.0018;
       node.vx += (center.x - node.x) * attraction * heat;
       node.vy += (center.y - node.y) * attraction * heat;
-      node.vx *= 0.8;
-      node.vy *= 0.8;
+      node.vx *= 0.82;
+      node.vy *= 0.82;
       node.x += node.vx;
       node.y += node.vy;
     }
+
+    if (step % 7 === 6) {
+      resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 2 });
+    }
   }
 
+  resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 20 });
   return { nodes, edges, byId };
 }
 
@@ -174,26 +231,19 @@ function wrapLines(context, text, maxWidth, maxLines) {
   return lines.slice(0, maxLines);
 }
 
-function cardScreenRect(node, point, scale, selected) {
+function cardScreenRect(point, scale, selected) {
   const world = cardWorldSize(selected);
-  const width = clamp(world.width * scale, selected ? 132 : 64, selected ? 280 : 220);
-  const height = clamp(world.height * scale, selected ? 78 : 34, selected ? 150 : 116);
-  return {
-    x: point.x - width / 2,
-    y: point.y - height / 2,
-    width,
-    height
-  };
+  const width = clamp(world.width * scale, selected ? 132 : 62, selected ? 280 : 220);
+  const height = clamp(world.height * scale, selected ? 78 : 32, selected ? 150 : 116);
+  return { x: point.x - width / 2, y: point.y - height / 2, width, height };
 }
 
 function lineRectIntersection(rect, from, to) {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   if (!dx && !dy) return { ...from };
-  const halfW = rect.width / 2;
-  const halfH = rect.height / 2;
-  const sx = dx === 0 ? Infinity : halfW / Math.abs(dx);
-  const sy = dy === 0 ? Infinity : halfH / Math.abs(dy);
+  const sx = dx === 0 ? Infinity : (rect.width / 2) / Math.abs(dx);
+  const sy = dy === 0 ? Infinity : (rect.height / 2) / Math.abs(dy);
   const t = Math.min(sx, sy);
   return { x: from.x + dx * t, y: from.y + dy * t };
 }
@@ -210,7 +260,9 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
   let dragStart = null;
   let panStart = null;
   let animationFrame = 0;
-  let visible = true;
+  let active = false;
+  let lastFrame = 0;
+  const cardBitmapCache = new Map();
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
@@ -226,23 +278,25 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
   }
 
   function floatingPosition(node, time) {
-    const amplitude = selectedId === node.id ? 2.5 : node.ghost ? 2 : 4.5;
+    const amplitude = selectedId === node.id ? 1.5 : node.ghost ? 1.2 : 2.4;
     return {
       x: node.x + Math.cos(time * node.floatSpeed + node.floatPhase) * amplitude,
       y: node.y + Math.sin(time * node.floatSpeed * 0.83 + node.floatPhase) * amplitude
     };
   }
 
-  function graphToScreen(node, time = performance.now()) {
+  function nodeToScreen(node, time = performance.now()) {
     const rect = canvas.getBoundingClientRect();
-    const floating = floatingPosition(node, time);
-    return {
-      x: rect.width / 2 + panX + floating.x * scale,
-      y: rect.height / 2 + panY + floating.y * scale
-    };
+    return worldToScreen(floatingPosition(node, time), {
+      width: rect.width,
+      height: rect.height,
+      panX,
+      panY,
+      scale
+    });
   }
 
-  function screenToGraph(x, y) {
+  function screenToWorld(x, y) {
     const rect = canvas.getBoundingClientRect();
     return {
       x: (x - rect.width / 2 - panX) / scale,
@@ -265,9 +319,9 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     const minY = Math.min(...state.nodes.map(node => node.y - halfH));
     const maxY = Math.max(...state.nodes.map(node => node.y + halfH));
     const rect = canvas.getBoundingClientRect();
-    const width = Math.max(200, maxX - minX + 160);
-    const height = Math.max(200, maxY - minY + 160);
-    scale = clamp(Math.min(rect.width / width, rect.height / height), 0.07, 1.9);
+    const width = Math.max(200, maxX - minX + 220);
+    const height = Math.max(200, maxY - minY + 220);
+    scale = clamp(Math.min(rect.width / width, rect.height / height), 0.045, 1.9);
     panX = -((minX + maxX) / 2) * scale;
     panY = -((minY + maxY) / 2) * scale;
     draw(performance.now());
@@ -287,83 +341,97 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     return result;
   }
 
+  function createCardBitmap(node, detail, selected) {
+    const size = cardWorldSize(selected);
+    const offscreen = document.createElement('canvas');
+    offscreen.width = size.width * 2;
+    offscreen.height = size.height * 2;
+    const ctx = offscreen.getContext('2d');
+    ctx.scale(2, 2);
+
+    const color = GRAPH_TYPE_COLORS[node.type] ?? '#8b949e';
+    ctx.globalAlpha = node.ghost ? 0.58 : 1;
+    roundedRect(ctx, 1, 1, size.width - 2, size.height - 2, 10);
+    ctx.fillStyle = node.ghost ? 'rgba(22,27,34,0.82)' : 'rgba(22,27,34,0.97)';
+    ctx.fill();
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.fillStyle = color;
+    roundedRect(ctx, 1, 1, 5, size.height - 2, 2.5);
+    ctx.fill();
+
+    const left = 14;
+    const contentWidth = size.width - 24;
+    ctx.textBaseline = 'top';
+    ctx.font = '600 10px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillStyle = color;
+    ctx.fillText(trimText(ctx, typeLabel?.(node.type) ?? node.type, contentWidth), left, 10);
+    ctx.font = `700 ${selected ? 16 : 14}px ui-sans-serif, system-ui, sans-serif`;
+    ctx.fillStyle = '#f0f6fc';
+    ctx.fillText(trimText(ctx, node.title || node.id, contentWidth), left, 26);
+
+    if (detail !== 'title') {
+      ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
+      ctx.fillStyle = '#8b949e';
+      const lines = wrapLines(ctx, node.short, contentWidth, detail === 'full' ? 2 : 1);
+      let y = selected ? 49 : 47;
+      for (const line of lines) {
+        ctx.fillText(line, left, y);
+        y += 14;
+      }
+
+      if (detail === 'full' && node.tags?.length) {
+        ctx.font = '600 9px ui-monospace, SFMono-Regular, Consolas, monospace';
+        const tagY = size.height - 17;
+        let x = left;
+        for (const tag of node.tags.slice(0, 3)) {
+          const label = String(tag);
+          const tagWidth = ctx.measureText(label).width + 10;
+          if (x + tagWidth > size.width - 10) break;
+          roundedRect(ctx, x, tagY - 3, tagWidth, 15, 5);
+          ctx.fillStyle = 'rgba(110,118,129,0.2)';
+          ctx.fill();
+          ctx.fillStyle = '#c9d1d9';
+          ctx.fillText(label, x + 5, tagY);
+          x += tagWidth + 5;
+        }
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    return offscreen;
+  }
+
+  function getCardBitmap(node, detail, selected) {
+    const key = `${node.id}|${detail}|${selected ? 1 : 0}|${node.ghost ? 1 : 0}`;
+    let bitmap = cardBitmapCache.get(key);
+    if (!bitmap) {
+      bitmap = createCardBitmap(node, detail, selected);
+      cardBitmapCache.set(key, bitmap);
+    }
+    return bitmap;
+  }
+
   function drawCard(node, point, neighbors) {
     const selected = node.id === selectedId;
     const hovered = node.id === hoveredId;
     const related = neighbors.has(node.id);
     const dim = selectedId && !selected && !related;
     const detail = cardDetailLevel(scale, selected);
-    const rect = cardScreenRect(node, point, scale, selected);
-    const color = GRAPH_TYPE_COLORS[node.type] ?? '#8b949e';
-    const alpha = dim ? 0.13 : node.ghost ? 0.34 : 0.96;
+    const rect = cardScreenRect(point, scale, selected);
+    const bitmap = getCardBitmap(node, detail, selected);
 
     context.save();
-    context.globalAlpha = alpha;
-    context.shadowColor = selected || hovered ? 'rgba(88,166,255,0.32)' : 'rgba(0,0,0,0.2)';
-    context.shadowBlur = selected ? 22 : hovered ? 16 : 8;
-    context.shadowOffsetY = 4;
-    roundedRect(context, rect.x, rect.y, rect.width, rect.height, Math.max(5, 10 * Math.min(scale, 1.3)));
-    context.fillStyle = node.ghost ? 'rgba(22,27,34,0.68)' : 'rgba(22,27,34,0.94)';
-    context.fill();
-    context.shadowColor = 'transparent';
-    context.lineWidth = selected ? 2.2 : hovered ? 1.8 : 1;
-    context.strokeStyle = selected || hovered ? '#f0f6fc' : color;
-    context.stroke();
-
-    const accentWidth = Math.max(3, Math.min(6, rect.width * 0.035));
-    context.fillStyle = color;
-    roundedRect(context, rect.x, rect.y, accentWidth, rect.height, accentWidth / 2);
-    context.fill();
-
-    const pad = Math.max(5, Math.min(12, rect.width * 0.06));
-    const left = rect.x + pad + accentWidth;
-    const contentWidth = Math.max(20, rect.width - pad * 2 - accentWidth);
-    const top = rect.y + pad;
-
-    const badgeSize = clamp(9.5 * Math.max(scale, 0.75), 8, 12);
-    context.font = `600 ${badgeSize}px ui-sans-serif, system-ui, sans-serif`;
-    context.fillStyle = color;
-    context.textBaseline = 'top';
-    context.fillText(trimText(context, typeLabel?.(node.type) ?? node.type, contentWidth), left, top);
-
-    const titleSize = clamp((selected ? 16 : 14) * Math.max(scale, 0.72), 9, selected ? 17 : 15);
-    context.font = `700 ${titleSize}px ui-sans-serif, system-ui, sans-serif`;
-    context.fillStyle = '#f0f6fc';
-    const titleY = top + badgeSize + 4;
-    context.fillText(trimText(context, node.title || node.id, contentWidth), left, titleY);
-
-    if (detail !== 'title') {
-      const bodySize = clamp(11.5 * Math.max(scale, 0.78), 8.5, 12.5);
-      context.font = `${bodySize}px ui-sans-serif, system-ui, sans-serif`;
-      context.fillStyle = '#8b949e';
-      const lines = wrapLines(context, node.short, contentWidth, detail === 'full' ? 2 : 1);
-      let y = titleY + titleSize + 6;
-      for (const line of lines) {
-        context.fillText(line, left, y);
-        y += bodySize + 3;
-      }
-
-      if (detail === 'full' && node.tags?.length && rect.height >= 72) {
-        const tagSize = clamp(9.5 * Math.max(scale, 0.8), 8, 10.5);
-        context.font = `600 ${tagSize}px ui-monospace, SFMono-Regular, Consolas, monospace`;
-        const tagY = rect.y + rect.height - pad - tagSize;
-        let x = left;
-        for (const tag of node.tags.slice(0, 3)) {
-          const label = String(tag);
-          const width = context.measureText(label).width + 10;
-          if (x + width > rect.x + rect.width - pad) break;
-          roundedRect(context, x, tagY - 3, width, tagSize + 6, 5);
-          context.fillStyle = 'rgba(110,118,129,0.2)';
-          context.fill();
-          context.fillStyle = '#c9d1d9';
-          context.fillText(label, x + 5, tagY);
-          x += width + 5;
-        }
-      }
+    context.globalAlpha = dim ? 0.12 : 1;
+    context.drawImage(bitmap, rect.x, rect.y, rect.width, rect.height);
+    if (selected || hovered) {
+      roundedRect(context, rect.x, rect.y, rect.width, rect.height, Math.max(5, 10 * Math.min(scale, 1.3)));
+      context.lineWidth = selected ? 2.2 : 1.7;
+      context.strokeStyle = '#f0f6fc';
+      context.stroke();
     }
-
     context.restore();
-    return rect;
   }
 
   function draw(time = performance.now()) {
@@ -373,11 +441,10 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     const geometry = new Map();
 
     for (const node of state.nodes) {
-      const point = graphToScreen(node, time);
-      const selected = node.id === selectedId;
+      const point = nodeToScreen(node, time);
       geometry.set(node.id, {
         point,
-        rect: cardScreenRect(node, point, scale, selected)
+        rect: cardScreenRect(point, scale, node.id === selectedId)
       });
     }
 
@@ -387,14 +454,14 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
       if (!ga || !gb) continue;
       const a = lineRectIntersection(ga.rect, ga.point, gb.point);
       const b = lineRectIntersection(gb.rect, gb.point, ga.point);
-      const active = connectedToSelected(edge);
+      const isActive = connectedToSelected(edge);
       context.beginPath();
       context.moveTo(a.x, a.y);
       context.lineTo(b.x, b.y);
-      context.lineWidth = active ? 2 : 0.85;
-      context.strokeStyle = active
+      context.lineWidth = isActive ? 2 : 0.7;
+      context.strokeStyle = isActive
         ? 'rgba(201, 209, 217, 0.82)'
-        : 'rgba(139, 148, 158, 0.15)';
+        : 'rgba(139, 148, 158, 0.12)';
       context.stroke();
     }
 
@@ -402,10 +469,7 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
       const rank = node => node.id === selectedId ? 3 : node.id === hoveredId ? 2 : neighbors.has(node.id) ? 1 : 0;
       return rank(a) - rank(b);
     });
-    for (const node of ordered) {
-      const point = geometry.get(node.id)?.point ?? graphToScreen(node, time);
-      drawCard(node, point, neighbors);
-    }
+    for (const node of ordered) drawCard(node, geometry.get(node.id).point, neighbors);
   }
 
   function hitTest(clientX, clientY) {
@@ -415,8 +479,8 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     const time = performance.now();
     const ordered = [...state.nodes].reverse();
     for (const node of ordered) {
-      const point = graphToScreen(node, time);
-      const card = cardScreenRect(node, point, scale, node.id === selectedId);
+      const point = nodeToScreen(node, time);
+      const card = cardScreenRect(point, scale, node.id === selectedId);
       if (x >= card.x && x <= card.x + card.width && y >= card.y && y <= card.y + card.height) return node;
     }
     return null;
@@ -441,7 +505,10 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
   }
 
   function animate(time) {
-    if (visible) draw(time);
+    if (active && !document.hidden && time - lastFrame >= FRAME_INTERVAL) {
+      lastFrame = time;
+      draw(time);
+    }
     animationFrame = requestAnimationFrame(animate);
   }
 
@@ -452,6 +519,7 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     if (dragging && dragStart && panStart) {
       panX = panStart.x + event.clientX - dragStart.x;
       panY = panStart.y + event.clientY - dragStart.y;
+      draw(performance.now());
     }
   });
 
@@ -460,6 +528,7 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     dragging = false;
     canvas.classList.remove('dragging');
     updateTooltip(null);
+    if (active) draw(performance.now());
   });
 
   canvas.addEventListener('mousedown', event => {
@@ -491,17 +560,20 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     const rect = canvas.getBoundingClientRect();
     const pointerX = event.clientX - rect.left;
     const pointerY = event.clientY - rect.top;
-    const before = screenToGraph(pointerX, pointerY);
+    const before = screenToWorld(pointerX, pointerY);
     const factor = event.deltaY < 0 ? 1.12 : 0.89;
-    scale = clamp(scale * factor, 0.06, 4.5);
-    const after = graphToScreen(before, performance.now());
+    scale = clamp(scale * factor, 0.045, 4.5);
+    const after = worldToScreen(before, {
+      width: rect.width,
+      height: rect.height,
+      panX,
+      panY,
+      scale
+    });
     panX += pointerX - after.x;
     panY += pointerY - after.y;
+    draw(performance.now());
   }, { passive: false });
-
-  document.addEventListener('visibilitychange', () => {
-    visible = !document.hidden;
-  });
 
   cancelAnimationFrame(animationFrame);
   animationFrame = requestAnimationFrame(animate);
@@ -511,8 +583,17 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
       state = layoutGraph(graph);
       selectedId = null;
       hoveredId = null;
+      cardBitmapCache.clear();
       resize();
       fit();
+    },
+    setActive(nextActive) {
+      active = Boolean(nextActive);
+      if (active) {
+        lastFrame = 0;
+        resize();
+        draw(performance.now());
+      }
     },
     fit,
     resize,
