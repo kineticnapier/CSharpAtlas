@@ -871,7 +871,7 @@
     "type": "code",
     "bad": null,
     "good": null,
-    "code": "string path = Path.Combine(\"reports\", \"summary.tar.gz\");\n\nstring fileName = Path.GetFileName(path);\nstring extension = Path.GetExtension(path);\nstring changed = Path.ChangeExtension(path, \".zip\");\n\nConsole.WriteLine(fileName);   // summary.tar.gz\nConsole.WriteLine(extension);  // .gz\nConsole.WriteLine(changed);    // reports/.../summary.tar.zip",
+    "code": "string path = Path.Combine(\"reports\", \"summary.tar.gz\");\n\nstring fileName = Path.GetFileName(path);\nstring extension = Path.GetExtension(path);\nstring changed = Path.ChangeExtension(path, \".zip\");\n\nConsole.WriteLine(fileName);   // summary.tar.gz\nConsole.WriteLine(extension);  // .gz\nConsole.WriteLine(changed);    // same directory; file name becomes summary.tar.zip",
     "related": [
       "path-combine-normalize",
       "file-copy-move-delete"
