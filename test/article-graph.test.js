@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildArticleGraph, extractWikiLinkIds } from '../src/article-graph.js';
-import { cardDetailLevel, cardWorldSize } from '../src/graph-view.js';
+import {
+  cardDetailLevel,
+  cardWorldSize,
+  resolveCardCollisions,
+  worldToScreen
+} from '../src/graph-view.js';
 
 test('extractWikiLinkIds finds wiki targets across localized article text', () => {
   const article = {
@@ -89,4 +94,26 @@ test('selected cards are larger than ordinary floating cards', () => {
   assert.ok(normal.height > 50);
   assert.ok(selected.width > normal.width);
   assert.ok(selected.height > normal.height);
+});
+
+test('worldToScreen transforms plain coordinates without node animation metadata', () => {
+  assert.deepEqual(
+    worldToScreen(
+      { x: 10, y: 20 },
+      { width: 800, height: 600, panX: 5, panY: -4, scale: 2 }
+    ),
+    { x: 425, y: 336 }
+  );
+});
+
+test('resolveCardCollisions separates overlapping article cards with padding', () => {
+  const nodes = [
+    { id: 'a', x: 0, y: 0 },
+    { id: 'b', x: 60, y: 20 }
+  ];
+  resolveCardCollisions(nodes, { width: 188, height: 92, padding: 18, iterations: 8 });
+
+  const dx = Math.abs(nodes[1].x - nodes[0].x);
+  const dy = Math.abs(nodes[1].y - nodes[0].y);
+  assert.ok(dx >= 206 || dy >= 110, `cards still overlap: dx=${dx}, dy=${dy}`);
 });
