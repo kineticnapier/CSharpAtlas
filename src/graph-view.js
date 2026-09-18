@@ -8,8 +8,8 @@ export const GRAPH_TYPE_COLORS = {
 };
 
 const TYPE_ORDER = ['code', 'exception', 'compiler-error', 'compiler-warning', 'logic', 'concept'];
-const BASE_CARD = { width: 188, height: 92 };
-const SELECTED_CARD = { width: 232, height: 122 };
+const BASE_CARD = { width: 320, height: 160 };
+const SELECTED_CARD = { width: 400, height: 220 };
 const COLLISION_PADDING = 180;
 const FRAME_INTERVAL = 1000 / 24;
 
@@ -250,13 +250,13 @@ export function cardScreenSize(scale, selected = false) {
   const world = cardWorldSize(selected);
   if (selected) {
     return {
-      width: clamp(world.width * scale, 132, 280),
-      height: clamp(world.height * scale, 78, 150)
+      width: clamp(world.width * scale, 180, 420),
+      height: clamp(world.height * scale, 100, 230)
     };
   }
   return {
-    width: clamp(world.width * scale, 12, 220),
-    height: clamp(world.height * scale, 7, 116)
+    width: clamp(world.width * scale, 16, 340),
+    height: clamp(world.height * scale, 8, 180)
   };
 }
 
