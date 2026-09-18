@@ -1,0 +1,88 @@
+name: Temporary readable graph viewport
+
+on:
+  push:
+    branches:
+      - feature/article-graph
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/article-graph
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply readable viewport and visible floating
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/graph-view.js')
+          text = path.read_text()
+
+          marker = "export function worldToScreen(point, { width, height, panX = 0, panY = 0, scale = 1 }) {\n  return {\n    x: width / 2 + panX + point.x * scale,\n    y: height / 2 + panY + point.y * scale\n  };\n}\n"
+          replacement = marker + "\nexport function initialGraphScale(nodeCount) {\n  if (nodeCount > 220) return 0.56;\n  if (nodeCount > 120) return 0.62;\n  if (nodeCount > 60) return 0.72;\n  return 0.9;\n}\n\nexport function floatingWorldAmplitude(screenPixels, scale) {\n  return screenPixels / Math.max(scale, 0.035);\n}\n"
+          if marker not in text:
+              raise SystemExit('worldToScreen marker not found')
+          text = text.replace(marker, replacement, 1)
+
+          old = "      floatSpeed: 0.00018 + ((seed >>> 16) % 7) * 0.00001,"
+          new = "      floatSpeed: 0.00032 + ((seed >>> 16) % 7) * 0.00002,"
+          if old not in text:
+              raise SystemExit('floatSpeed marker not found')
+          text = text.replace(old, new, 1)
+
+          old = "  function floatingPosition(node, time) {\n    const amplitude = selectedId === node.id ? 1.5 : node.ghost ? 1.2 : 2.4;\n    return {\n      x: node.x + Math.cos(time * node.floatSpeed + node.floatPhase) * amplitude,\n      y: node.y + Math.sin(time * node.floatSpeed * 0.83 + node.floatPhase) * amplitude\n    };\n  }"
+          new = "  function floatingPosition(node, time) {\n    const screenAmplitude = selectedId === node.id ? 4 : node.ghost ? 3 : 5;\n    const amplitude = floatingWorldAmplitude(screenAmplitude, scale);\n    return {\n      x: node.x + Math.cos(time * node.floatSpeed + node.floatPhase) * amplitude,\n      y: node.y + Math.sin(time * node.floatSpeed * 0.83 + node.floatPhase) * amplitude\n    };\n  }"
+          if old not in text:
+              raise SystemExit('floatingPosition marker not found')
+          text = text.replace(old, new, 1)
+
+          fit_end = "    draw(performance.now());\n  }\n\n  function connectedToSelected(edge) {"
+          focus_block = "    draw(performance.now());\n  }\n\n  function focus() {\n    if (!state.nodes.length) {\n      scale = 1;\n      panX = 0;\n      panY = 0;\n      draw(performance.now());\n      return;\n    }\n\n    const degree = new Map(state.nodes.map(node => [node.id, 0]));\n    for (const edge of state.edges) {\n      degree.set(edge.source, (degree.get(edge.source) ?? 0) + 1);\n      degree.set(edge.target, (degree.get(edge.target) ?? 0) + 1);\n    }\n    const candidates = state.nodes.filter(node => !node.ghost);\n    const anchor = (candidates.length ? candidates : state.nodes).reduce((best, node) =>\n      (degree.get(node.id) ?? 0) > (degree.get(best.id) ?? 0) ? node : best\n    );\n\n    scale = initialGraphScale(state.nodes.length);\n    panX = -anchor.x * scale;\n    panY = -anchor.y * scale;\n    draw(performance.now());\n  }\n\n  function connectedToSelected(edge) {"
+          if fit_end not in text:
+              raise SystemExit('fit end marker not found')
+          text = text.replace(fit_end, focus_block, 1)
+
+          old = "      resize();\n      fit();\n    },"
+          new = "      resize();\n      if (active) focus();\n      else draw(performance.now());\n    },"
+          if old not in text:
+              raise SystemExit('setGraph marker not found')
+          text = text.replace(old, new, 1)
+
+          old = "    fit,\n    resize,\n    draw"
+          new = "    fit,\n    focus,\n    resize,\n    draw"
+          if old not in text:
+              raise SystemExit('return marker not found')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text)
+
+          bootstrap = Path('src/graph-bootstrap.js')
+          boot = bootstrap.read_text()
+          old = "        graphCanvas.resize();\n        graphCanvas.fit();"
+          new = "        graphCanvas.resize();\n        graphCanvas.focus();"
+          if old not in boot:
+              raise SystemExit('graph bootstrap entry marker not found')
+          bootstrap.write_text(boot.replace(old, new, 1))
+          PY
+      - name: Verify
+        run: |
+          npm install
+          npm test
+          npm run build
+      - name: Commit changes and remove temporary workflow
+        run: |
+          rm .github/workflows/temp-readable-graph.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/graph-view.js src/graph-bootstrap.js test/article-graph.test.js .github/workflows/temp-readable-graph.yml
+          git commit -m "fix: keep graph readable and visibly floating"
+          git push origin HEAD:feature/article-graph
