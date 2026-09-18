@@ -25,3 +25,11 @@ test('graph styles include view switching and canvas affordances', async () => {
   assert.match(css, /\.graph-shell/);
   assert.match(css, /#articleGraph/);
 });
+
+test('graph renderer sleeps while list view is active', async () => {
+  const bootstrap = await readFile(new URL('src/graph-bootstrap.js', root), 'utf8');
+  const view = await readFile(new URL('src/graph-view.js', root), 'utf8');
+  assert.match(bootstrap, /graphCanvas\.setActive\(showingGraph\)/);
+  assert.match(view, /setActive\(active\)/);
+  assert.match(view, /FRAME_INTERVAL/);
+});
