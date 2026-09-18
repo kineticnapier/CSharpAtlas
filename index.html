@@ -19,7 +19,7 @@
   <meta name="twitter:image" content="https://csharpatlas.pages.dev/csharp-atlas-og.png">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="stylesheet" href="/src/code-enhancements.css">
-  <link rel="stylesheet" href="/src/graph-view.css">
+  <link rel="stylesheet" href="/src/quest-view.css">
 </head>
 <body>
 <header>
@@ -75,7 +75,7 @@
       <section>
         <div class="view-switch" role="group" aria-label="View mode">
           <button id="listViewButton" type="button" class="active" aria-pressed="true">一覧で見る</button>
-          <button id="graphViewButton" type="button" aria-pressed="false">グラフで見る</button>
+          <button id="questViewButton" type="button" aria-pressed="false">学習マップで見る</button>
         </div>
 
         <div id="listViewPanel">
@@ -87,25 +87,27 @@
           <div id="empty" class="empty">一致する項目がありません。</div>
         </div>
 
-        <div id="graphViewPanel" class="graph-view-panel hidden">
-          <div class="graph-toolbar">
-            <label for="edgeModeSelect">
-              <span id="graphEdgeModeLabel">接続</span>
-              <select id="edgeModeSelect">
-                <option value="both">related + Wiki</option>
-                <option value="related">related のみ</option>
-                <option value="wiki">Wiki のみ</option>
-              </select>
-            </label>
-            <button id="graphResetButton" type="button">全体を表示</button>
-            <span id="graphStats" class="graph-stats"></span>
+        <div id="questViewPanel" class="quest-view-panel hidden">
+          <div class="quest-toolbar">
+            <div class="quest-toolbar-copy">
+              <h2 id="questChapterTitle"></h2>
+              <p id="questChapterDescription"></p>
+            </div>
+            <div class="quest-toolbar-side">
+              <button id="questFitButton" type="button">全体を表示</button>
+              <span id="questStats" class="quest-stats"></span>
+            </div>
           </div>
-          <div class="graph-shell">
-            <canvas id="articleGraph" aria-label="Article relationship graph"></canvas>
-            <div id="graphTooltip" class="graph-tooltip hidden"></div>
-            <div id="graphHelp" class="graph-help">ドラッグ: 移動 / ホイール: ズーム / クリック: 強調 / ダブルクリック: 記事を開く</div>
+          <div class="quest-layout">
+            <div id="questViewport" class="quest-viewport">
+              <div id="questWorld" class="quest-world">
+                <svg id="questEdges" class="quest-edges" aria-hidden="true"></svg>
+                <div id="questNodes" class="quest-nodes"></div>
+              </div>
+              <div id="questHelp" class="quest-help">ドラッグ: 移動 / ホイール: ズーム / クリック: 概要 / ダブルクリック: 記事を開く</div>
+            </div>
+            <aside id="questDetail" class="quest-detail"></aside>
           </div>
-          <div id="graphLegend" class="graph-legend"></div>
         </div>
       </section>
     </div>
@@ -118,6 +120,6 @@
 </main>
 
 <script type="module" src="/src/main.js"></script>
-<script type="module" src="/src/graph-bootstrap.js"></script>
+<script type="module" src="/src/quest-bootstrap.js"></script>
 </body>
 </html>
