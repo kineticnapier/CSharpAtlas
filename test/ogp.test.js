@@ -15,6 +15,6 @@ test('page exposes site-wide Open Graph and Twitter Card metadata', async () => 
   assert.match(html, /<meta\s+property="og:image:height"\s+content="630"\s*\/?>/);
   assert.match(html, /<meta\s+name="twitter:card"\s+content="summary_large_image"\s*\/?>/);
 
-  const image = await stat(new URL('../public/csharp-atlas-og.svg', import.meta.url));
+  const image = await stat(new URL('../public/csharp-atlas-og.png', import.meta.url));
   assert.ok(image.size > 0);
 });
