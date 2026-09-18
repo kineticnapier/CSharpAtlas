@@ -74,6 +74,8 @@ export function buildArticleGraph(articles, { type = 'all', edgeMode = 'both' } 
       id: item.id,
       type: item.type,
       title: item.title,
+      short: item.short ?? '',
+      tags: Array.isArray(item.tags) ? item.tags.slice(0, 3) : [],
       ghost: type !== 'all' && !activeIds.has(item.id)
     }));
 
