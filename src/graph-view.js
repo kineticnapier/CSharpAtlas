@@ -10,7 +10,7 @@ export const GRAPH_TYPE_COLORS = {
 const TYPE_ORDER = ['code', 'exception', 'compiler-error', 'compiler-warning', 'logic', 'concept'];
 const BASE_CARD = { width: 188, height: 92 };
 const SELECTED_CARD = { width: 232, height: 122 };
-const COLLISION_PADDING = 66;
+const COLLISION_PADDING = 180;
 const FRAME_INTERVAL = 1000 / 24;
 
 export function cardWorldSize(selected = false) {
@@ -36,8 +36,8 @@ export function resolveCardCollisions(
   nodes,
   { width = BASE_CARD.width, height = BASE_CARD.height, padding = COLLISION_PADDING, iterations = 12 } = {}
 ) {
-  const minDx = width + padding;
-  const minDy = height + padding;
+  const personalWidth = width + padding;
+  const personalHeight = height + padding;
 
   for (let pass = 0; pass < iterations; pass++) {
     let moved = false;
@@ -47,28 +47,27 @@ export function resolveCardCollisions(
         const b = nodes[j];
         let dx = b.x - a.x;
         let dy = b.y - a.y;
-        const absX = Math.abs(dx);
-        const absY = Math.abs(dy);
-        if (absX >= minDx || absY >= minDy) continue;
 
         if (dx === 0 && dy === 0) {
-          dx = i % 2 === 0 ? 0.01 : -0.01;
-          dy = j % 2 === 0 ? 0.01 : -0.01;
+          const angle = ((i * 37 + j * 53) % 360) * Math.PI / 180;
+          dx = Math.cos(angle) * 0.01;
+          dy = Math.sin(angle) * 0.01;
         }
 
-        const overlapX = minDx - Math.abs(dx);
-        const overlapY = minDy - Math.abs(dy);
-        if (overlapX < overlapY) {
-          const push = overlapX / 2 + 0.05;
-          const sign = dx >= 0 ? 1 : -1;
-          a.x -= push * sign;
-          b.x += push * sign;
-        } else {
-          const push = overlapY / 2 + 0.05;
-          const sign = dy >= 0 ? 1 : -1;
-          a.y -= push * sign;
-          b.y += push * sign;
-        }
+        const nx = dx / personalWidth;
+        const ny = dy / personalHeight;
+        const normalizedDistance = Math.hypot(nx, ny);
+        if (normalizedDistance >= 1) continue;
+
+        const scaleUp = 1 / Math.max(normalizedDistance, 0.0001);
+        const targetDx = dx * scaleUp;
+        const targetDy = dy * scaleUp;
+        const pushX = (targetDx - dx) / 2;
+        const pushY = (targetDy - dy) / 2;
+        a.x -= pushX;
+        a.y -= pushY;
+        b.x += pushX;
+        b.y += pushY;
         moved = true;
       }
     }
@@ -88,7 +87,7 @@ function hashString(value) {
 
 function categoryCenters(nodes) {
   const present = TYPE_ORDER.filter(type => nodes.some(node => node.type === type));
-  const radius = present.length <= 2 ? 760 : 1460;
+  const radius = present.length <= 2 ? 1180 : 2200;
   const centers = new Map();
   present.forEach((type, index) => {
     const angle = (Math.PI * 2 * index) / Math.max(present.length, 1) - Math.PI / 2;
@@ -103,7 +102,7 @@ function layoutGraph(graph) {
     const center = centers.get(node.type) ?? { x: 0, y: 0 };
     const seed = hashString(node.id);
     const angle = ((seed % 3600) / 3600) * Math.PI * 2;
-    const ring = 160 + ((seed >>> 8) % 680);
+    const ring = 240 + ((seed >>> 8) % 1180);
     return {
       ...node,
       x: center.x + Math.cos(angle) * ring,
@@ -138,7 +137,7 @@ function layoutGraph(graph) {
           d2 = dx * dx + dy * dy;
         }
         const dist = Math.sqrt(d2);
-        const force = Math.min(8, 8500 / d2) * heat;
+        const force = Math.min(7, 12000 / d2) * heat;
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
         a.vx -= fx;
@@ -152,8 +151,8 @@ function layoutGraph(graph) {
       const dx = edge.b.x - edge.a.x;
       const dy = edge.b.y - edge.a.y;
       const dist = Math.max(1, Math.hypot(dx, dy));
-      const target = edge.a.ghost || edge.b.ghost ? 560 : 480;
-      const force = (dist - target) * 0.008 * heat;
+      const target = edge.a.ghost || edge.b.ghost ? 900 : 780;
+      const force = (dist - target) * 0.0035 * heat;
       const fx = (dx / dist) * force;
       const fy = (dy / dist) * force;
       edge.a.vx += fx;
@@ -164,21 +163,21 @@ function layoutGraph(graph) {
 
     for (const node of nodes) {
       const center = centers.get(node.type) ?? { x: 0, y: 0 };
-      const attraction = node.ghost ? 0.0007 : 0.0012;
+      const attraction = node.ghost ? 0.00035 : 0.00065;
       node.vx += (center.x - node.x) * attraction * heat;
       node.vy += (center.y - node.y) * attraction * heat;
-      node.vx *= 0.82;
-      node.vy *= 0.82;
+      node.vx *= 0.84;
+      node.vy *= 0.84;
       node.x += node.vx;
       node.y += node.vy;
     }
 
-    if (step % 7 === 6) {
+    if (step % 6 === 5) {
       resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 2 });
     }
   }
 
-  resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 30 });
+  resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 40 });
   return { nodes, edges, byId };
 }
 
@@ -332,9 +331,9 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     const minY = Math.min(...state.nodes.map(node => node.y - halfH));
     const maxY = Math.max(...state.nodes.map(node => node.y + halfH));
     const rect = canvas.getBoundingClientRect();
-    const width = Math.max(200, maxX - minX + 220);
-    const height = Math.max(200, maxY - minY + 220);
-    scale = clamp(Math.min(rect.width / width, rect.height / height), 0.045, 1.9);
+    const width = Math.max(200, maxX - minX + 360);
+    const height = Math.max(200, maxY - minY + 360);
+    scale = clamp(Math.min(rect.width / width, rect.height / height), 0.035, 1.9);
     panX = -((minX + maxX) / 2) * scale;
     panY = -((minY + maxY) / 2) * scale;
     draw(performance.now());
@@ -580,7 +579,7 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     const pointerY = event.clientY - rect.top;
     const before = screenToWorld(pointerX, pointerY);
     const factor = event.deltaY < 0 ? 1.12 : 0.89;
-    scale = clamp(scale * factor, 0.045, 4.5);
+    scale = clamp(scale * factor, 0.035, 4.5);
     const after = worldToScreen(before, {
       width: rect.width,
       height: rect.height,
