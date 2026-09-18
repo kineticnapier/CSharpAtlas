@@ -32,6 +32,17 @@ export function worldToScreen(point, { width, height, panX = 0, panY = 0, scale 
   };
 }
 
+export function initialGraphScale(nodeCount) {
+  if (nodeCount > 220) return 0.56;
+  if (nodeCount > 120) return 0.62;
+  if (nodeCount > 60) return 0.72;
+  return 0.9;
+}
+
+export function floatingWorldAmplitude(screenPixels, scale) {
+  return screenPixels / Math.max(scale, 0.035);
+}
+
 export function resolveCardCollisions(
   nodes,
   { width = BASE_CARD.width, height = BASE_CARD.height, padding = COLLISION_PADDING, iterations = 12 } = {}
@@ -110,7 +121,7 @@ function layoutGraph(graph) {
       vx: 0,
       vy: 0,
       floatPhase: ((seed >>> 4) % 628) / 100,
-      floatSpeed: 0.00018 + ((seed >>> 16) % 7) * 0.00001,
+      floatSpeed: 0.00032 + ((seed >>> 16) % 7) * 0.00002,
       index
     };
   });
@@ -290,7 +301,8 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
   }
 
   function floatingPosition(node, time) {
-    const amplitude = selectedId === node.id ? 1.5 : node.ghost ? 1.2 : 2.4;
+    const screenAmplitude = selectedId === node.id ? 4 : node.ghost ? 3 : 5;
+    const amplitude = floatingWorldAmplitude(screenAmplitude, scale);
     return {
       x: node.x + Math.cos(time * node.floatSpeed + node.floatPhase) * amplitude,
       y: node.y + Math.sin(time * node.floatSpeed * 0.83 + node.floatPhase) * amplitude
@@ -336,6 +348,31 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     scale = clamp(Math.min(rect.width / width, rect.height / height), 0.035, 1.9);
     panX = -((minX + maxX) / 2) * scale;
     panY = -((minY + maxY) / 2) * scale;
+    draw(performance.now());
+  }
+
+  function focus() {
+    if (!state.nodes.length) {
+      scale = 1;
+      panX = 0;
+      panY = 0;
+      draw(performance.now());
+      return;
+    }
+
+    const degree = new Map(state.nodes.map(node => [node.id, 0]));
+    for (const edge of state.edges) {
+      degree.set(edge.source, (degree.get(edge.source) ?? 0) + 1);
+      degree.set(edge.target, (degree.get(edge.target) ?? 0) + 1);
+    }
+    const candidates = state.nodes.filter(node => !node.ghost);
+    const anchor = (candidates.length ? candidates : state.nodes).reduce((best, node) =>
+      (degree.get(node.id) ?? 0) > (degree.get(best.id) ?? 0) ? node : best
+    );
+
+    scale = initialGraphScale(state.nodes.length);
+    panX = -anchor.x * scale;
+    panY = -anchor.y * scale;
     draw(performance.now());
   }
 
@@ -602,7 +639,8 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
       hoveredId = null;
       cardBitmapCache.clear();
       resize();
-      fit();
+      if (active) focus();
+      else draw(performance.now());
     },
     setActive(nextActive) {
       active = Boolean(nextActive);
@@ -613,6 +651,7 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
       }
     },
     fit,
+    focus,
     resize,
     draw
   };

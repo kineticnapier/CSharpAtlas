@@ -128,7 +128,7 @@ async function initializeGraphView() {
     if (showingGraph) {
       requestAnimationFrame(() => {
         graphCanvas.resize();
-        graphCanvas.fit();
+        graphCanvas.focus();
       });
     }
   }
