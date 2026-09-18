@@ -1,0 +1,71 @@
+name: Temporary graph layout tuning
+
+on:
+  push:
+    branches:
+      - feature/article-graph
+
+permissions:
+  contents: write
+
+jobs:
+  tune:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/article-graph
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply graph layout changes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/graph-view.js')
+          text = path.read_text()
+
+          replacements = {
+              "const COLLISION_PADDING = 22;": "const COLLISION_PADDING = 66;",
+              "  if (scale < 0.55) return 'title';\n  if (scale < 1.1) return 'summary';": "  if (scale < 0.16) return 'shell';\n  if (scale < 0.45) return 'title';\n  if (scale < 0.95) return 'summary';",
+              "  const radius = present.length <= 2 ? 620 : 1180;": "  const radius = present.length <= 2 ? 760 : 1460;",
+              "    const ring = 120 + ((seed >>> 8) % 520);": "    const ring = 160 + ((seed >>> 8) % 680);",
+              "      const target = edge.a.ghost || edge.b.ghost ? 390 : 330;": "      const target = edge.a.ghost || edge.b.ghost ? 560 : 480;",
+              "      const attraction = node.ghost ? 0.0009 : 0.0018;": "      const attraction = node.ghost ? 0.0007 : 0.0012;",
+              "  resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 20 });": "  resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 30 });"
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'missing expected graph-view fragment: {old!r}')
+              text = text.replace(old, new, 1)
+
+          marker = "function cardScreenRect(point, scale, selected) {\n  const world = cardWorldSize(selected);\n  const width = clamp(world.width * scale, selected ? 132 : 62, selected ? 280 : 220);\n  const height = clamp(world.height * scale, selected ? 78 : 32, selected ? 150 : 116);\n  return { x: point.x - width / 2, y: point.y - height / 2, width, height };\n}\n"
+          replacement = "export function cardScreenSize(scale, selected = false) {\n  const world = cardWorldSize(selected);\n  if (selected) {\n    return {\n      width: clamp(world.width * scale, 132, 280),\n      height: clamp(world.height * scale, 78, 150)\n    };\n  }\n  return {\n    width: clamp(world.width * scale, 12, 220),\n    height: clamp(world.height * scale, 7, 116)\n  };\n}\n\nfunction cardScreenRect(point, scale, selected) {\n  const size = cardScreenSize(scale, selected);\n  return { x: point.x - size.width / 2, y: point.y - size.height / 2, ...size };\n}\n"
+          if marker not in text:
+              raise SystemExit('missing cardScreenRect block')
+          text = text.replace(marker, replacement, 1)
+
+          text_marker = "    const left = 14;\n    const contentWidth = size.width - 24;\n"
+          text_replacement = "    if (detail === 'shell') {\n      ctx.globalAlpha = 1;\n      return offscreen;\n    }\n\n    const left = 14;\n    const contentWidth = size.width - 24;\n"
+          if text_marker not in text:
+              raise SystemExit('missing bitmap text marker')
+          text = text.replace(text_marker, text_replacement, 1)
+
+          path.write_text(text)
+          PY
+
+      - name: Verify
+        run: |
+          npm install
+          npm test
+          npm run build
+      - name: Commit changes and remove temporary workflow
+        run: |
+          rm .github/workflows/temp-graph-layout.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/graph-view.js test/article-graph.test.js .github/workflows/temp-graph-layout.yml
+          git commit -m "fix: give graph cards more breathing room"
+          git push origin HEAD:feature/article-graph
