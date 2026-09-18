@@ -1,0 +1,99 @@
+name: Temporary reviewed content fixes
+
+on:
+  push:
+    branches:
+      - codex/content-expand-300
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/content-expand-300
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Apply reviewed content fixes
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          function load(path) {
+            return JSON.parse(fs.readFileSync(path, 'utf8'));
+          }
+          function save(path, value) {
+            fs.writeFileSync(path, JSON.stringify(value, null, 2) + '\n');
+          }
+          function byId(items, id) {
+            const item = items.find(x => x.id === id);
+            if (!item) throw new Error(`Missing article ${id}`);
+            return item;
+          }
+
+          const exceptionsPath = 'public/content/articles/exceptions.json';
+          const exceptions = load(exceptionsPath);
+          const http = byId(exceptions, 'http-request-exception');
+          if (!http.code.includes('Timeout = TimeSpan.FromMilliseconds(1)')) {
+            throw new Error('http-request-exception no longer matches reviewed version');
+          }
+          http.code = `using var request = new HttpRequestMessage(
+    HttpMethod.Get,
+    "https://example.test/");
+using var response = new HttpResponseMessage(System.Net.HttpStatusCode.ServiceUnavailable)
+{
+    RequestMessage = request
+};
+
+try
+{
+    response.EnsureSuccessStatusCode(); // 503 -> HttpRequestException
+}
+catch (HttpRequestException ex)
+{
+    Console.WriteLine(ex.StatusCode); // ServiceUnavailable
+}`;
+          save(exceptionsPath, exceptions);
+
+          const recipesPath = 'public/content/articles/code-recipes.json';
+          const recipes = load(recipesPath);
+          const pathArticle = byId(recipes, 'path-metadata-extension');
+          const oldPathComment = 'Console.WriteLine(changed);    // reports/.../summary.tar.zip';
+          if (!pathArticle.code.includes(oldPathComment)) {
+            throw new Error('path-metadata-extension no longer matches reviewed version');
+          }
+          pathArticle.code = pathArticle.code.replace(
+            oldPathComment,
+            'Console.WriteLine(changed);    // same directory; file name becomes summary.tar.zip'
+          );
+          save(recipesPath, recipes);
+
+          const warningsPath = 'public/content/articles/compiler-warnings.json';
+          const warnings = load(warningsPath);
+          const cs0108 = byId(warnings, 'cs0108');
+          if (JSON.stringify(cs0108.related) !== JSON.stringify(['inheritance-polymorphism', 'static-members'])) {
+            throw new Error('cs0108 related links no longer match reviewed version');
+          }
+          cs0108.related = ['inheritance-polymorphism', 'methods-parameters-returns'];
+          save(warningsPath, warnings);
+          NODE
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Commit fixes and remove temporary workflow
+        run: |
+          rm .github/workflows/temp-quality-fixes.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/content/articles/exceptions.json public/content/articles/code-recipes.json public/content/articles/compiler-warnings.json .github/workflows/temp-quality-fixes.yml
+          git commit -m "fix: polish reviewed content examples"
+          git push origin HEAD:codex/content-expand-300
