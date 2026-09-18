@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildArticleGraph, extractWikiLinkIds } from '../src/article-graph.js';
+import { cardDetailLevel, cardWorldSize } from '../src/graph-view.js';
 
 test('extractWikiLinkIds finds wiki targets across localized article text', () => {
   const article = {
@@ -19,15 +20,18 @@ test('extractWikiLinkIds finds wiki targets across localized article text', () =
 test('buildArticleGraph combines related and wiki edges without duplicating a pair', () => {
   const articles = [
     {
-      id: 'a', type: 'concept', title: 'A', related: ['b'],
-      summary: 'See [[b]] and [[c|C]].', short: '', why: '', tips: ''
+      id: 'a', type: 'concept', title: 'A', related: ['b'], tags: ['alpha', 'beta'],
+      summary: 'See [[b]] and [[c|C]].', short: 'Article A summary', why: '', tips: ''
     },
-    { id: 'b', type: 'code', title: 'B', related: [], summary: '', short: '', why: '', tips: '' },
+    { id: 'b', type: 'code', title: 'B', related: [], tags: [], summary: '', short: 'B summary', why: '', tips: '' },
     { id: 'c', type: 'exception', title: 'C', related: [], summary: '', short: '', why: '', tips: '' }
   ];
 
   const graph = buildArticleGraph(articles, { type: 'all', edgeMode: 'both' });
   assert.equal(graph.nodes.length, 3);
+  assert.deepEqual(graph.nodes[0], {
+    id: 'a', type: 'concept', title: 'A', short: 'Article A summary', tags: ['alpha', 'beta'], ghost: false
+  });
   assert.deepEqual(graph.edges, [
     { source: 'a', target: 'b', kinds: ['related', 'wiki'] },
     { source: 'a', target: 'c', kinds: ['wiki'] }
@@ -36,15 +40,15 @@ test('buildArticleGraph combines related and wiki edges without duplicating a pa
 
 test('category graph keeps matching articles active and direct outside neighbors as ghosts', () => {
   const articles = [
-    { id: 'a', type: 'concept', title: 'A', related: ['b'], summary: '', short: '', why: '', tips: '' },
-    { id: 'b', type: 'code', title: 'B', related: ['c'], summary: '', short: '', why: '', tips: '' },
+    { id: 'a', type: 'concept', title: 'A', related: ['b'], tags: ['core'], summary: '', short: 'A short', why: '', tips: '' },
+    { id: 'b', type: 'code', title: 'B', related: ['c'], tags: [], summary: '', short: 'B short', why: '', tips: '' },
     { id: 'c', type: 'code', title: 'C', related: [], summary: '', short: '', why: '', tips: '' }
   ];
 
   const graph = buildArticleGraph(articles, { type: 'concept', edgeMode: 'related' });
   assert.deepEqual(graph.nodes, [
-    { id: 'a', type: 'concept', title: 'A', ghost: false },
-    { id: 'b', type: 'code', title: 'B', ghost: true }
+    { id: 'a', type: 'concept', title: 'A', short: 'A short', tags: ['core'], ghost: false },
+    { id: 'b', type: 'code', title: 'B', short: 'B short', tags: [], ghost: true }
   ]);
   assert.deepEqual(graph.edges, [
     { source: 'a', target: 'b', kinds: ['related'] }
@@ -69,4 +73,20 @@ test('edge mode filters related and wiki links independently', () => {
     buildArticleGraph(articles, { type: 'all', edgeMode: 'wiki' }).edges,
     [{ source: 'a', target: 'c', kinds: ['wiki'] }]
   );
+});
+
+test('article cards progressively reveal detail as the user zooms in', () => {
+  assert.equal(cardDetailLevel(0.3, false), 'title');
+  assert.equal(cardDetailLevel(0.8, false), 'summary');
+  assert.equal(cardDetailLevel(1.4, false), 'full');
+  assert.equal(cardDetailLevel(0.2, true), 'full');
+});
+
+test('selected cards are larger than ordinary floating cards', () => {
+  const normal = cardWorldSize(false);
+  const selected = cardWorldSize(true);
+  assert.ok(normal.width > 100);
+  assert.ok(normal.height > 50);
+  assert.ok(selected.width > normal.width);
+  assert.ok(selected.height > normal.height);
 });
