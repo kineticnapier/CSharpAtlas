@@ -13,13 +13,14 @@ test('home shell exposes list and graph view controls', async () => {
   assert.match(html, /id="articleGraph"/);
 });
 
-test('graph bootstrap is loaded as a module', async () => {
+test('graph bootstrap and stylesheet are loaded', async () => {
   const html = await readFile(new URL('index.html', root), 'utf8');
+  assert.match(html, /href="\/src\/graph-view\.css"/);
   assert.match(html, /src="\/src\/graph-bootstrap\.js"/);
 });
 
-test('graph styles include ghost and canvas affordances', async () => {
-  const css = await readFile(new URL('src/styles.css', root), 'utf8');
+test('graph styles include view switching and canvas affordances', async () => {
+  const css = await readFile(new URL('src/graph-view.css', root), 'utf8');
   assert.match(css, /\.view-switch/);
   assert.match(css, /\.graph-shell/);
   assert.match(css, /#articleGraph/);
