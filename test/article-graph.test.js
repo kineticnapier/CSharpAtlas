@@ -98,13 +98,13 @@ test('overview cards shrink with zoom instead of clamping to large screen boxes'
   assert.deepEqual(normal, cardWorldSize(false));
 });
 
-test('selected cards are larger than ordinary floating cards', () => {
+test('article cards have enough room for readable title and summary text', () => {
   const normal = cardWorldSize(false);
   const selected = cardWorldSize(true);
-  assert.ok(normal.width > 100);
-  assert.ok(normal.height > 50);
-  assert.ok(selected.width > normal.width);
-  assert.ok(selected.height > normal.height);
+  assert.ok(normal.width >= 260, `normal card is too narrow: ${normal.width}`);
+  assert.ok(normal.height >= 130, `normal card is too short: ${normal.height}`);
+  assert.ok(selected.width >= 320, `selected card is too narrow: ${selected.width}`);
+  assert.ok(selected.height >= 170, `selected card is too short: ${selected.height}`);
 });
 
 test('worldToScreen transforms plain coordinates without node animation metadata', () => {
