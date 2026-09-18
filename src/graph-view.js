@@ -10,7 +10,7 @@ export const GRAPH_TYPE_COLORS = {
 const TYPE_ORDER = ['code', 'exception', 'compiler-error', 'compiler-warning', 'logic', 'concept'];
 const BASE_CARD = { width: 188, height: 92 };
 const SELECTED_CARD = { width: 232, height: 122 };
-const COLLISION_PADDING = 22;
+const COLLISION_PADDING = 66;
 const FRAME_INTERVAL = 1000 / 24;
 
 export function cardWorldSize(selected = false) {
@@ -19,8 +19,9 @@ export function cardWorldSize(selected = false) {
 
 export function cardDetailLevel(scale, selected = false) {
   if (selected) return 'full';
-  if (scale < 0.55) return 'title';
-  if (scale < 1.1) return 'summary';
+  if (scale < 0.16) return 'shell';
+  if (scale < 0.45) return 'title';
+  if (scale < 0.95) return 'summary';
   return 'full';
 }
 
@@ -87,7 +88,7 @@ function hashString(value) {
 
 function categoryCenters(nodes) {
   const present = TYPE_ORDER.filter(type => nodes.some(node => node.type === type));
-  const radius = present.length <= 2 ? 620 : 1180;
+  const radius = present.length <= 2 ? 760 : 1460;
   const centers = new Map();
   present.forEach((type, index) => {
     const angle = (Math.PI * 2 * index) / Math.max(present.length, 1) - Math.PI / 2;
@@ -102,7 +103,7 @@ function layoutGraph(graph) {
     const center = centers.get(node.type) ?? { x: 0, y: 0 };
     const seed = hashString(node.id);
     const angle = ((seed % 3600) / 3600) * Math.PI * 2;
-    const ring = 120 + ((seed >>> 8) % 520);
+    const ring = 160 + ((seed >>> 8) % 680);
     return {
       ...node,
       x: center.x + Math.cos(angle) * ring,
@@ -151,7 +152,7 @@ function layoutGraph(graph) {
       const dx = edge.b.x - edge.a.x;
       const dy = edge.b.y - edge.a.y;
       const dist = Math.max(1, Math.hypot(dx, dy));
-      const target = edge.a.ghost || edge.b.ghost ? 390 : 330;
+      const target = edge.a.ghost || edge.b.ghost ? 560 : 480;
       const force = (dist - target) * 0.008 * heat;
       const fx = (dx / dist) * force;
       const fy = (dy / dist) * force;
@@ -163,7 +164,7 @@ function layoutGraph(graph) {
 
     for (const node of nodes) {
       const center = centers.get(node.type) ?? { x: 0, y: 0 };
-      const attraction = node.ghost ? 0.0009 : 0.0018;
+      const attraction = node.ghost ? 0.0007 : 0.0012;
       node.vx += (center.x - node.x) * attraction * heat;
       node.vy += (center.y - node.y) * attraction * heat;
       node.vx *= 0.82;
@@ -177,7 +178,7 @@ function layoutGraph(graph) {
     }
   }
 
-  resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 20 });
+  resolveCardCollisions(nodes, { padding: COLLISION_PADDING, iterations: 30 });
   return { nodes, edges, byId };
 }
 
@@ -231,11 +232,23 @@ function wrapLines(context, text, maxWidth, maxLines) {
   return lines.slice(0, maxLines);
 }
 
-function cardScreenRect(point, scale, selected) {
+export function cardScreenSize(scale, selected = false) {
   const world = cardWorldSize(selected);
-  const width = clamp(world.width * scale, selected ? 132 : 62, selected ? 280 : 220);
-  const height = clamp(world.height * scale, selected ? 78 : 32, selected ? 150 : 116);
-  return { x: point.x - width / 2, y: point.y - height / 2, width, height };
+  if (selected) {
+    return {
+      width: clamp(world.width * scale, 132, 280),
+      height: clamp(world.height * scale, 78, 150)
+    };
+  }
+  return {
+    width: clamp(world.width * scale, 12, 220),
+    height: clamp(world.height * scale, 7, 116)
+  };
+}
+
+function cardScreenRect(point, scale, selected) {
+  const size = cardScreenSize(scale, selected);
+  return { x: point.x - size.width / 2, y: point.y - size.height / 2, ...size };
 }
 
 function lineRectIntersection(rect, from, to) {
@@ -360,6 +373,11 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     ctx.fillStyle = color;
     roundedRect(ctx, 1, 1, 5, size.height - 2, 2.5);
     ctx.fill();
+
+    if (detail === 'shell') {
+      ctx.globalAlpha = 1;
+      return offscreen;
+    }
 
     const left = 14;
     const contentWidth = size.width - 24;
