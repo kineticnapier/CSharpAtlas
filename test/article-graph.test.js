@@ -4,6 +4,7 @@ import { buildArticleGraph, extractWikiLinkIds } from '../src/article-graph.js';
 import {
   cardDetailLevel,
   cardScreenSize,
+  cardTextScale,
   cardWorldSize,
   resolveCardCollisions,
   worldToScreen
@@ -143,4 +144,11 @@ test('floating amplitude remains visible on screen after zooming out', async () 
   assert.equal(typeof graphView.floatingWorldAmplitude, 'function');
   const worldAmplitude = graphView.floatingWorldAmplitude(5, 0.08);
   assert.ok(Math.abs(worldAmplitude * 0.08 - 5) < 0.001);
+});
+
+test('graph text keeps a readable screen size at the default large-graph zoom', () => {
+  const scale = 0.56;
+  const textScale = cardTextScale(scale, false);
+  assert.ok(textScale * 14 >= 13, `title would render too small: ${textScale * 14}px`);
+  assert.ok(textScale * 11 >= 11, `summary would render too small: ${textScale * 11}px`);
 });
