@@ -20,7 +20,7 @@ export function cardWorldSize(selected = false) {
 export function cardDetailLevel(scale, selected = false) {
   if (selected) return 'full';
   if (scale < 0.16) return 'shell';
-  if (scale < 0.45) return 'title';
+  if (scale < 0.62) return 'title';
   if (scale < 0.95) return 'summary';
   return 'full';
 }
@@ -41,6 +41,10 @@ export function initialGraphScale(nodeCount) {
 
 export function floatingWorldAmplitude(screenPixels, scale) {
   return screenPixels / Math.max(scale, 0.035);
+}
+
+export function cardTextScale(renderScale) {
+  return renderScale >= 1 ? 1 : 1 / Math.max(renderScale, 0.01);
 }
 
 export function resolveCardCollisions(
@@ -390,8 +394,9 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     return result;
   }
 
-  function createCardBitmap(node, detail, selected) {
+  function createCardBitmap(node, detail, selected, renderScale) {
     const size = cardWorldSize(selected);
+    const textScale = cardTextScale(renderScale);
     const offscreen = document.createElement('canvas');
     offscreen.width = size.width * 2;
     offscreen.height = size.height * 2;
@@ -415,40 +420,40 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
       return offscreen;
     }
 
-    const left = 14;
-    const contentWidth = size.width - 24;
+    const left = 14 * textScale;
+    const contentWidth = Math.max(12 * textScale, size.width - 24 * textScale);
     ctx.textBaseline = 'top';
-    ctx.font = '600 10px ui-sans-serif, system-ui, sans-serif';
+    ctx.font = `600 ${10 * textScale}px ui-sans-serif, system-ui, sans-serif`;
     ctx.fillStyle = color;
-    ctx.fillText(trimText(ctx, typeLabel?.(node.type) ?? node.type, contentWidth), left, 10);
-    ctx.font = `700 ${selected ? 16 : 14}px ui-sans-serif, system-ui, sans-serif`;
+    ctx.fillText(trimText(ctx, typeLabel?.(node.type) ?? node.type, contentWidth), left, 10 * textScale);
+    ctx.font = `700 ${(selected ? 16 : 14) * textScale}px ui-sans-serif, system-ui, sans-serif`;
     ctx.fillStyle = '#f0f6fc';
-    ctx.fillText(trimText(ctx, node.title || node.id, contentWidth), left, 26);
+    ctx.fillText(trimText(ctx, node.title || node.id, contentWidth), left, 26 * textScale);
 
     if (detail !== 'title') {
-      ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
+      ctx.font = `${11 * textScale}px ui-sans-serif, system-ui, sans-serif`;
       ctx.fillStyle = '#8b949e';
       const lines = wrapLines(ctx, node.short, contentWidth, detail === 'full' ? 2 : 1);
-      let y = selected ? 49 : 47;
+      let y = (selected ? 49 : 47) * textScale;
       for (const line of lines) {
         ctx.fillText(line, left, y);
-        y += 14;
+        y += 14 * textScale;
       }
 
       if (detail === 'full' && node.tags?.length) {
-        ctx.font = '600 9px ui-monospace, SFMono-Regular, Consolas, monospace';
-        const tagY = size.height - 17;
+        ctx.font = `600 ${9 * textScale}px ui-monospace, SFMono-Regular, Consolas, monospace`;
+        const tagY = size.height - 17 * textScale;
         let x = left;
         for (const tag of node.tags.slice(0, 3)) {
           const label = String(tag);
-          const tagWidth = ctx.measureText(label).width + 10;
-          if (x + tagWidth > size.width - 10) break;
-          roundedRect(ctx, x, tagY - 3, tagWidth, 15, 5);
+          const tagWidth = ctx.measureText(label).width + 10 * textScale;
+          if (x + tagWidth > size.width - 10 * textScale) break;
+          roundedRect(ctx, x, tagY - 3 * textScale, tagWidth, 15 * textScale, 5 * textScale);
           ctx.fillStyle = 'rgba(110,118,129,0.2)';
           ctx.fill();
           ctx.fillStyle = '#c9d1d9';
-          ctx.fillText(label, x + 5, tagY);
-          x += tagWidth + 5;
+          ctx.fillText(label, x + 5 * textScale, tagY);
+          x += tagWidth + 5 * textScale;
         }
       }
     }
@@ -457,11 +462,12 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     return offscreen;
   }
 
-  function getCardBitmap(node, detail, selected) {
-    const key = `${node.id}|${detail}|${selected ? 1 : 0}|${node.ghost ? 1 : 0}`;
+  function getCardBitmap(node, detail, selected, renderScale) {
+    const scaleBucket = Math.round(renderScale * 20) / 20;
+    const key = `${node.id}|${detail}|${selected ? 1 : 0}|${node.ghost ? 1 : 0}|${scaleBucket}`;
     let bitmap = cardBitmapCache.get(key);
     if (!bitmap) {
-      bitmap = createCardBitmap(node, detail, selected);
+      bitmap = createCardBitmap(node, detail, selected, Math.max(scaleBucket, 0.01));
       cardBitmapCache.set(key, bitmap);
     }
     return bitmap;
@@ -474,7 +480,9 @@ export function createGraphCanvas({ canvas, tooltip, onOpen, typeLabel }) {
     const dim = selectedId && !selected && !related;
     const detail = cardDetailLevel(scale, selected);
     const rect = cardScreenRect(point, scale, selected);
-    const bitmap = getCardBitmap(node, detail, selected);
+    const worldSize = cardWorldSize(selected);
+    const renderScale = rect.width / worldSize.width;
+    const bitmap = getCardBitmap(node, detail, selected, renderScale);
 
     context.save();
     context.globalAlpha = dim ? 0.12 : 1;
