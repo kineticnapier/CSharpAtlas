@@ -1,0 +1,33 @@
+name: Generate OGP PNG
+
+on:
+  push:
+    branches: [feature/ogp]
+    paths:
+      - '.github/workflows/ogp-png-helper.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/ogp
+      - name: Render SVG to PNG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin
+          rsvg-convert -w 1200 -h 630 public/csharp-atlas-og.svg -o public/csharp-atlas-og.png
+          sed -i 's/csharp-atlas-og\.svg/csharp-atlas-og.png/g' index.html
+          sed -i 's/csharp-atlas-og\\\.svg/csharp-atlas-og\\\.png/g' test/ogp.test.js
+      - name: Commit generated image and remove helper
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/csharp-atlas-og.png index.html test/ogp.test.js
+          git rm .github/workflows/ogp-png-helper.yml
+          git commit -m 'fix: use PNG for social preview image'
+          git push origin HEAD:feature/ogp
