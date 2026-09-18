@@ -1,0 +1,86 @@
+name: Temporary readable graph text
+
+on:
+  push:
+    branches:
+      - feature/article-graph
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/article-graph
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply readable card typography
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/graph-view.js')
+          text = path.read_text()
+
+          marker = "export function floatingWorldAmplitude(screenPixels, scale) {\n  return screenPixels / Math.max(scale, 0.035);\n}\n"
+          replacement = marker + "\nexport function cardTextScale(renderScale) {\n  return renderScale >= 1 ? 1 : 1 / Math.max(renderScale, 0.01);\n}\n"
+          if marker not in text:
+              raise SystemExit('floating amplitude marker not found')
+          text = text.replace(marker, replacement, 1)
+
+          old = "  if (scale < 0.45) return 'title';\n  if (scale < 0.95) return 'summary';"
+          new = "  if (scale < 0.62) return 'title';\n  if (scale < 0.95) return 'summary';"
+          if old not in text:
+              raise SystemExit('detail thresholds not found')
+          text = text.replace(old, new, 1)
+
+          old = "  function createCardBitmap(node, detail, selected) {\n    const size = cardWorldSize(selected);"
+          new = "  function createCardBitmap(node, detail, selected, renderScale) {\n    const size = cardWorldSize(selected);\n    const textScale = cardTextScale(renderScale);"
+          if old not in text:
+              raise SystemExit('createCardBitmap marker not found')
+          text = text.replace(old, new, 1)
+
+          old = "    const left = 14;\n    const contentWidth = size.width - 24;\n    ctx.textBaseline = 'top';\n    ctx.font = '600 10px ui-sans-serif, system-ui, sans-serif';\n    ctx.fillStyle = color;\n    ctx.fillText(trimText(ctx, typeLabel?.(node.type) ?? node.type, contentWidth), left, 10);\n    ctx.font = `700 ${selected ? 16 : 14}px ui-sans-serif, system-ui, sans-serif`;\n    ctx.fillStyle = '#f0f6fc';\n    ctx.fillText(trimText(ctx, node.title || node.id, contentWidth), left, 26);"
+          new = "    const left = 14 * textScale;\n    const contentWidth = Math.max(12 * textScale, size.width - 24 * textScale);\n    ctx.textBaseline = 'top';\n    ctx.font = `600 ${10 * textScale}px ui-sans-serif, system-ui, sans-serif`;\n    ctx.fillStyle = color;\n    ctx.fillText(trimText(ctx, typeLabel?.(node.type) ?? node.type, contentWidth), left, 10 * textScale);\n    ctx.font = `700 ${(selected ? 16 : 14) * textScale}px ui-sans-serif, system-ui, sans-serif`;\n    ctx.fillStyle = '#f0f6fc';\n    ctx.fillText(trimText(ctx, node.title || node.id, contentWidth), left, 26 * textScale);"
+          if old not in text:
+              raise SystemExit('primary typography block not found')
+          text = text.replace(old, new, 1)
+
+          old = "      ctx.font = '11px ui-sans-serif, system-ui, sans-serif';\n      ctx.fillStyle = '#8b949e';\n      const lines = wrapLines(ctx, node.short, contentWidth, detail === 'full' ? 2 : 1);\n      let y = selected ? 49 : 47;\n      for (const line of lines) {\n        ctx.fillText(line, left, y);\n        y += 14;\n      }\n\n      if (detail === 'full' && node.tags?.length) {\n        ctx.font = '600 9px ui-monospace, SFMono-Regular, Consolas, monospace';\n        const tagY = size.height - 17;\n        let x = left;\n        for (const tag of node.tags.slice(0, 3)) {\n          const label = String(tag);\n          const tagWidth = ctx.measureText(label).width + 10;\n          if (x + tagWidth > size.width - 10) break;\n          roundedRect(ctx, x, tagY - 3, tagWidth, 15, 5);\n          ctx.fillStyle = 'rgba(110,118,129,0.2)';\n          ctx.fill();\n          ctx.fillStyle = '#c9d1d9';\n          ctx.fillText(label, x + 5, tagY);\n          x += tagWidth + 5;\n        }\n      }"
+          new = "      ctx.font = `${11 * textScale}px ui-sans-serif, system-ui, sans-serif`;\n      ctx.fillStyle = '#8b949e';\n      const lines = wrapLines(ctx, node.short, contentWidth, detail === 'full' ? 2 : 1);\n      let y = (selected ? 49 : 47) * textScale;\n      for (const line of lines) {\n        ctx.fillText(line, left, y);\n        y += 14 * textScale;\n      }\n\n      if (detail === 'full' && node.tags?.length) {\n        ctx.font = `600 ${9 * textScale}px ui-monospace, SFMono-Regular, Consolas, monospace`;\n        const tagY = size.height - 17 * textScale;\n        let x = left;\n        for (const tag of node.tags.slice(0, 3)) {\n          const label = String(tag);\n          const tagWidth = ctx.measureText(label).width + 10 * textScale;\n          if (x + tagWidth > size.width - 10 * textScale) break;\n          roundedRect(ctx, x, tagY - 3 * textScale, tagWidth, 15 * textScale, 5 * textScale);\n          ctx.fillStyle = 'rgba(110,118,129,0.2)';\n          ctx.fill();\n          ctx.fillStyle = '#c9d1d9';\n          ctx.fillText(label, x + 5 * textScale, tagY);\n          x += tagWidth + 5 * textScale;\n        }\n      }"
+          if old not in text:
+              raise SystemExit('secondary typography block not found')
+          text = text.replace(old, new, 1)
+
+          old = "  function getCardBitmap(node, detail, selected) {\n    const key = `${node.id}|${detail}|${selected ? 1 : 0}|${node.ghost ? 1 : 0}`;\n    let bitmap = cardBitmapCache.get(key);\n    if (!bitmap) {\n      bitmap = createCardBitmap(node, detail, selected);\n      cardBitmapCache.set(key, bitmap);\n    }\n    return bitmap;\n  }"
+          new = "  function getCardBitmap(node, detail, selected, renderScale) {\n    const scaleBucket = Math.round(renderScale * 20) / 20;\n    const key = `${node.id}|${detail}|${selected ? 1 : 0}|${node.ghost ? 1 : 0}|${scaleBucket}`;\n    let bitmap = cardBitmapCache.get(key);\n    if (!bitmap) {\n      bitmap = createCardBitmap(node, detail, selected, Math.max(scaleBucket, 0.01));\n      cardBitmapCache.set(key, bitmap);\n    }\n    return bitmap;\n  }"
+          if old not in text:
+              raise SystemExit('bitmap cache block not found')
+          text = text.replace(old, new, 1)
+
+          old = "    const detail = cardDetailLevel(scale, selected);\n    const rect = cardScreenRect(point, scale, selected);\n    const bitmap = getCardBitmap(node, detail, selected);"
+          new = "    const detail = cardDetailLevel(scale, selected);\n    const rect = cardScreenRect(point, scale, selected);\n    const worldSize = cardWorldSize(selected);\n    const renderScale = rect.width / worldSize.width;\n    const bitmap = getCardBitmap(node, detail, selected, renderScale);"
+          if old not in text:
+              raise SystemExit('drawCard bitmap block not found')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text)
+          PY
+      - name: Verify
+        run: |
+          npm install
+          npm test
+          npm run build
+      - name: Commit changes and remove temporary workflow
+        run: |
+          rm .github/workflows/temp-readable-graph-text.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/graph-view.js test/article-graph.test.js .github/workflows/temp-readable-graph-text.yml
+          git commit -m "fix: keep graph card text readable"
+          git push origin HEAD:feature/article-graph
