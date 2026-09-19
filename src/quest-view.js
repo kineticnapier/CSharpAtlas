@@ -61,6 +61,25 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     renderDetail(graph.nodes.find(node => node.id === id) ?? null);
   }
 
+  function resetReadableView() {
+    const rect = viewport.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    scale = 1;
+    const anchor = graph.nodes.find(node => node.kind !== 'support') ?? graph.nodes[0];
+    if (!anchor) {
+      panX = 24;
+      panY = 24;
+      applyTransform();
+      return;
+    }
+
+    const anchorHeight = anchor.kind === 'support' ? 68 : 86;
+    panX = 48 - anchor.x;
+    panY = Math.max(24, rect.height / 2 - (anchor.y + anchorHeight / 2));
+    applyTransform();
+  }
+
   function render(nextGraph) {
     graph = nextGraph;
     selectedId = null;
@@ -105,7 +124,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     });
 
     renderDetail(null);
-    requestAnimationFrame(fit);
+    requestAnimationFrame(resetReadableView);
   }
 
   function fit() {
@@ -120,6 +139,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
 
   viewport.addEventListener('pointerdown', event => {
     if (event.target.closest('.quest-node') || event.target.closest('.quest-detail')) return;
+    event.preventDefault();
     dragging = true;
     dragStart = { x: event.clientX, y: event.clientY };
     panStart = { x: panX, y: panY };
@@ -134,11 +154,17 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     applyTransform();
   });
 
-  viewport.addEventListener('pointerup', event => {
+  function finishDrag(event) {
+    if (!dragging) return;
     dragging = false;
-    viewport.releasePointerCapture?.(event.pointerId);
+    if (viewport.hasPointerCapture?.(event.pointerId)) {
+      viewport.releasePointerCapture?.(event.pointerId);
+    }
     viewport.classList.remove('dragging');
-  });
+  }
+
+  viewport.addEventListener('pointerup', finishDrag);
+  viewport.addEventListener('pointercancel', finishDrag);
 
   viewport.addEventListener('wheel', event => {
     event.preventDefault();
