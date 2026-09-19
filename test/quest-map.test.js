@@ -1,7 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import { buildQuestChapter, computeQuestLayout } from '../src/quest-map.js';
+import {
+  buildQuestChapter,
+  computeQuestLayout,
+  reflowQuestLayout
+} from '../src/quest-map.js';
 
 async function readJson(path) {
   return JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
@@ -25,11 +29,14 @@ test('learning map is curated into reusable chapters and only references real ar
     for (const node of chapter.nodes) {
       assert.ok(ids.has(node.id), `unknown article in learning map: ${node.id}`);
       assert.ok(['main', 'support'].includes(node.kind ?? 'main'));
+      if ((node.kind ?? 'main') === 'main') {
+        assert.ok(String(node.code ?? '').trim(), `learning node has no representative code: ${node.id}`);
+      }
     }
   }
 });
 
-test('buildQuestChapter separates learning prerequisites from support branches', () => {
+test('buildQuestChapter separates learning prerequisites from support branches and carries representative code', () => {
   const articles = [
     { id: 'a', type: 'concept', title: 'A', short: 'A' },
     { id: 'b', type: 'concept', title: 'B', short: 'B' },
@@ -38,13 +45,14 @@ test('buildQuestChapter separates learning prerequisites from support branches',
   const chapter = {
     id: 'demo',
     nodes: [
-      { id: 'a' },
-      { id: 'b', prerequisites: ['a'] },
+      { id: 'a', code: 'int a = 10;' },
+      { id: 'b', code: 'Console.WriteLine(a);', prerequisites: ['a'] },
       { id: 'err', kind: 'support', attachedTo: 'b' }
     ]
   };
 
   const graph = buildQuestChapter(articles, chapter);
+  assert.equal(graph.nodes.find(node => node.id === 'a').code, 'int a = 10;');
   assert.deepEqual(graph.edges, [
     { source: 'a', target: 'b', kind: 'prerequisite' },
     { source: 'b', target: 'err', kind: 'support' }
@@ -63,4 +71,25 @@ test('quest layout places later prerequisite depth further to the right', () => 
   assert.ok(byId.get('middle').x > byId.get('start').x);
   assert.ok(byId.get('end').x > byId.get('middle').x);
   assert.notEqual(byId.get('middle').y, byId.get('side').y);
+});
+
+test('measured node sizes automatically push later depths and lanes out of the way', () => {
+  const nodes = [
+    { id: 'start', depth: 0, lane: 0, offsetY: 0 },
+    { id: 'wide', depth: 1, lane: 0, offsetY: 0 },
+    { id: 'next', depth: 2, lane: 0, offsetY: 0 },
+    { id: 'below', depth: 1, lane: 1, offsetY: 0 }
+  ];
+  const measurements = new Map([
+    ['start', { width: 220, height: 90 }],
+    ['wide', { width: 360, height: 150 }],
+    ['next', { width: 220, height: 90 }],
+    ['below', { width: 220, height: 90 }]
+  ]);
+
+  const layout = reflowQuestLayout(nodes, measurements);
+  const byId = new Map(layout.map(node => [node.id, node]));
+  assert.equal(byId.get('wide').width, 360);
+  assert.ok(byId.get('next').x >= byId.get('wide').x + byId.get('wide').width + 100);
+  assert.ok(byId.get('below').y >= byId.get('wide').y + byId.get('wide').height + 40);
 });
