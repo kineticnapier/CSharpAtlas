@@ -9,8 +9,11 @@ import { loadLocalizedContent } from './content-loader.js';
 import { resolveLocale, uiText, withLangParam } from './i18n.js';
 import {
   TOPIC_DEFINITIONS,
+  buildDiscoverySearch,
   deriveArticleTopics,
   filterArticlesByTopics,
+  filterArticlesByTypes,
+  parseDiscoveryState,
   pushRecent,
   sortArticles,
   toggleId
@@ -27,10 +30,10 @@ const FAVORITES_STORAGE_KEY = 'csharp-atlas-favorites';
 const RECENT_STORAGE_KEY = 'csharp-atlas-recent';
 
 let currentLocale = 'ja';
-let currentType = 'all';
 let currentQuery = '';
 let currentItems = [];
 let allItems = [];
+let selectedTypes = new Set();
 let selectedTopics = new Set();
 let sortMode = 'recommended';
 let favoritesOnly = false;
@@ -51,15 +54,28 @@ const topicFilters = document.getElementById('topicFilters');
 const sortSelect = document.getElementById('sortSelect');
 const favoritesOnlyButton = document.getElementById('favoritesOnlyButton');
 const recentOnlyButton = document.getElementById('recentOnlyButton');
+const selectedFilters = document.getElementById('selectedFilters');
+const selectedFilterChips = document.getElementById('selectedFilterChips');
+const clearFiltersButton = document.getElementById('clearFiltersButton');
 
 async function initialize() {
   currentLocale = resolveLocale({
     search: window.location.search,
     storedLocale: readStoredLocale()
   });
+  const discoveryState = parseDiscoveryState(window.location.search);
+  currentQuery = discoveryState.query;
+  selectedTypes = discoveryState.types;
+  selectedTopics = discoveryState.topics;
+  sortMode = discoveryState.sort;
   favoriteIds = new Set(readStoredList(FAVORITES_STORAGE_KEY));
   recentIds = readStoredList(RECENT_STORAGE_KEY);
+
   applyStaticUi();
+  searchInput.value = currentQuery;
+  sortSelect.value = sortMode;
+  syncTypeButtons();
+  syncPersonalFilterButtons();
 
   const { articles } = await loadLocalizedContent({
     fetchJson: loadJson,
@@ -132,6 +148,8 @@ function applyStaticUi() {
   document.getElementById('backButton').textContent = uiText(currentLocale, 'back');
   document.getElementById('topicFilterLabel').textContent = uiText(currentLocale, 'topics');
   document.getElementById('sortLabel').textContent = uiText(currentLocale, 'sort');
+  document.getElementById('selectedFiltersLabel').textContent = uiText(currentLocale, 'activeFilters');
+  clearFiltersButton.textContent = uiText(currentLocale, 'clearFilters');
   favoritesOnlyButton.textContent = uiText(currentLocale, 'favoritesOnly');
   recentOnlyButton.textContent = uiText(currentLocale, 'recentOnly');
   empty.textContent = uiText(currentLocale, 'noResults');
@@ -170,10 +188,72 @@ function renderTopicFilters() {
   });
 }
 
+function syncTypeButtons() {
+  document.querySelectorAll('[data-type]').forEach(button => {
+    if (button.dataset.chapter) return;
+    const type = button.dataset.type;
+    const active = type === 'all' ? selectedTypes.size === 0 : selectedTypes.has(type);
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+}
+
+function syncPersonalFilterButtons() {
+  favoritesOnlyButton.classList.toggle('active', favoritesOnly);
+  favoritesOnlyButton.setAttribute('aria-pressed', String(favoritesOnly));
+  recentOnlyButton.classList.toggle('active', recentOnly);
+  recentOnlyButton.setAttribute('aria-pressed', String(recentOnly));
+}
+
+function renderSelectedFilters() {
+  const locale = currentLocale === 'en' ? 'en' : 'ja';
+  const chips = [];
+
+  for (const type of selectedTypes) {
+    chips.push({ kind: 'type', value: type, label: typeLabel(type, currentLocale) });
+  }
+  for (const topicId of selectedTopics) {
+    const topic = TOPIC_DEFINITIONS.find(candidate => candidate.id === topicId);
+    if (topic) chips.push({ kind: 'topic', value: topicId, label: topic.labels[locale] });
+  }
+  if (favoritesOnly) chips.push({ kind: 'favorites', value: '', label: uiText(currentLocale, 'favoritesOnly') });
+  if (recentOnly) chips.push({ kind: 'recent', value: '', label: uiText(currentLocale, 'recentOnly') });
+
+  selectedFilters.hidden = chips.length === 0;
+  selectedFilterChips.innerHTML = chips.map(chip => `
+    <button type="button" class="selected-filter-chip" data-filter-kind="${escapeHtml(chip.kind)}" data-filter-value="${escapeHtml(chip.value)}">${escapeHtml(chip.label)}</button>
+  `).join('');
+
+  selectedFilterChips.querySelectorAll('[data-filter-kind]').forEach(button => {
+    button.addEventListener('click', () => {
+      const kind = button.dataset.filterKind;
+      const value = button.dataset.filterValue;
+      if (kind === 'type') selectedTypes.delete(value);
+      if (kind === 'topic') selectedTopics.delete(value);
+      if (kind === 'favorites') favoritesOnly = false;
+      if (kind === 'recent') recentOnly = false;
+      syncTypeButtons();
+      syncPersonalFilterButtons();
+      if (kind === 'topic') renderTopicFilters();
+      loadItems();
+    });
+  });
+}
+
+function syncDiscoveryUrl() {
+  const search = buildDiscoverySearch({
+    query: currentQuery,
+    types: selectedTypes,
+    topics: selectedTopics,
+    sort: sortMode
+  }, window.location.search);
+  const nextUrl = `${window.location.pathname}${search}${window.location.hash}`;
+  window.history.replaceState(null, '', nextUrl);
+}
+
 function loadItems() {
   const words = currentQuery.toLowerCase().split(/\s+/).filter(Boolean);
-  let items = allItems.filter(item => {
-    if (currentType !== 'all' && item.type !== currentType) return false;
+  let items = filterArticlesByTypes(allItems, selectedTypes).filter(item => {
     return !words.length || words.every(word => matchesArticle(item, word));
   });
 
@@ -185,6 +265,8 @@ function loadItems() {
   }
 
   currentItems = sortArticles(items, sortMode, { recentIds, favoriteIds });
+  syncDiscoveryUrl();
+  renderSelectedFilters();
   renderCards();
 }
 
@@ -224,9 +306,9 @@ function renderCards() {
   resultCount.textContent = uiText(currentLocale, 'resultCount', currentItems.length);
   listTitle.textContent = currentQuery
     ? uiText(currentLocale, 'searchResults', currentQuery)
-    : currentType === 'all'
-      ? uiText(currentLocale, 'recommended')
-      : typeLabel(currentType, currentLocale);
+    : selectedTypes.size === 1
+      ? typeLabel([...selectedTypes][0], currentLocale)
+      : uiText(currentLocale, 'recommended');
 }
 
 function navigateToItem(id) {
@@ -443,11 +525,16 @@ function showHome() {
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-function setType(type) {
-  currentType = type;
-  document.querySelectorAll('[data-type]').forEach(button => {
-    button.classList.toggle('active', button.dataset.type === type);
-  });
+function toggleType(type) {
+  if (type === 'all') selectedTypes.clear();
+  else selectedTypes = toggleId(selectedTypes, type);
+  syncTypeButtons();
+  loadItems();
+}
+
+function setTypeFromNavigation(type) {
+  selectedTypes = type === 'all' ? new Set() : new Set([type]);
+  syncTypeButtons();
   loadItems();
 }
 
@@ -460,24 +547,22 @@ document.getElementById('searchForm').addEventListener('submit', event => {
 document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => {
   currentQuery = button.dataset.query;
   searchInput.value = currentQuery;
-  currentType = 'all';
-  document.querySelectorAll('[data-type]').forEach(x => {
-    x.classList.toggle('active', x.dataset.type === 'all');
-  });
+  selectedTypes.clear();
+  syncTypeButtons();
   loadItems();
 }));
 
 document.querySelectorAll('[data-type]').forEach(button => {
   button.addEventListener('click', () => {
     if (button.dataset.chapter) return;
-    setType(button.dataset.type);
+    toggleType(button.dataset.type);
   });
 });
 
 document.querySelectorAll('[data-nav-type]').forEach(button => {
   button.addEventListener('click', () => {
     navigateHome();
-    setType(button.dataset.navType);
+    setTypeFromNavigation(button.dataset.navType);
   });
 });
 
@@ -487,14 +572,22 @@ sortSelect.addEventListener('change', () => {
 });
 favoritesOnlyButton.addEventListener('click', () => {
   favoritesOnly = !favoritesOnly;
-  favoritesOnlyButton.classList.toggle('active', favoritesOnly);
-  favoritesOnlyButton.setAttribute('aria-pressed', String(favoritesOnly));
+  syncPersonalFilterButtons();
   loadItems();
 });
 recentOnlyButton.addEventListener('click', () => {
   recentOnly = !recentOnly;
-  recentOnlyButton.classList.toggle('active', recentOnly);
-  recentOnlyButton.setAttribute('aria-pressed', String(recentOnly));
+  syncPersonalFilterButtons();
+  loadItems();
+});
+clearFiltersButton.addEventListener('click', () => {
+  selectedTypes.clear();
+  selectedTopics.clear();
+  favoritesOnly = false;
+  recentOnly = false;
+  syncTypeButtons();
+  syncPersonalFilterButtons();
+  renderTopicFilters();
   loadItems();
 });
 
