@@ -10,7 +10,8 @@ export const CONTENT_CATEGORIES = [
   'logic-errors.json',
   'advanced-expansion.json',
   'hourly-batch-001.json',
-  'hourly-batch-002.json'
+  'hourly-batch-002.json',
+  'hourly-batch-003.json'
 ];
 
 const CONTENT_ID_ALIASES = {
