@@ -19,6 +19,7 @@
   <meta name="twitter:image" content="https://csharpatlas.pages.dev/csharp-atlas-og.png">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="stylesheet" href="/src/code-enhancements.css">
+  <link rel="stylesheet" href="/src/list-discovery.css">
   <link rel="stylesheet" href="/src/quest-view.css">
 </head>
 <body>
@@ -82,6 +83,30 @@
           <div class="list-head">
             <h2 id="listTitle">おすすめ</h2>
             <span id="resultCount"></span>
+          </div>
+          <div class="list-tools">
+            <div class="topic-filter-group">
+              <span id="topicFilterLabel" class="list-tool-label">トピック</span>
+              <div id="topicFilters" class="topic-filters"></div>
+            </div>
+            <div class="list-tool-actions">
+              <label class="sort-picker" for="sortSelect">
+                <span id="sortLabel">並び順</span>
+                <select id="sortSelect">
+                  <option value="recommended">おすすめ順</option>
+                  <option value="title">名前順</option>
+                  <option value="recent">最近見た順</option>
+                  <option value="favorites">お気に入り優先</option>
+                </select>
+              </label>
+              <button id="favoritesOnlyButton" type="button" aria-pressed="false">☆ お気に入り</button>
+              <button id="recentOnlyButton" type="button" aria-pressed="false">最近見た</button>
+            </div>
+          </div>
+          <div id="selectedFilters" class="selected-filters" hidden>
+            <span id="selectedFiltersLabel" class="list-tool-label">選択中</span>
+            <div id="selectedFilterChips" class="selected-filter-chips"></div>
+            <button id="clearFiltersButton" type="button">すべて解除</button>
           </div>
           <div id="cards" class="cards"></div>
           <div id="empty" class="empty">一致する項目がありません。</div>
