@@ -126,6 +126,7 @@ async function initializeQuestView() {
   function setView(nextView) {
     view = nextView;
     const showingQuest = view === 'quest';
+    document.body.classList.toggle('quest-mode', showingQuest);
     listPanel.classList.toggle('hidden', showingQuest);
     questPanel.classList.toggle('hidden', !showingQuest);
     listButton.classList.toggle('active', !showingQuest);
@@ -133,10 +134,7 @@ async function initializeQuestView() {
     listButton.setAttribute('aria-pressed', String(!showingQuest));
     questButton.setAttribute('aria-pressed', String(showingQuest));
     setAsideMode(nextView);
-    if (showingQuest) {
-      renderChapter();
-      requestAnimationFrame(() => questView.fit());
-    }
+    if (showingQuest) renderChapter();
   }
 
   asideButtons.forEach(button => {
@@ -150,7 +148,6 @@ async function initializeQuestView() {
   questButton.addEventListener('click', () => setView('quest'));
   fitButton.addEventListener('click', () => questView.fit());
   document.querySelectorAll('[data-nav-type]').forEach(button => button.addEventListener('click', () => setView('list')));
-  window.addEventListener('resize', () => { if (view === 'quest') questView.fit(); });
   setView('list');
 }
 

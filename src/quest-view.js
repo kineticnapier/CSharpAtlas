@@ -1,4 +1,9 @@
-import { questWorldBounds } from './quest-map.js';
+import {
+  assignEdgeRouteOffsets,
+  questWorldBounds,
+  reflowQuestLayout,
+  routeQuestEdgePoints
+} from './quest-map.js';
 
 const TYPE_COLORS = {
   code: '#58a6ff',
@@ -8,6 +13,65 @@ const TYPE_COLORS = {
   logic: '#bc8cff',
   concept: '#3fb950'
 };
+
+export function roundedQuestPath(points, radius = 18) {
+  const compact = [];
+  for (const point of points) {
+    const previous = compact.at(-1);
+    if (!previous || previous.x !== point.x || previous.y !== point.y) {
+      compact.push(point);
+    }
+  }
+
+  const routed = [];
+  for (let index = 0; index < compact.length; index += 1) {
+    const point = compact[index];
+    const previous = routed.at(-1);
+    const next = compact[index + 1];
+    const isCollinear = previous && next && (
+      (previous.x === point.x && point.x === next.x) ||
+      (previous.y === point.y && point.y === next.y)
+    );
+    if (!isCollinear) routed.push(point);
+  }
+
+  if (!routed.length) return '';
+  if (routed.length === 1) return `M ${routed[0].x} ${routed[0].y}`;
+
+  let path = `M ${routed[0].x} ${routed[0].y}`;
+  const requestedRadius = Math.max(0, radius);
+
+  for (let index = 1; index < routed.length - 1; index += 1) {
+    const previous = routed[index - 1];
+    const corner = routed[index];
+    const next = routed[index + 1];
+    const incomingX = corner.x - previous.x;
+    const incomingY = corner.y - previous.y;
+    const outgoingX = next.x - corner.x;
+    const outgoingY = next.y - corner.y;
+    const incomingLength = Math.hypot(incomingX, incomingY);
+    const outgoingLength = Math.hypot(outgoingX, outgoingY);
+    const cornerRadius = Math.min(requestedRadius, incomingLength / 2, outgoingLength / 2);
+
+    if (!cornerRadius) {
+      path += ` L ${corner.x} ${corner.y}`;
+      continue;
+    }
+
+    const enter = {
+      x: corner.x - (incomingX / incomingLength) * cornerRadius,
+      y: corner.y - (incomingY / incomingLength) * cornerRadius
+    };
+    const leave = {
+      x: corner.x + (outgoingX / outgoingLength) * cornerRadius,
+      y: corner.y + (outgoingY / outgoingLength) * cornerRadius
+    };
+    path += ` L ${enter.x} ${enter.y} Q ${corner.x} ${corner.y} ${leave.x} ${leave.y}`;
+  }
+
+  const last = routed.at(-1);
+  return `${path} L ${last.x} ${last.y}`;
+}
 
 export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail, onOpen, typeLabel, copy }) {
   let graph = { nodes: [], edges: [] };
@@ -23,16 +87,44 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
   }
 
-  function edgePath(a, b) {
-    const aWidth = a.kind === 'support' ? 180 : 220;
-    const aHeight = a.kind === 'support' ? 68 : 86;
-    const bHeight = b.kind === 'support' ? 68 : 86;
-    const startX = a.x + aWidth;
-    const startY = a.y + aHeight / 2;
-    const endX = b.x;
-    const endY = b.y + bHeight / 2;
-    const bend = Math.max(70, (endX - startX) * 0.45);
-    return `M ${startX} ${startY} C ${startX + bend} ${startY}, ${endX - bend} ${endY}, ${endX} ${endY}`;
+  function nodeHeight(node) {
+    return node.height ?? (node.kind === 'support' ? 68 : 86);
+  }
+
+  function pointsToPath(points) {
+    return roundedQuestPath(points);
+  }
+
+  function syncWorldBounds() {
+    const bounds = questWorldBounds(graph.nodes);
+    world.style.width = `${bounds.width}px`;
+    world.style.height = `${bounds.height}px`;
+    edgeLayer.setAttribute('viewBox', `0 0 ${bounds.width} ${bounds.height}`);
+    edgeLayer.setAttribute('width', bounds.width);
+    edgeLayer.setAttribute('height', bounds.height);
+  }
+
+  function renderEdges() {
+    const byId = new Map(graph.nodes.map(node => [node.id, node]));
+    const routeOffsets = assignEdgeRouteOffsets(graph.edges, graph.nodes);
+    edgeLayer.innerHTML = graph.edges.map((edge, index) => {
+      const source = byId.get(edge.source);
+      const target = byId.get(edge.target);
+      if (!source || !target) return '';
+      const className = edge.kind === 'support' ? 'quest-edge support' : 'quest-edge';
+      const path = pointsToPath(routeQuestEdgePoints(source, target, graph.nodes, routeOffsets[index] ?? 0));
+      return `<path class="${className}" d="${path}"></path>`;
+    }).join('');
+  }
+
+  function positionNodes() {
+    const byId = new Map(graph.nodes.map(node => [node.id, node]));
+    nodeLayer.querySelectorAll('.quest-node').forEach(button => {
+      const node = byId.get(button.dataset.id);
+      if (!node) return;
+      button.style.left = `${node.x}px`;
+      button.style.top = `${node.y}px`;
+    });
   }
 
   function renderDetail(node) {
@@ -61,34 +153,59 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     renderDetail(graph.nodes.find(node => node.id === id) ?? null);
   }
 
+  function resetReadableView() {
+    const rect = viewport.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    scale = 1;
+    const anchor = graph.nodes.find(node => node.kind !== 'support') ?? graph.nodes[0];
+    if (!anchor) {
+      panX = 24;
+      panY = 24;
+      applyTransform();
+      return;
+    }
+
+    panX = 48 - anchor.x;
+    panY = Math.max(24, rect.height / 2 - (anchor.y + nodeHeight(anchor) / 2));
+    applyTransform();
+  }
+
+  function measureAndReflow() {
+    const measurements = new Map();
+    nodeLayer.querySelectorAll('.quest-node').forEach(button => {
+      measurements.set(button.dataset.id, {
+        width: button.offsetWidth,
+        height: button.offsetHeight
+      });
+    });
+    graph = { ...graph, nodes: reflowQuestLayout(graph.nodes, measurements) };
+    positionNodes();
+    syncWorldBounds();
+    renderEdges();
+  }
+
   function render(nextGraph) {
     graph = nextGraph;
     selectedId = null;
-    const byId = new Map(graph.nodes.map(node => [node.id, node]));
-    const bounds = questWorldBounds(graph.nodes);
-    world.style.width = `${bounds.width}px`;
-    world.style.height = `${bounds.height}px`;
-    edgeLayer.setAttribute('viewBox', `0 0 ${bounds.width} ${bounds.height}`);
-    edgeLayer.setAttribute('width', bounds.width);
-    edgeLayer.setAttribute('height', bounds.height);
-
-    edgeLayer.innerHTML = graph.edges.map(edge => {
-      const source = byId.get(edge.source);
-      const target = byId.get(edge.target);
-      if (!source || !target) return '';
-      const className = edge.kind === 'support' ? 'quest-edge support' : 'quest-edge';
-      return `<path class="${className}" d="${edgePath(source, target)}"></path>`;
-    }).join('');
+    syncWorldBounds();
+    renderEdges();
 
     nodeLayer.innerHTML = graph.nodes.map(node => {
       const color = TYPE_COLORS[node.type] ?? '#8b949e';
       const support = node.kind === 'support';
+      const code = node.code
+        ? `<code class="quest-node-code">${escapeHtml(node.code)}</code>`
+        : '';
       return `
         <button type="button" class="quest-node ${support ? 'support' : 'main'}" data-id="${escapeHtml(node.id)}"
           style="left:${node.x}px;top:${node.y}px;--quest-color:${color}">
-          <span class="quest-node-type">${escapeHtml(typeLabel(node.type))}</span>
+          <span class="quest-node-meta">
+            <span class="quest-node-type">${escapeHtml(typeLabel(node.type))}</span>
+            ${support ? `<span class="quest-node-support">${copy.support}</span>` : ''}
+          </span>
           <strong>${escapeHtml(node.title)}</strong>
-          ${support ? `<span class="quest-node-support">${copy.support}</span>` : ''}
+          ${code}
         </button>
       `;
     }).join('');
@@ -105,7 +222,10 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     });
 
     renderDetail(null);
-    requestAnimationFrame(fit);
+    requestAnimationFrame(() => {
+      measureAndReflow();
+      requestAnimationFrame(resetReadableView);
+    });
   }
 
   function fit() {
@@ -120,6 +240,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
 
   viewport.addEventListener('pointerdown', event => {
     if (event.target.closest('.quest-node') || event.target.closest('.quest-detail')) return;
+    event.preventDefault();
     dragging = true;
     dragStart = { x: event.clientX, y: event.clientY };
     panStart = { x: panX, y: panY };
@@ -134,11 +255,17 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     applyTransform();
   });
 
-  viewport.addEventListener('pointerup', event => {
+  function finishDrag(event) {
+    if (!dragging) return;
     dragging = false;
-    viewport.releasePointerCapture?.(event.pointerId);
+    if (viewport.hasPointerCapture?.(event.pointerId)) {
+      viewport.releasePointerCapture?.(event.pointerId);
+    }
     viewport.classList.remove('dragging');
-  });
+  }
+
+  viewport.addEventListener('pointerup', finishDrag);
+  viewport.addEventListener('pointercancel', finishDrag);
 
   viewport.addEventListener('wheel', event => {
     event.preventDefault();
