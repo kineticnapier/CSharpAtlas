@@ -7,66 +7,13 @@ import { CONTENT_CATEGORIES } from '../src/content-loader.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BATCHES = [
-  {
-    file: 'hourly-batch-001.json',
-    ids: new Set([
-      'frozen-dictionary-read-mostly',
-      'configureawait-library-code',
-      'iasyncdisposable-await-using',
-      'regex-source-generator',
-      'checked-overflow-context'
-    ])
-  },
-  {
-    file: 'hourly-batch-002.json',
-    ids: new Set([
-      'priorityqueue-min-heap',
-      'immutablearray-snapshot',
-      'random-shared-concurrent',
-      'argumentnullexception-throwifnull',
-      'task-waitasync-timeout',
-      'string-create-formatting',
-      'record-with-expression',
-      'async-lock-semaphoreslim',
-      'linq-any-before-enumeration',
-      'stream-position-after-read'
-    ])
-  },
-  {
-    file: 'hourly-batch-003.json',
-    ids: new Set([
-      'arraypool-rent-return',
-      'timeprovider-testable-time',
-      'caller-argument-expression',
-      'exception-dispatch-info-rethrow',
-      'utf8jsonwriter-streaming',
-      'lazy-thread-safe-initialization',
-      'lock-scope-minimize',
-      'arraypool-return-finally',
-      'stream-read-partial-buffer',
-      'task-run-async-io'
-    ])
-  },
-  {
-    file: 'hourly-batch-004.json',
-    ids: new Set([
-      'periodic-timer-loop',
-      'linked-cancellation-token',
-      'valuetask-single-consumption',
-      'interlocked-counter',
-      'collections-marshal-span',
-      'searchvalues-repeated-search',
-      'composite-format-reuse',
-      'guid-create-version7',
-      'task-wheneach-completion-order',
-      'cancellation-token-register-dispose'
-    ])
-  }
+  { file: 'hourly-batch-001.json', ids: new Set(['frozen-dictionary-read-mostly','configureawait-library-code','iasyncdisposable-await-using','regex-source-generator','checked-overflow-context']) },
+  { file: 'hourly-batch-002.json', ids: new Set(['priorityqueue-min-heap','immutablearray-snapshot','random-shared-concurrent','argumentnullexception-throwifnull','task-waitasync-timeout','string-create-formatting','record-with-expression','async-lock-semaphoreslim','linq-any-before-enumeration','stream-position-after-read']) },
+  { file: 'hourly-batch-003.json', ids: new Set(['arraypool-rent-return','timeprovider-testable-time','caller-argument-expression','exception-dispatch-info-rethrow','utf8jsonwriter-streaming','lazy-thread-safe-initialization','lock-scope-minimize','arraypool-return-finally','stream-read-partial-buffer','task-run-async-io']) },
+  { file: 'hourly-batch-004.json', ids: new Set(['activitysource-tracing','linked-cancellation-token','valuetask-single-consumption','interlocked-counter','collections-marshal-span','searchvalues-repeated-search','composite-format-reuse','guid-create-version7','task-wheneach-completion-order','cancellation-token-register-dispose']) }
 ];
 
-async function json(...parts) {
-  return JSON.parse(await readFile(path.join(root, ...parts), 'utf8'));
-}
+async function json(...parts) { return JSON.parse(await readFile(path.join(root, ...parts), 'utf8')); }
 
 for (const batch of BATCHES) {
   test(`${batch.file} adds exactly its approved fully localized articles`, async () => {
@@ -85,9 +32,7 @@ for (const batch of BATCHES) {
       assert.ok(Array.isArray(article.related) && article.related.length > 0, `${article.id}: related required`);
     }
     for (const locale of [ja, en]) for (const id of batch.ids) {
-      for (const field of ['title', 'short', 'summary', 'why', 'tips']) {
-        assert.ok(locale[id]?.[field]?.trim(), `${id}: ${field} required`);
-      }
+      for (const field of ['title', 'short', 'summary', 'why', 'tips']) assert.ok(locale[id]?.[field]?.trim(), `${id}: ${field} required`);
       assert.ok(locale[id].tags?.length > 0, `${id}: tags required`);
     }
   });
