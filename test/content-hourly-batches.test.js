@@ -10,7 +10,8 @@ const BATCHES = [
   { file: 'hourly-batch-001.json', ids: new Set(['frozen-dictionary-read-mostly','configureawait-library-code','iasyncdisposable-await-using','regex-source-generator','checked-overflow-context']) },
   { file: 'hourly-batch-002.json', ids: new Set(['priorityqueue-min-heap','immutablearray-snapshot','random-shared-concurrent','argumentnullexception-throwifnull','task-waitasync-timeout','string-create-formatting','record-with-expression','async-lock-semaphoreslim','linq-any-before-enumeration','stream-position-after-read']) },
   { file: 'hourly-batch-003.json', ids: new Set(['arraypool-rent-return','timeprovider-testable-time','caller-argument-expression','exception-dispatch-info-rethrow','utf8jsonwriter-streaming','lazy-thread-safe-initialization','lock-scope-minimize','arraypool-return-finally','stream-read-partial-buffer','task-run-async-io']) },
-  { file: 'hourly-batch-004.json', ids: new Set(['activitysource-tracing','linked-cancellation-token','valuetask-single-consumption','interlocked-counter','collections-marshal-span','searchvalues-repeated-search','composite-format-reuse','guid-create-version7','task-wheneach-completion-order','cancellation-token-register-dispose']) }
+  { file: 'hourly-batch-004.json', ids: new Set(['activitysource-tracing','linked-cancellation-token','valuetask-single-consumption','interlocked-counter','collections-marshal-span','searchvalues-repeated-search','composite-format-reuse','guid-create-version7','task-wheneach-completion-order','cancellation-token-register-dispose']) },
+  { file: 'hourly-batch-005.json', ids: new Set(['frozen-set-read-mostly','system-threading-lock','pipereader-consume-buffer','json-source-generation','memorycache-size-limit','enumerable-chunk-batching','parallel-foreachasync','objectpool-reuse','channel-trywrite-backpressure','stringbuilder-clear-reuse']) }
 ];
 
 async function json(...parts) { return JSON.parse(await readFile(path.join(root, ...parts), 'utf8')); }
