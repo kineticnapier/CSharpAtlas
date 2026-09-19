@@ -371,7 +371,10 @@ document.querySelectorAll('[data-query]').forEach(button => button.addEventListe
 }));
 
 document.querySelectorAll('[data-type]').forEach(button => {
-  button.addEventListener('click', () => setType(button.dataset.type));
+  button.addEventListener('click', () => {
+    if (button.dataset.chapter) return;
+    setType(button.dataset.type);
+  });
 });
 
 document.querySelectorAll('[data-nav-type]').forEach(button => {

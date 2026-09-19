@@ -1,0 +1,112 @@
+{
+  "chapters": [
+    {
+      "id": "basics",
+      "title": { "ja": "C# 基礎", "en": "C# Basics" },
+      "description": { "ja": "変数、条件分岐、ループ、メソッド、配列まで。まずここから。", "en": "Variables, control flow, methods, and arrays. Start here." },
+      "nodes": [
+        { "id": "program-entry", "lane": 1 },
+        { "id": "variables-assignment", "prerequisites": ["program-entry"], "lane": 1 },
+        { "id": "numeric-types", "prerequisites": ["variables-assignment"], "lane": 0 },
+        { "id": "boolean-operators", "prerequisites": ["variables-assignment"], "lane": 2 },
+        { "id": "if-else", "prerequisites": ["boolean-operators"], "lane": 2 },
+        { "id": "while-do-loops", "prerequisites": ["if-else"], "lane": 3 },
+        { "id": "methods-parameters-returns", "prerequisites": ["variables-assignment"], "lane": 1 },
+        { "id": "arrays-basics", "prerequisites": ["while-do-loops", "methods-parameters-returns"], "lane": 1 },
+        { "id": "string-literals", "prerequisites": ["variables-assignment"], "lane": 4 },
+        { "id": "index-out-of-range", "kind": "support", "attachedTo": "arrays-basics", "lane": 3 }
+      ]
+    },
+    {
+      "id": "types-oop",
+      "title": { "ja": "型・クラス設計", "en": "Types & Object Design" },
+      "description": { "ja": "参照型、プロパティ、record、interface、ジェネリックなど、C# の型設計を学ぶ。", "en": "Reference types, properties, records, interfaces, generics, and object design." },
+      "nodes": [
+        { "id": "value-reference-types", "lane": 1 },
+        { "id": "properties", "prerequisites": ["value-reference-types"], "lane": 0 },
+        { "id": "records", "prerequisites": ["properties"], "lane": 0 },
+        { "id": "interfaces", "prerequisites": ["value-reference-types"], "lane": 2 },
+        { "id": "generics", "prerequisites": ["interfaces"], "lane": 2 },
+        { "id": "delegates", "prerequisites": ["value-reference-types"], "lane": 4 },
+        { "id": "events", "prerequisites": ["delegates"], "lane": 4 },
+        { "id": "pattern-matching", "prerequisites": ["value-reference-types"], "lane": 3 },
+        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 5 }
+      ]
+    },
+    {
+      "id": "collections-linq",
+      "title": { "ja": "コレクション・LINQ", "en": "Collections & LINQ" },
+      "description": { "ja": "List、HashSet、IEnumerable、ラムダ式から LINQ へ進む。", "en": "Move from List, HashSet, IEnumerable, and lambdas into LINQ." },
+      "nodes": [
+        { "id": "list-basic", "lane": 1 },
+        { "id": "hashset-basic", "prerequisites": ["list-basic"], "lane": 0 },
+        { "id": "ienumerable", "prerequisites": ["list-basic"], "lane": 2 },
+        { "id": "lambda", "prerequisites": ["ienumerable"], "lane": 2 },
+        { "id": "list-filter", "prerequisites": ["lambda"], "lane": 1 },
+        { "id": "linq-select", "prerequisites": ["lambda"], "lane": 3 },
+        { "id": "linq-deferred", "prerequisites": ["list-filter", "linq-select"], "lane": 2 },
+        { "id": "linq-groupby", "prerequisites": ["linq-deferred"], "lane": 1 },
+        { "id": "linq-distinct", "prerequisites": ["hashset-basic", "linq-deferred"], "lane": 3 },
+        { "id": "invalid-operation", "kind": "support", "attachedTo": "linq-deferred", "lane": 4 }
+      ]
+    },
+    {
+      "id": "exceptions-debugging",
+      "title": { "ja": "例外・デバッグ", "en": "Exceptions & Debugging" },
+      "description": { "ja": "例外処理と null 周りの事故を、頻出トラブルと一緒に学ぶ。", "en": "Learn exception handling and null safety alongside common failures." },
+      "nodes": [
+        { "id": "try-catch", "lane": 1 },
+        { "id": "nullable", "prerequisites": ["try-catch"], "lane": 0 },
+        { "id": "nullable-value-types", "prerequisites": ["nullable"], "lane": 0 },
+        { "id": "pattern-matching", "prerequisites": ["nullable"], "lane": 2 },
+        { "id": "argument-null", "kind": "support", "attachedTo": "nullable", "lane": 3 },
+        { "id": "nullref", "kind": "support", "attachedTo": "nullable", "lane": 4 },
+        { "id": "format-exception", "kind": "support", "attachedTo": "try-catch", "lane": 5 },
+        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 6 }
+      ]
+    },
+    {
+      "id": "io-network",
+      "title": { "ja": "I/O・ネットワーク", "en": "I/O & Networking" },
+      "description": { "ja": "ファイル、JSON、HTTP と、リソースの正しい扱い方。", "en": "Files, JSON, HTTP, and correct resource lifetime management." },
+      "nodes": [
+        { "id": "idisposable", "lane": 1 },
+        { "id": "file-write", "prerequisites": ["idisposable"], "lane": 0 },
+        { "id": "directory-enumerate", "prerequisites": ["idisposable"], "lane": 2 },
+        { "id": "json-write", "prerequisites": ["file-write"], "lane": 0 },
+        { "id": "http-get", "prerequisites": ["idisposable"], "lane": 3 },
+        { "id": "io-exception", "kind": "support", "attachedTo": "file-write", "lane": 4 },
+        { "id": "directory-not-found", "kind": "support", "attachedTo": "directory-enumerate", "lane": 5 },
+        { "id": "unauthorized-access", "kind": "support", "attachedTo": "file-write", "lane": 6 },
+        { "id": "object-disposed", "kind": "support", "attachedTo": "idisposable", "lane": 7 }
+      ]
+    },
+    {
+      "id": "async-concurrency",
+      "title": { "ja": "async・並行処理", "en": "Async & Concurrency" },
+      "description": { "ja": "Task、async/await、待機、キャンセルを順番に理解する。", "en": "Understand Task, async/await, delays, and cancellation in order." },
+      "nodes": [
+        { "id": "task", "lane": 1 },
+        { "id": "async-await", "prerequisites": ["task"], "lane": 1 },
+        { "id": "task-delay", "prerequisites": ["async-await"], "lane": 0 },
+        { "id": "cancellation-token", "prerequisites": ["async-await"], "lane": 2 },
+        { "id": "operation-canceled", "kind": "support", "attachedTo": "cancellation-token", "lane": 4 }
+      ]
+    },
+    {
+      "id": "practical",
+      "title": { "ja": "実践テクニック", "en": "Practical Techniques" },
+      "description": { "ja": "文字列、日時、正規表現、タプルなど、実装でよく使う道具を広げる。", "en": "Expand into strings, dates, regex, tuples, and other practical tools." },
+      "nodes": [
+        { "id": "string-interpolation", "lane": 1 },
+        { "id": "string-split-join", "prerequisites": ["string-interpolation"], "lane": 0 },
+        { "id": "date-format", "prerequisites": ["string-interpolation"], "lane": 2 },
+        { "id": "regex-basic", "prerequisites": ["string-split-join"], "lane": 0 },
+        { "id": "tuples-deconstruction", "prerequisites": ["string-interpolation"], "lane": 3 },
+        { "id": "enums-flags", "prerequisites": ["tuples-deconstruction"], "lane": 3 },
+        { "id": "pattern-matching", "prerequisites": ["tuples-deconstruction"], "lane": 4 },
+        { "id": "format-exception", "kind": "support", "attachedTo": "date-format", "lane": 5 }
+      ]
+    }
+  ]
+}
