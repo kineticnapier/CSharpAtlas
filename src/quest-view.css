@@ -22,6 +22,37 @@
   color: #f0f6fc;
 }
 
+body.quest-mode main {
+  width: 100%;
+  max-width: none;
+  padding: 0 16px 24px;
+}
+
+body.quest-mode .hero {
+  display: none;
+}
+
+body.quest-mode .layout {
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 16px;
+  padding-top: 18px;
+}
+
+body.quest-mode .quest-layout {
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 14px;
+}
+
+body.quest-mode .quest-viewport {
+  height: calc(100dvh - 190px);
+  min-height: 560px;
+}
+
+body.quest-mode .quest-detail {
+  max-height: calc(100dvh - 190px);
+  overflow: auto;
+}
+
 .quest-view-panel {
   min-width: 0;
 }
@@ -299,12 +330,19 @@
 }
 
 @media (max-width: 900px) {
+  body.quest-mode .layout,
+  body.quest-mode .quest-layout,
   .quest-layout {
     grid-template-columns: 1fr;
   }
 
   .quest-detail {
     position: static;
+  }
+
+  body.quest-mode .quest-detail {
+    max-height: none;
+    overflow: visible;
   }
 
   .quest-viewport {
