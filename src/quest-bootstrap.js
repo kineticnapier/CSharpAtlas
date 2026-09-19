@@ -126,6 +126,7 @@ async function initializeQuestView() {
   function setView(nextView) {
     view = nextView;
     const showingQuest = view === 'quest';
+    document.body.classList.toggle('quest-mode', showingQuest);
     listPanel.classList.toggle('hidden', showingQuest);
     questPanel.classList.toggle('hidden', !showingQuest);
     listButton.classList.toggle('active', !showingQuest);
