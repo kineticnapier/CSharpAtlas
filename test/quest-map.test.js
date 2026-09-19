@@ -39,6 +39,29 @@ test('learning map is curated into reusable chapters and only references real ar
   }
 });
 
+test('learning map connects curated logic errors as support nodes to relevant learning nodes', async () => {
+  const config = await readJson('../public/content/learning-map.json');
+  const logicArticles = await readJson('../public/content/articles/logic-errors.json');
+  const logicIds = new Set(logicArticles.map(article => article.id));
+  const logicSupports = [];
+
+  for (const chapter of config.chapters) {
+    const ids = new Set(chapter.nodes.map(node => node.id));
+    for (const node of chapter.nodes) {
+      if (!logicIds.has(node.id)) continue;
+      logicSupports.push({ chapter: chapter.id, ...node });
+      assert.equal(node.kind, 'support', `${node.id} must be a support node`);
+      assert.ok(node.attachedTo && ids.has(node.attachedTo), `${node.id} must attach to a node in the same chapter`);
+    }
+  }
+
+  assert.ok(logicSupports.length >= 10, 'expected a useful curated set of logic-error branches');
+  assert.ok(new Set(logicSupports.map(node => node.chapter)).size >= 5, 'logic errors should appear across several learning chapters');
+  for (const id of ['floating-equality', 'reference-equality', 'deferred-enumeration', 'json-reference-cycles', 'async-void-errors', 'regex-escaping']) {
+    assert.ok(logicSupports.some(node => node.id === id), `missing representative logic-error branch: ${id}`);
+  }
+});
+
 test('buildQuestChapter separates learning prerequisites from support branches and carries representative code', () => {
   const articles = [
     { id: 'a', type: 'concept', title: 'A', short: 'A' },
