@@ -6,6 +6,7 @@ const DEFAULT_NODE_SIZE = {
 const NODE_VERTICAL_GAP = 40;
 const EDGE_CHANNEL_GAP = 24;
 const EDGE_OBSTACLE_GAP = 28;
+const EDGE_BOUND_PADDING = 80;
 
 export function extractSupportSnippet(article, maxLines = 4) {
   const bad = typeof article?.bad === 'string' ? article.bad.trim() : '';
@@ -231,6 +232,6 @@ export function questWorldBounds(nodes) {
   if (!nodes.length) return { width: 900, height: 560 };
   return {
     width: Math.max(900, Math.max(...nodes.map(node => node.x + (node.width ?? 220))) + 140),
-    height: Math.max(560, Math.max(...nodes.map(node => node.y + (node.height ?? 86))) + 120)
+    height: Math.max(560, Math.max(...nodes.map(node => node.y + (node.height ?? 86))) + EDGE_BOUND_PADDING + 40)
   };
 }
