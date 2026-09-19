@@ -4,7 +4,9 @@ import fs from 'node:fs/promises';
 import {
   buildQuestChapter,
   computeQuestLayout,
-  reflowQuestLayout
+  extractSupportSnippet,
+  reflowQuestLayout,
+  routeQuestEdgePoints
 } from '../src/quest-map.js';
 
 async function readJson(path) {
@@ -40,7 +42,7 @@ test('buildQuestChapter separates learning prerequisites from support branches a
   const articles = [
     { id: 'a', type: 'concept', title: 'A', short: 'A' },
     { id: 'b', type: 'concept', title: 'B', short: 'B' },
-    { id: 'err', type: 'exception', title: 'Err', short: 'Err' }
+    { id: 'err', type: 'exception', title: 'Err', short: 'Err', bad: 'object value = "123";\nint number = (int)value;', badHighlight: [2] }
   ];
   const chapter = {
     id: 'demo',
@@ -53,10 +55,27 @@ test('buildQuestChapter separates learning prerequisites from support branches a
 
   const graph = buildQuestChapter(articles, chapter);
   assert.equal(graph.nodes.find(node => node.id === 'a').code, 'int a = 10;');
+  assert.equal(graph.nodes.find(node => node.id === 'err').code, 'object value = "123";\nint number = (int)value;');
   assert.deepEqual(graph.edges, [
     { source: 'a', target: 'b', kind: 'prerequisite' },
     { source: 'b', target: 'err', kind: 'support' }
   ]);
+});
+
+test('support snippets keep just enough code around the failing line', () => {
+  assert.equal(extractSupportSnippet({
+    bad: 'var stream = new MemoryStream();\nstream.Dispose();\nstream.WriteByte(1);',
+    badHighlight: [3]
+  }), 'var stream = new MemoryStream();\nstream.Dispose();\nstream.WriteByte(1);');
+
+  assert.equal(extractSupportSnippet({
+    bad: 'File.WriteAllText("logs/today.txt", "hello");',
+    badHighlight: [1]
+  }), 'File.WriteAllText("logs/today.txt", "hello");');
+
+  assert.equal(extractSupportSnippet({
+    code: 'line1\nline2\nline3\nline4\nline5'
+  }), 'line1\nline2\nline3\nline4');
 });
 
 test('quest layout places later prerequisite depth further to the right', () => {
@@ -113,4 +132,35 @@ test('sparse lane numbers are packed within each depth instead of creating giant
   assert.equal(byId.get('support-a').y, 110);
   assert.ok(byId.get('support-b').y >= byId.get('support-a').y + byId.get('support-a').height + 40);
   assert.ok(byId.get('support-b').y <= byId.get('support-a').y + byId.get('support-a').height + 48);
+});
+
+test('connected nodes are reordered within a depth to reduce avoidable edge crossings', () => {
+  const nodes = [
+    { id: 'a', depth: 0, lane: 0, kind: 'main', prerequisites: [] },
+    { id: 'b', depth: 0, lane: 1, kind: 'main', prerequisites: [] },
+    { id: 'c', depth: 1, lane: 0, kind: 'main', prerequisites: ['b'] },
+    { id: 'd', depth: 1, lane: 1, kind: 'main', prerequisites: ['a'] }
+  ];
+
+  const layout = reflowQuestLayout(nodes);
+  const byId = new Map(layout.map(node => [node.id, node]));
+  assert.ok(byId.get('d').y < byId.get('c').y);
+});
+
+test('orthogonal edge routing goes around boxes in skipped depths', () => {
+  const source = { id: 'source', depth: 0, x: 120, y: 220, width: 220, height: 100 };
+  const blocker = { id: 'blocker', depth: 1, x: 450, y: 160, width: 260, height: 180 };
+  const target = { id: 'target', depth: 2, x: 820, y: 240, width: 220, height: 100 };
+  const points = routeQuestEdgePoints(source, target, [source, blocker, target]);
+
+  assert.ok(points.length >= 4);
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1];
+    const b = points[i];
+    assert.ok(a.x === b.x || a.y === b.y, 'edge segment must be orthogonal');
+    const crossesBlocker = a.y === b.y
+      ? a.y > blocker.y && a.y < blocker.y + blocker.height && Math.max(a.x, b.x) > blocker.x && Math.min(a.x, b.x) < blocker.x + blocker.width
+      : a.x > blocker.x && a.x < blocker.x + blocker.width && Math.max(a.y, b.y) > blocker.y && Math.min(a.y, b.y) < blocker.y + blocker.height;
+    assert.equal(crossesBlocker, false, 'edge must not cross another node box');
+  }
 });
