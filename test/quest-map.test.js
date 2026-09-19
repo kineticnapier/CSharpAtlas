@@ -5,6 +5,7 @@ import {
   buildQuestChapter,
   computeQuestLayout,
   extractSupportSnippet,
+  questWorldBounds,
   reflowQuestLayout,
   routeQuestEdgePoints
 } from '../src/quest-map.js';
@@ -163,4 +164,13 @@ test('orthogonal edge routing goes around boxes in skipped depths', () => {
       : a.x > blocker.x && a.x < blocker.x + blocker.width && Math.max(a.y, b.y) > blocker.y && Math.min(a.y, b.y) < blocker.y + blocker.height;
     assert.equal(crossesBlocker, false, 'edge must not cross another node box');
   }
+});
+
+test('world bounds leave padding for routed edges around the outermost nodes', () => {
+  const nodes = [
+    { id: 'a', x: 120, y: 110, width: 220, height: 120 },
+    { id: 'b', x: 450, y: 520, width: 220, height: 160 }
+  ];
+  const bounds = questWorldBounds(nodes);
+  assert.ok(bounds.height >= 800);
 });
