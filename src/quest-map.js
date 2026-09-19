@@ -1,3 +1,8 @@
+const DEFAULT_NODE_SIZE = {
+  main: { width: 220, height: 86 },
+  support: { width: 180, height: 68 }
+};
+
 export function buildQuestChapter(articles, chapter) {
   const articlesById = new Map(articles.map(article => [article.id, article]));
   const configById = new Map(chapter.nodes.map(node => [node.id, node]));
@@ -8,6 +13,7 @@ export function buildQuestChapter(articles, chapter) {
       return {
         ...article,
         kind: config.kind ?? 'main',
+        code: config.code ?? '',
         prerequisites: [...(config.prerequisites ?? [])],
         attachedTo: config.attachedTo ?? null,
         lane: config.lane,
@@ -59,7 +65,7 @@ export function computeQuestLayout(nodes) {
   }
 
   const usedLanes = new Map();
-  const result = [];
+  const staged = [];
   for (const node of nodes) {
     let depth = depthOf(node);
     if (node.kind === 'support' && node.attachedTo && byId.has(node.attachedTo)) {
@@ -68,20 +74,60 @@ export function computeQuestLayout(nodes) {
     const nextLane = usedLanes.get(depth) ?? 0;
     const lane = Number.isFinite(node.lane) ? node.lane : nextLane;
     usedLanes.set(depth, Math.max(nextLane + 1, lane + 1));
-    result.push({
-      ...node,
-      depth,
-      x: 120 + depth * 330,
-      y: 110 + lane * 150 + (node.offsetY ?? 0)
-    });
+    staged.push({ ...node, depth, lane });
   }
-  return result;
+
+  return reflowQuestLayout(staged);
+}
+
+export function reflowQuestLayout(nodes, measurements = new Map()) {
+  if (!nodes.length) return [];
+
+  const sized = nodes.map(node => {
+    const fallback = DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'];
+    const measured = measurements.get(node.id) ?? {};
+    return {
+      ...node,
+      width: measured.width ?? node.width ?? fallback.width,
+      height: measured.height ?? node.height ?? fallback.height
+    };
+  });
+
+  const depths = [...new Set(sized.map(node => node.depth ?? 0))].sort((a, b) => a - b);
+  const maxWidthByDepth = new Map(depths.map(depth => [
+    depth,
+    Math.max(...sized.filter(node => (node.depth ?? 0) === depth).map(node => node.width))
+  ]));
+  const depthX = new Map();
+  let nextX = 120;
+  for (const depth of depths) {
+    depthX.set(depth, nextX);
+    nextX += maxWidthByDepth.get(depth) + 110;
+  }
+
+  const lanes = [...new Set(sized.map(node => node.lane ?? 0))].sort((a, b) => a - b);
+  const maxHeightByLane = new Map(lanes.map(lane => [
+    lane,
+    Math.max(...sized.filter(node => (node.lane ?? 0) === lane).map(node => node.height))
+  ]));
+  const laneY = new Map();
+  let nextY = 110;
+  for (const lane of lanes) {
+    laneY.set(lane, nextY);
+    nextY += maxHeightByLane.get(lane) + 64;
+  }
+
+  return sized.map(node => ({
+    ...node,
+    x: depthX.get(node.depth ?? 0),
+    y: laneY.get(node.lane ?? 0) + (node.offsetY ?? 0)
+  }));
 }
 
 export function questWorldBounds(nodes) {
   if (!nodes.length) return { width: 900, height: 560 };
   return {
-    width: Math.max(900, Math.max(...nodes.map(node => node.x)) + 360),
-    height: Math.max(560, Math.max(...nodes.map(node => node.y)) + 220)
+    width: Math.max(900, Math.max(...nodes.map(node => node.x + (node.width ?? 220))) + 140),
+    height: Math.max(560, Math.max(...nodes.map(node => node.y + (node.height ?? 86))) + 120)
   };
 }
