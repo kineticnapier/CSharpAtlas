@@ -21,8 +21,7 @@ const EXPECTED_IDS = new Set([
   'equality-comparer-design', 'variance-generic-interfaces',
   'async-select-not-awaited', 'modify-list-during-foreach', 'fire-and-forget-task', 'task-result-sync-blocking', 'ignored-cancellation-token',
   'semaphore-release-finally', 'multiple-enumeration-side-effects', 'disposable-ownership', 'datetime-unspecified-kind', 'culture-sensitive-string-comparison',
-  'json-case-sensitive-properties', 'concurrent-dictionary-factory-repeat', 'whenall-failure-observation', 'channel-completion-hang', 'valuetask-double-await',
-  'span-async-boundary',
+  'json-case-sensitive-properties', 'concurrent-dictionary-factory-repeat', 'whenall-failure-observation',
   'http-request-failure', 'json-deserialize-invalid', 'channel-closed-read', 'aggregate-task-failure',
   'cs0120-instance-member', 'cs0165-unassigned-local', 'cs0266-explicit-conversion', 'cs1503-argument-type',
   'cs8602-possible-null', 'cs8618-nonnullable-init'
@@ -45,6 +44,7 @@ test('expansion shard contains exactly the approved 50 localized articles', asyn
   const ids = new Set(base.map(article => article.id));
 
   assert.equal(base.length, 50);
+  assert.equal(EXPECTED_IDS.size, 50);
   assert.deepEqual(ids, EXPECTED_IDS);
   assert.deepEqual(new Set(Object.keys(ja)), EXPECTED_IDS);
   assert.deepEqual(new Set(Object.keys(en)), EXPECTED_IDS);
