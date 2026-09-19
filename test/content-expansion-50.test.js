@@ -16,7 +16,7 @@ const EXPECTED_IDS = new Set([
   'span-slicing', 'memory-buffer', 'ref-out-in-parameters', 'yield-return-streaming', 'async-enumerable-streaming',
   'semaphore-slim-limit', 'datetimeoffset-conversion', 'httpclient-reuse', 'json-options-web', 'file-stream-async',
   'bounded-channel-producer-consumer', 'concurrent-dictionary-update', 'periodic-timer-loop', 'task-whenall-results', 'cancellation-timeout',
-  'span-vs-memory', 'ref-struct-lifetime', 'generic-constraints-design', 'required-members', 'collection-expressions',
+  'span-vs-memory', 'ref-struct-lifetime', 'generic-constraints-design', 'required-members', 'collection-expression-syntax',
   'valuetask-guidance', 'cancellation-cooperation', 'synchronization-context', 'exception-filters', 'datetime-kind-model',
   'equality-comparer-design', 'variance-generic-interfaces',
   'async-select-not-awaited', 'modify-list-during-foreach', 'fire-and-forget-task', 'task-result-sync-blocking', 'ignored-cancellation-token',
