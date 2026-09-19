@@ -31,6 +31,36 @@ const BATCHES = [
       'linq-any-before-enumeration',
       'stream-position-after-read'
     ])
+  },
+  {
+    file: 'hourly-batch-003.json',
+    ids: new Set([
+      'arraypool-rent-return',
+      'timeprovider-testable-time',
+      'caller-argument-expression',
+      'exception-dispatch-info-rethrow',
+      'utf8jsonwriter-streaming',
+      'lazy-thread-safe-initialization',
+      'lock-scope-minimize',
+      'arraypool-return-finally',
+      'stream-read-partial-buffer',
+      'task-run-async-io'
+    ])
+  },
+  {
+    file: 'hourly-batch-004.json',
+    ids: new Set([
+      'periodic-timer-loop',
+      'linked-cancellation-token',
+      'valuetask-single-consumption',
+      'interlocked-counter',
+      'collections-marshal-span',
+      'searchvalues-repeated-search',
+      'composite-format-reuse',
+      'guid-create-version7',
+      'task-wheneach-completion-order',
+      'cancellation-token-register-dispose'
+    ])
   }
 ];
 
