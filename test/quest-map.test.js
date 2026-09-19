@@ -93,3 +93,24 @@ test('measured node sizes automatically push later depths and lanes out of the w
   assert.ok(byId.get('next').x >= byId.get('wide').x + byId.get('wide').width + 100);
   assert.ok(byId.get('below').y >= byId.get('wide').y + byId.get('wide').height + 40);
 });
+
+test('sparse lane numbers are packed within each depth instead of creating giant vertical gaps', () => {
+  const nodes = [
+    { id: 'root', depth: 0, lane: 0, kind: 'main', offsetY: 0 },
+    { id: 'middle', depth: 1, lane: 0, kind: 'main', offsetY: 0 },
+    { id: 'support-a', depth: 2, lane: 4, kind: 'support', offsetY: 0 },
+    { id: 'support-b', depth: 2, lane: 7, kind: 'support', offsetY: 0 }
+  ];
+  const measurements = new Map([
+    ['root', { width: 220, height: 150 }],
+    ['middle', { width: 220, height: 150 }],
+    ['support-a', { width: 180, height: 68 }],
+    ['support-b', { width: 180, height: 68 }]
+  ]);
+
+  const layout = reflowQuestLayout(nodes, measurements);
+  const byId = new Map(layout.map(node => [node.id, node]));
+  assert.equal(byId.get('support-a').y, 110);
+  assert.ok(byId.get('support-b').y >= byId.get('support-a').y + byId.get('support-a').height + 40);
+  assert.ok(byId.get('support-b').y <= byId.get('support-a').y + byId.get('support-a').height + 48);
+});
