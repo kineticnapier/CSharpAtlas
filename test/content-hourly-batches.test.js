@@ -6,38 +6,59 @@ import path from 'node:path';
 import { CONTENT_CATEGORIES } from '../src/content-loader.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const FILE = 'hourly-batch-001.json';
-const IDS = new Set([
-  'frozen-dictionary-read-mostly',
-  'configureawait-library-code',
-  'iasyncdisposable-await-using',
-  'regex-source-generator',
-  'checked-overflow-context'
-]);
+const BATCHES = [
+  {
+    file: 'hourly-batch-001.json',
+    ids: new Set([
+      'frozen-dictionary-read-mostly',
+      'configureawait-library-code',
+      'iasyncdisposable-await-using',
+      'regex-source-generator',
+      'checked-overflow-context'
+    ])
+  },
+  {
+    file: 'hourly-batch-002.json',
+    ids: new Set([
+      'priorityqueue-min-heap',
+      'immutablearray-snapshot',
+      'random-shared-concurrent',
+      'argumentnullexception-throwifnull',
+      'task-waitasync-timeout',
+      'string-create-formatting',
+      'record-with-expression',
+      'async-lock-semaphoreslim',
+      'linq-any-before-enumeration',
+      'stream-position-after-read'
+    ])
+  }
+];
 
 async function json(...parts) {
   return JSON.parse(await readFile(path.join(root, ...parts), 'utf8'));
 }
 
-test('hourly batch 001 adds exactly five fully localized articles', async () => {
-  assert.ok(CONTENT_CATEGORIES.includes(FILE), `${FILE} must be loaded`);
-  const [base, ja, en] = await Promise.all([
-    json('public', 'content', 'articles', FILE),
-    json('public', 'content', 'locales', 'ja', FILE),
-    json('public', 'content', 'locales', 'en', FILE)
-  ]);
-  assert.equal(base.length, 5);
-  assert.deepEqual(new Set(base.map(x => x.id)), IDS);
-  assert.deepEqual(new Set(Object.keys(ja)), IDS);
-  assert.deepEqual(new Set(Object.keys(en)), IDS);
-  for (const article of base) {
-    assert.ok(Array.isArray(article.topics) && article.topics.length > 0, `${article.id}: topics required`);
-    assert.ok(Array.isArray(article.related) && article.related.length > 0, `${article.id}: related required`);
-  }
-  for (const locale of [ja, en]) for (const id of IDS) {
-    for (const field of ['title', 'short', 'summary', 'why', 'tips']) {
-      assert.ok(locale[id]?.[field]?.trim(), `${id}: ${field} required`);
+for (const batch of BATCHES) {
+  test(`${batch.file} adds exactly its approved fully localized articles`, async () => {
+    assert.ok(CONTENT_CATEGORIES.includes(batch.file), `${batch.file} must be loaded`);
+    const [base, ja, en] = await Promise.all([
+      json('public', 'content', 'articles', batch.file),
+      json('public', 'content', 'locales', 'ja', batch.file),
+      json('public', 'content', 'locales', 'en', batch.file)
+    ]);
+    assert.equal(base.length, batch.ids.size);
+    assert.deepEqual(new Set(base.map(x => x.id)), batch.ids);
+    assert.deepEqual(new Set(Object.keys(ja)), batch.ids);
+    assert.deepEqual(new Set(Object.keys(en)), batch.ids);
+    for (const article of base) {
+      assert.ok(Array.isArray(article.topics) && article.topics.length > 0, `${article.id}: topics required`);
+      assert.ok(Array.isArray(article.related) && article.related.length > 0, `${article.id}: related required`);
     }
-    assert.ok(locale[id].tags?.length > 0, `${id}: tags required`);
-  }
-});
+    for (const locale of [ja, en]) for (const id of batch.ids) {
+      for (const field of ['title', 'short', 'summary', 'why', 'tips']) {
+        assert.ok(locale[id]?.[field]?.trim(), `${id}: ${field} required`);
+      }
+      assert.ok(locale[id].tags?.length > 0, `${id}: tags required`);
+    }
+  });
+}
