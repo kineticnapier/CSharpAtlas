@@ -17,6 +17,18 @@ const CONTENT_ID_ALIASES = {
   }
 };
 
+function normalizeExpansionLocaleEntry(id, entry) {
+  if (id !== 'bounded-channel-producer-consumer' || !entry || typeof entry !== 'object') return entry;
+
+  if (entry.title === 'Channel<T> で producer / consumer をつなぐ') {
+    return { ...entry, title: '容量制限付き Channel<T> で producer / consumer をつなぐ' };
+  }
+  if (entry.title === 'Connect producers and consumers with Channel<T>') {
+    return { ...entry, title: 'Connect producers and consumers with a bounded Channel<T>' };
+  }
+  return entry;
+}
+
 export function normalizeContentGroup(file, group) {
   const aliases = CONTENT_ID_ALIASES[file];
   if (!aliases) return group;
@@ -30,7 +42,10 @@ export function normalizeContentGroup(file, group) {
   }
 
   return Object.fromEntries(
-    Object.entries(group ?? {}).map(([id, entry]) => [aliases[id] ?? id, entry])
+    Object.entries(group ?? {}).map(([id, entry]) => {
+      const normalizedId = aliases[id] ?? id;
+      return [normalizedId, normalizeExpansionLocaleEntry(normalizedId, entry)];
+    })
   );
 }
 
