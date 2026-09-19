@@ -4,6 +4,30 @@ const DEFAULT_NODE_SIZE = {
 };
 
 const NODE_VERTICAL_GAP = 40;
+const EDGE_CHANNEL_GAP = 24;
+const EDGE_OBSTACLE_GAP = 28;
+
+export function extractSupportSnippet(article, maxLines = 4) {
+  const bad = typeof article?.bad === 'string' ? article.bad.trim() : '';
+  const code = typeof article?.code === 'string' ? article.code.trim() : '';
+  const source = bad || code;
+  if (!source) return '';
+
+  const lines = source.split('\n');
+  const highlights = Array.isArray(article?.badHighlight)
+    ? article.badHighlight.filter(line => Number.isInteger(line) && line > 0)
+    : [];
+
+  if (!bad || !highlights.length) {
+    return lines.slice(0, maxLines).join('\n');
+  }
+
+  const first = Math.min(...highlights) - 1;
+  const last = Math.max(...highlights) - 1;
+  const start = Math.max(0, first - (maxLines - 1));
+  const end = Math.min(lines.length, Math.max(last + 1, start + 1));
+  return lines.slice(Math.max(start, end - maxLines), end).join('\n');
+}
 
 export function buildQuestChapter(articles, chapter) {
   const articlesById = new Map(articles.map(article => [article.id, article]));
@@ -12,10 +36,11 @@ export function buildQuestChapter(articles, chapter) {
     .map(config => {
       const article = articlesById.get(config.id);
       if (!article) return null;
+      const kind = config.kind ?? 'main';
       return {
         ...article,
-        kind: config.kind ?? 'main',
-        code: config.code ?? '',
+        kind,
+        code: config.code ?? (kind === 'support' ? extractSupportSnippet(article) : ''),
         prerequisites: [...(config.prerequisites ?? [])],
         attachedTo: config.attachedTo ?? null,
         lane: config.lane,
@@ -109,10 +134,32 @@ export function reflowQuestLayout(nodes, measurements = new Map()) {
   }
 
   const positions = new Map();
+  const sizedById = new Map(sized.map(node => [node.id, node]));
+  const parentCenter = node => {
+    const parentIds = node.kind === 'support' && node.attachedTo
+      ? [node.attachedTo]
+      : (node.prerequisites ?? []);
+    const centers = parentIds
+      .map(id => {
+        const parent = sizedById.get(id);
+        const position = positions.get(id);
+        return parent && position ? position.y + parent.height / 2 : null;
+      })
+      .filter(value => value !== null);
+    return centers.length ? centers.reduce((sum, value) => sum + value, 0) / centers.length : null;
+  };
+
   for (const depth of depths) {
     const column = sized
       .filter(node => (node.depth ?? 0) === depth)
-      .sort((a, b) => (a.lane ?? 0) - (b.lane ?? 0) || a.layoutOrder - b.layoutOrder);
+      .sort((a, b) => {
+        const aParent = parentCenter(a);
+        const bParent = parentCenter(b);
+        if (aParent !== null && bParent !== null && aParent !== bParent) return aParent - bParent;
+        if (aParent !== null && bParent === null) return -1;
+        if (aParent === null && bParent !== null) return 1;
+        return (a.lane ?? 0) - (b.lane ?? 0) || a.layoutOrder - b.layoutOrder;
+      });
 
     let nextY = 110;
     for (const node of column) {
@@ -126,6 +173,58 @@ export function reflowQuestLayout(nodes, measurements = new Map()) {
     ...node,
     ...positions.get(node.id)
   }));
+}
+
+export function routeQuestEdgePoints(source, target, nodes, routeOffset = 0) {
+  const sourceWidth = source.width ?? DEFAULT_NODE_SIZE[source.kind === 'support' ? 'support' : 'main'].width;
+  const sourceHeight = source.height ?? DEFAULT_NODE_SIZE[source.kind === 'support' ? 'support' : 'main'].height;
+  const targetHeight = target.height ?? DEFAULT_NODE_SIZE[target.kind === 'support' ? 'support' : 'main'].height;
+  const start = { x: source.x + sourceWidth, y: source.y + sourceHeight / 2 };
+  const end = { x: target.x, y: target.y + targetHeight / 2 };
+
+  const sourceDepth = source.depth ?? 0;
+  const targetDepth = target.depth ?? sourceDepth + 1;
+  const sourceDepthRight = Math.max(...nodes
+    .filter(node => (node.depth ?? 0) === sourceDepth)
+    .map(node => node.x + (node.width ?? DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'].width)));
+  const targetDepthLeft = Math.min(...nodes
+    .filter(node => (node.depth ?? 0) === targetDepth)
+    .map(node => node.x));
+
+  const sourceChannelX = sourceDepthRight + EDGE_CHANNEL_GAP + routeOffset;
+  const targetChannelX = targetDepthLeft - EDGE_CHANNEL_GAP - routeOffset;
+  const intermediate = nodes.filter(node => {
+    const depth = node.depth ?? 0;
+    return depth > sourceDepth && depth < targetDepth;
+  });
+
+  if (!intermediate.length || targetDepth <= sourceDepth + 1) {
+    const midX = (sourceChannelX + targetChannelX) / 2;
+    return [
+      start,
+      { x: midX, y: start.y },
+      { x: midX, y: end.y },
+      end
+    ];
+  }
+
+  const topY = Math.min(...intermediate.map(node => node.y)) - EDGE_OBSTACLE_GAP - routeOffset;
+  const bottomY = Math.max(...intermediate.map(node => {
+    const height = node.height ?? DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'].height;
+    return node.y + height;
+  })) + EDGE_OBSTACLE_GAP + routeOffset;
+  const topCost = Math.abs(start.y - topY) + Math.abs(end.y - topY);
+  const bottomCost = Math.abs(start.y - bottomY) + Math.abs(end.y - bottomY);
+  const routeY = topCost <= bottomCost ? topY : bottomY;
+
+  return [
+    start,
+    { x: sourceChannelX, y: start.y },
+    { x: sourceChannelX, y: routeY },
+    { x: targetChannelX, y: routeY },
+    { x: targetChannelX, y: end.y },
+    end
+  ];
 }
 
 export function questWorldBounds(nodes) {
