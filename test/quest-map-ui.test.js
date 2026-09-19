@@ -28,3 +28,20 @@ test('quest view distinguishes prerequisite and support connections', async () =
   assert.match(css, /stroke-dasharray/);
   assert.match(view, /edge\.kind === 'support'/);
 });
+
+test('quest map opens at a readable native zoom instead of fitting the whole chapter immediately', async () => {
+  const bootstrap = await readFile(new URL('src/quest-bootstrap.js', root), 'utf8');
+  const view = await readFile(new URL('src/quest-view.js', root), 'utf8');
+  assert.match(view, /function resetReadableView\(/);
+  assert.match(view, /requestAnimationFrame\(resetReadableView\)/);
+  assert.doesNotMatch(bootstrap, /requestAnimationFrame\(\(\) => questView\.fit\(\)\)/);
+});
+
+test('quest map avoids persistent transform rasterization and browser text selection while panning', async () => {
+  const css = await readFile(new URL('src/quest-view.css', root), 'utf8');
+  const view = await readFile(new URL('src/quest-view.js', root), 'utf8');
+  assert.doesNotMatch(css, /will-change:\s*transform/);
+  assert.match(css, /\.quest-viewport\s*\{[\s\S]*?user-select:\s*none/);
+  assert.match(css, /\.quest-viewport\s*\{[\s\S]*?touch-action:\s*none/);
+  assert.match(view, /pointerdown[\s\S]*?event\.preventDefault\(\)/);
+});
