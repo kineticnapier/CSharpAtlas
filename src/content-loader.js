@@ -11,20 +11,44 @@ export const CONTENT_CATEGORIES = [
   'advanced-expansion.json'
 ];
 
+const CONTENT_ID_ALIASES = {
+  'advanced-expansion.json': {
+    'collection-expressions': 'collection-expression-syntax'
+  }
+};
+
+export function normalizeContentGroup(file, group) {
+  const aliases = CONTENT_ID_ALIASES[file];
+  if (!aliases) return group;
+
+  if (Array.isArray(group)) {
+    return group.map(article => ({
+      ...article,
+      id: aliases[article.id] ?? article.id,
+      related: (article.related ?? []).map(id => aliases[id] ?? id)
+    }));
+  }
+
+  return Object.fromEntries(
+    Object.entries(group ?? {}).map(([id, entry]) => [aliases[id] ?? id, entry])
+  );
+}
+
+async function loadGroups(fetchJson, prefix) {
+  return Promise.all(CONTENT_CATEGORIES.map(async file => {
+    const group = await fetchJson(`${prefix}/${file}`);
+    return normalizeContentGroup(file, group);
+  }));
+}
+
 export async function loadLocalizedContent({ fetchJson, locale, fallbackLocale = 'ja' }) {
   if (typeof fetchJson !== 'function') throw new Error('fetchJson is required');
 
-  const baseGroups = await Promise.all(
-    CONTENT_CATEGORIES.map(file => fetchJson(`./content/articles/${file}`))
-  );
-  const fallbackGroups = await Promise.all(
-    CONTENT_CATEGORIES.map(file => fetchJson(`./content/locales/${fallbackLocale}/${file}`))
-  );
+  const baseGroups = await loadGroups(fetchJson, './content/articles');
+  const fallbackGroups = await loadGroups(fetchJson, `./content/locales/${fallbackLocale}`);
   const requestedGroups = locale === fallbackLocale
     ? fallbackGroups
-    : await Promise.all(
-      CONTENT_CATEGORIES.map(file => fetchJson(`./content/locales/${locale}/${file}`))
-    );
+    : await loadGroups(fetchJson, `./content/locales/${locale}`);
 
   const baseArticles = baseGroups.flat();
   const mergeLocaleGroups = groups => Object.assign({}, ...groups);
