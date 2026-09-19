@@ -49,7 +49,7 @@ test('expansion shard contains exactly the approved 50 localized articles', asyn
   assert.deepEqual(new Set(Object.keys(ja)), EXPECTED_IDS);
   assert.deepEqual(new Set(Object.keys(en)), EXPECTED_IDS);
 
-  const typeCounts = Object.create(null);
+  const typeCounts = {};
   for (const article of base) {
     typeCounts[article.type] = (typeCounts[article.type] ?? 0) + 1;
     assert.ok(Array.isArray(article.related), `${article.id}: related must be an array`);
