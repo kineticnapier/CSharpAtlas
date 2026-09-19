@@ -13,6 +13,65 @@ const TYPE_COLORS = {
   concept: '#3fb950'
 };
 
+export function roundedQuestPath(points, radius = 18) {
+  const compact = [];
+  for (const point of points) {
+    const previous = compact.at(-1);
+    if (!previous || previous.x !== point.x || previous.y !== point.y) {
+      compact.push(point);
+    }
+  }
+
+  const routed = [];
+  for (let index = 0; index < compact.length; index += 1) {
+    const point = compact[index];
+    const previous = routed.at(-1);
+    const next = compact[index + 1];
+    const isCollinear = previous && next && (
+      (previous.x === point.x && point.x === next.x) ||
+      (previous.y === point.y && point.y === next.y)
+    );
+    if (!isCollinear) routed.push(point);
+  }
+
+  if (!routed.length) return '';
+  if (routed.length === 1) return `M ${routed[0].x} ${routed[0].y}`;
+
+  let path = `M ${routed[0].x} ${routed[0].y}`;
+  const requestedRadius = Math.max(0, radius);
+
+  for (let index = 1; index < routed.length - 1; index += 1) {
+    const previous = routed[index - 1];
+    const corner = routed[index];
+    const next = routed[index + 1];
+    const incomingX = corner.x - previous.x;
+    const incomingY = corner.y - previous.y;
+    const outgoingX = next.x - corner.x;
+    const outgoingY = next.y - corner.y;
+    const incomingLength = Math.hypot(incomingX, incomingY);
+    const outgoingLength = Math.hypot(outgoingX, outgoingY);
+    const cornerRadius = Math.min(requestedRadius, incomingLength / 2, outgoingLength / 2);
+
+    if (!cornerRadius) {
+      path += ` L ${corner.x} ${corner.y}`;
+      continue;
+    }
+
+    const enter = {
+      x: corner.x - (incomingX / incomingLength) * cornerRadius,
+      y: corner.y - (incomingY / incomingLength) * cornerRadius
+    };
+    const leave = {
+      x: corner.x + (outgoingX / outgoingLength) * cornerRadius,
+      y: corner.y + (outgoingY / outgoingLength) * cornerRadius
+    };
+    path += ` L ${enter.x} ${enter.y} Q ${corner.x} ${corner.y} ${leave.x} ${leave.y}`;
+  }
+
+  const last = routed.at(-1);
+  return `${path} L ${last.x} ${last.y}`;
+}
+
 export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail, onOpen, typeLabel, copy }) {
   let graph = { nodes: [], edges: [] };
   let scale = 1;
@@ -32,8 +91,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
   }
 
   function pointsToPath(points) {
-    if (!points.length) return '';
-    return points.slice(1).reduce((path, point) => `${path} L ${point.x} ${point.y}`, `M ${points[0].x} ${points[0].y}`);
+    return roundedQuestPath(points);
   }
 
   function syncWorldBounds() {
