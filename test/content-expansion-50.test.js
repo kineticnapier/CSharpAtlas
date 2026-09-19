@@ -15,7 +15,7 @@ const enPath = path.join(root, 'public', 'content', 'locales', 'en', EXPANSION_F
 const EXPECTED_IDS = new Set([
   'span-slicing', 'memory-buffer', 'ref-out-in-parameters', 'yield-return-streaming', 'async-enumerable-streaming',
   'semaphore-slim-limit', 'datetimeoffset-conversion', 'httpclient-reuse', 'json-options-web', 'file-stream-async',
-  'channel-producer-consumer', 'concurrent-dictionary-update', 'periodic-timer-loop', 'task-whenall-results', 'cancellation-timeout',
+  'bounded-channel-producer-consumer', 'concurrent-dictionary-update', 'periodic-timer-loop', 'task-whenall-results', 'cancellation-timeout',
   'span-vs-memory', 'ref-struct-lifetime', 'generic-constraints-design', 'required-members', 'collection-expressions',
   'valuetask-guidance', 'cancellation-cooperation', 'synchronization-context', 'exception-filters', 'datetime-kind-model',
   'equality-comparer-design', 'variance-generic-interfaces',
