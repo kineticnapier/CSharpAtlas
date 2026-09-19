@@ -57,3 +57,19 @@ test('learning nodes show representative code and use their measured DOM size fo
   assert.match(view, /offsetHeight/);
   assert.match(view, /reflowQuestLayout/);
 });
+
+test('support cards size to their title and minimal failing code without overlaying the support label', async () => {
+  const css = await readFile(new URL('src/quest-view.css', root), 'utf8');
+  const view = await readFile(new URL('src/quest-view.js', root), 'utf8');
+  assert.match(css, /\.quest-node\.support\s*\{[\s\S]*?width:\s*max-content/);
+  assert.match(css, /\.quest-node\.support\s*\{[\s\S]*?max-width:\s*340px/);
+  assert.match(css, /\.quest-node-support\s*\{[\s\S]*?position:\s*static/);
+  assert.match(view, /const code = node\.code/);
+});
+
+test('quest edges use obstacle-aware orthogonal routing instead of cubic curves', async () => {
+  const view = await readFile(new URL('src/quest-view.js', root), 'utf8');
+  assert.match(view, /routeQuestEdgePoints/);
+  assert.match(view, /pointsToPath/);
+  assert.doesNotMatch(view, /\bC \$\{/);
+});
