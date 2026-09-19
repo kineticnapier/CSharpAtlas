@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { CONTENT_CATEGORIES } from '../src/content-loader.js';
+import { CONTENT_CATEGORIES, normalizeContentGroup } from '../src/content-loader.js';
 
 const EXPANSION_FILE = 'advanced-expansion.json';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -40,7 +40,10 @@ test('expansion shard contains exactly the approved 50 localized articles', asyn
   assert.equal(existsSync(jaPath), true, 'Japanese expansion locale must exist');
   assert.equal(existsSync(enPath), true, 'English expansion locale must exist');
 
-  const [base, ja, en] = await Promise.all([json(basePath), json(jaPath), json(enPath)]);
+  const [rawBase, rawJa, rawEn] = await Promise.all([json(basePath), json(jaPath), json(enPath)]);
+  const base = normalizeContentGroup(EXPANSION_FILE, rawBase);
+  const ja = normalizeContentGroup(EXPANSION_FILE, rawJa);
+  const en = normalizeContentGroup(EXPANSION_FILE, rawEn);
   const ids = new Set(base.map(article => article.id));
 
   assert.equal(base.length, 50);
