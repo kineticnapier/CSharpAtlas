@@ -7,7 +7,8 @@ export const CONTENT_CATEGORIES = [
   'compiler-warnings.json',
   'concepts.json',
   'code-recipes.json',
-  'logic-errors.json'
+  'logic-errors.json',
+  'advanced-expansion.json'
 ];
 
 export async function loadLocalizedContent({ fetchJson, locale, fallbackLocale = 'ja' }) {
