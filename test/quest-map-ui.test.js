@@ -73,3 +73,12 @@ test('quest edges use obstacle-aware orthogonal routing instead of cubic curves'
   assert.match(view, /pointsToPath/);
   assert.doesNotMatch(view, /\bC \$\{/);
 });
+
+test('quest mode expands the page and map viewport to use most of the browser window', async () => {
+  const bootstrap = await readFile(new URL('src/quest-bootstrap.js', root), 'utf8');
+  const css = await readFile(new URL('src/quest-view.css', root), 'utf8');
+  assert.match(bootstrap, /document\.body\.classList\.toggle\('quest-mode', showingQuest\)/);
+  assert.match(css, /body\.quest-mode\s+main\s*\{[\s\S]*?max-width:\s*(?:1800px|none)/);
+  assert.match(css, /body\.quest-mode\s+\.hero\s*\{[\s\S]*?display:\s*none/);
+  assert.match(css, /body\.quest-mode\s+\.quest-viewport\s*\{[\s\S]*?(?:height|min-height):\s*calc\(100dvh\s*-\s*\d+px\)/);
+});
