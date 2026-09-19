@@ -3,6 +3,8 @@ const DEFAULT_NODE_SIZE = {
   support: { width: 180, height: 68 }
 };
 
+const NODE_VERTICAL_GAP = 40;
+
 export function buildQuestChapter(articles, chapter) {
   const articlesById = new Map(articles.map(article => [article.id, article]));
   const configById = new Map(chapter.nodes.map(node => [node.id, node]));
@@ -83,13 +85,14 @@ export function computeQuestLayout(nodes) {
 export function reflowQuestLayout(nodes, measurements = new Map()) {
   if (!nodes.length) return [];
 
-  const sized = nodes.map(node => {
+  const sized = nodes.map((node, index) => {
     const fallback = DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'];
     const measured = measurements.get(node.id) ?? {};
     return {
       ...node,
       width: measured.width ?? node.width ?? fallback.width,
-      height: measured.height ?? node.height ?? fallback.height
+      height: measured.height ?? node.height ?? fallback.height,
+      layoutOrder: index
     };
   });
 
@@ -105,22 +108,23 @@ export function reflowQuestLayout(nodes, measurements = new Map()) {
     nextX += maxWidthByDepth.get(depth) + 110;
   }
 
-  const lanes = [...new Set(sized.map(node => node.lane ?? 0))].sort((a, b) => a - b);
-  const maxHeightByLane = new Map(lanes.map(lane => [
-    lane,
-    Math.max(...sized.filter(node => (node.lane ?? 0) === lane).map(node => node.height))
-  ]));
-  const laneY = new Map();
-  let nextY = 110;
-  for (const lane of lanes) {
-    laneY.set(lane, nextY);
-    nextY += maxHeightByLane.get(lane) + 64;
+  const positions = new Map();
+  for (const depth of depths) {
+    const column = sized
+      .filter(node => (node.depth ?? 0) === depth)
+      .sort((a, b) => (a.lane ?? 0) - (b.lane ?? 0) || a.layoutOrder - b.layoutOrder);
+
+    let nextY = 110;
+    for (const node of column) {
+      const y = nextY + (node.offsetY ?? 0);
+      positions.set(node.id, { x: depthX.get(depth), y });
+      nextY = Math.max(nextY, y) + node.height + NODE_VERTICAL_GAP;
+    }
   }
 
-  return sized.map(node => ({
+  return sized.map(({ layoutOrder, ...node }) => ({
     ...node,
-    x: depthX.get(node.depth ?? 0),
-    y: laneY.get(node.lane ?? 0) + (node.offsetY ?? 0)
+    ...positions.get(node.id)
   }));
 }
 
