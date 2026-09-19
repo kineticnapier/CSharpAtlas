@@ -1,4 +1,4 @@
-import { questWorldBounds } from './quest-map.js';
+import { questWorldBounds, reflowQuestLayout } from './quest-map.js';
 
 const TYPE_COLORS = {
   code: '#58a6ff',
@@ -23,16 +23,51 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
   }
 
+  function nodeWidth(node) {
+    return node.width ?? (node.kind === 'support' ? 180 : 220);
+  }
+
+  function nodeHeight(node) {
+    return node.height ?? (node.kind === 'support' ? 68 : 86);
+  }
+
   function edgePath(a, b) {
-    const aWidth = a.kind === 'support' ? 180 : 220;
-    const aHeight = a.kind === 'support' ? 68 : 86;
-    const bHeight = b.kind === 'support' ? 68 : 86;
-    const startX = a.x + aWidth;
-    const startY = a.y + aHeight / 2;
+    const startX = a.x + nodeWidth(a);
+    const startY = a.y + nodeHeight(a) / 2;
     const endX = b.x;
-    const endY = b.y + bHeight / 2;
+    const endY = b.y + nodeHeight(b) / 2;
     const bend = Math.max(70, (endX - startX) * 0.45);
     return `M ${startX} ${startY} C ${startX + bend} ${startY}, ${endX - bend} ${endY}, ${endX} ${endY}`;
+  }
+
+  function syncWorldBounds() {
+    const bounds = questWorldBounds(graph.nodes);
+    world.style.width = `${bounds.width}px`;
+    world.style.height = `${bounds.height}px`;
+    edgeLayer.setAttribute('viewBox', `0 0 ${bounds.width} ${bounds.height}`);
+    edgeLayer.setAttribute('width', bounds.width);
+    edgeLayer.setAttribute('height', bounds.height);
+  }
+
+  function renderEdges() {
+    const byId = new Map(graph.nodes.map(node => [node.id, node]));
+    edgeLayer.innerHTML = graph.edges.map(edge => {
+      const source = byId.get(edge.source);
+      const target = byId.get(edge.target);
+      if (!source || !target) return '';
+      const className = edge.kind === 'support' ? 'quest-edge support' : 'quest-edge';
+      return `<path class="${className}" d="${edgePath(source, target)}"></path>`;
+    }).join('');
+  }
+
+  function positionNodes() {
+    const byId = new Map(graph.nodes.map(node => [node.id, node]));
+    nodeLayer.querySelectorAll('.quest-node').forEach(button => {
+      const node = byId.get(button.dataset.id);
+      if (!node) return;
+      button.style.left = `${node.x}px`;
+      button.style.top = `${node.y}px`;
+    });
   }
 
   function renderDetail(node) {
@@ -74,39 +109,43 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
       return;
     }
 
-    const anchorHeight = anchor.kind === 'support' ? 68 : 86;
     panX = 48 - anchor.x;
-    panY = Math.max(24, rect.height / 2 - (anchor.y + anchorHeight / 2));
+    panY = Math.max(24, rect.height / 2 - (anchor.y + nodeHeight(anchor) / 2));
     applyTransform();
+  }
+
+  function measureAndReflow() {
+    const measurements = new Map();
+    nodeLayer.querySelectorAll('.quest-node').forEach(button => {
+      measurements.set(button.dataset.id, {
+        width: button.offsetWidth,
+        height: button.offsetHeight
+      });
+    });
+    graph = { ...graph, nodes: reflowQuestLayout(graph.nodes, measurements) };
+    positionNodes();
+    syncWorldBounds();
+    renderEdges();
   }
 
   function render(nextGraph) {
     graph = nextGraph;
     selectedId = null;
-    const byId = new Map(graph.nodes.map(node => [node.id, node]));
-    const bounds = questWorldBounds(graph.nodes);
-    world.style.width = `${bounds.width}px`;
-    world.style.height = `${bounds.height}px`;
-    edgeLayer.setAttribute('viewBox', `0 0 ${bounds.width} ${bounds.height}`);
-    edgeLayer.setAttribute('width', bounds.width);
-    edgeLayer.setAttribute('height', bounds.height);
-
-    edgeLayer.innerHTML = graph.edges.map(edge => {
-      const source = byId.get(edge.source);
-      const target = byId.get(edge.target);
-      if (!source || !target) return '';
-      const className = edge.kind === 'support' ? 'quest-edge support' : 'quest-edge';
-      return `<path class="${className}" d="${edgePath(source, target)}"></path>`;
-    }).join('');
+    syncWorldBounds();
+    renderEdges();
 
     nodeLayer.innerHTML = graph.nodes.map(node => {
       const color = TYPE_COLORS[node.type] ?? '#8b949e';
       const support = node.kind === 'support';
+      const code = !support && node.code
+        ? `<code class="quest-node-code">${escapeHtml(node.code)}</code>`
+        : '';
       return `
         <button type="button" class="quest-node ${support ? 'support' : 'main'}" data-id="${escapeHtml(node.id)}"
           style="left:${node.x}px;top:${node.y}px;--quest-color:${color}">
           <span class="quest-node-type">${escapeHtml(typeLabel(node.type))}</span>
           <strong>${escapeHtml(node.title)}</strong>
+          ${code}
           ${support ? `<span class="quest-node-support">${copy.support}</span>` : ''}
         </button>
       `;
@@ -124,7 +163,10 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     });
 
     renderDetail(null);
-    requestAnimationFrame(resetReadableView);
+    requestAnimationFrame(() => {
+      measureAndReflow();
+      requestAnimationFrame(resetReadableView);
+    });
   }
 
   function fit() {
