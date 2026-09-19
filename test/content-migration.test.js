@@ -13,7 +13,8 @@ const categories = [
   'compiler-warnings.json',
   'concepts.json',
   'code-recipes.json',
-  'logic-errors.json'
+  'logic-errors.json',
+  'advanced-expansion.json'
 ];
 const validTypes = new Set([
   'code',
@@ -99,5 +100,5 @@ test('localized article corpus has valid IDs, types, fields, and links', async (
   }
 
   assert.deepEqual(missingTargets, [], `broken article links:\n${missingTargets.join('\n')}`);
-  assert.ok(base.length >= 100, 'i18n foundation must preserve at least the original 100 articles');
+  assert.ok(base.length >= 150, 'expanded corpus must preserve the existing articles and include the new batch');
 });
