@@ -14,7 +14,10 @@
         { "id": "methods-parameters-returns", "code": "int Add(int a, int b) => a + b;", "prerequisites": ["variables-assignment"], "lane": 1 },
         { "id": "arrays-basics", "code": "int[] nums = { 1, 2, 3 };", "prerequisites": ["while-do-loops", "methods-parameters-returns"], "lane": 1 },
         { "id": "string-literals", "code": "string name = \"Alice\";", "prerequisites": ["variables-assignment"], "lane": 4 },
-        { "id": "index-out-of-range", "kind": "support", "attachedTo": "arrays-basics", "lane": 3 }
+        { "id": "index-out-of-range", "kind": "support", "attachedTo": "arrays-basics", "lane": 3 },
+        { "id": "floating-equality", "kind": "support", "attachedTo": "numeric-types", "lane": 5 },
+        { "id": "integer-overflow", "kind": "support", "attachedTo": "numeric-types", "lane": 6 },
+        { "id": "empty-statement-loop", "kind": "support", "attachedTo": "while-do-loops", "lane": 7 }
       ]
     },
     {
@@ -30,7 +33,9 @@
         { "id": "delegates", "code": "Func<int, int> f = x => x * 2;", "prerequisites": ["value-reference-types"], "lane": 4 },
         { "id": "events", "code": "button.Click += OnClick;", "prerequisites": ["delegates"], "lane": 4 },
         { "id": "pattern-matching", "code": "if (obj is string s) { ... }", "prerequisites": ["value-reference-types"], "lane": 3 },
-        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 5 }
+        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 5 },
+        { "id": "reference-equality", "kind": "support", "attachedTo": "value-reference-types", "lane": 6 },
+        { "id": "record-shallow-copy", "kind": "support", "attachedTo": "records", "lane": 7 }
       ]
     },
     {
@@ -47,7 +52,10 @@
         { "id": "linq-deferred", "code": "var query = list.Where(x => x > 0);", "prerequisites": ["list-filter", "linq-select"], "lane": 2 },
         { "id": "linq-groupby", "code": "var groups = items.GroupBy(x => x.Category);", "prerequisites": ["linq-deferred"], "lane": 1 },
         { "id": "linq-distinct", "code": "var unique = list.Distinct();", "prerequisites": ["hashset-basic", "linq-deferred"], "lane": 3 },
-        { "id": "invalid-operation", "kind": "support", "attachedTo": "linq-deferred", "lane": 4 }
+        { "id": "invalid-operation", "kind": "support", "attachedTo": "linq-deferred", "lane": 4 },
+        { "id": "deferred-enumeration", "kind": "support", "attachedTo": "linq-deferred", "lane": 5 },
+        { "id": "collection-modified-enumeration", "kind": "support", "attachedTo": "ienumerable", "lane": 6 },
+        { "id": "mutable-hash-keys", "kind": "support", "attachedTo": "hashset-basic", "lane": 7 }
       ]
     },
     {
@@ -62,7 +70,8 @@
         { "id": "argument-null", "kind": "support", "attachedTo": "nullable", "lane": 3 },
         { "id": "nullref", "kind": "support", "attachedTo": "nullable", "lane": 4 },
         { "id": "format-exception", "kind": "support", "attachedTo": "try-catch", "lane": 5 },
-        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 6 }
+        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 6 },
+        { "id": "exception-rethrow", "kind": "support", "attachedTo": "try-catch", "lane": 7 }
       ]
     },
     {
@@ -78,7 +87,8 @@
         { "id": "io-exception", "kind": "support", "attachedTo": "file-write", "lane": 4 },
         { "id": "directory-not-found", "kind": "support", "attachedTo": "directory-enumerate", "lane": 5 },
         { "id": "unauthorized-access", "kind": "support", "attachedTo": "file-write", "lane": 6 },
-        { "id": "object-disposed", "kind": "support", "attachedTo": "idisposable", "lane": 7 }
+        { "id": "object-disposed", "kind": "support", "attachedTo": "idisposable", "lane": 7 },
+        { "id": "json-reference-cycles", "kind": "support", "attachedTo": "json-write", "lane": 8 }
       ]
     },
     {
@@ -90,7 +100,9 @@
         { "id": "async-await", "code": "var data = await LoadAsync();", "prerequisites": ["task"], "lane": 1 },
         { "id": "task-delay", "code": "await Task.Delay(1000);", "prerequisites": ["async-await"], "lane": 0 },
         { "id": "cancellation-token", "code": "await WorkAsync(token);", "prerequisites": ["async-await"], "lane": 2 },
-        { "id": "operation-canceled", "kind": "support", "attachedTo": "cancellation-token", "lane": 4 }
+        { "id": "operation-canceled", "kind": "support", "attachedTo": "cancellation-token", "lane": 4 },
+        { "id": "async-void-errors", "kind": "support", "attachedTo": "async-await", "lane": 5 },
+        { "id": "cancel-without-awaiting", "kind": "support", "attachedTo": "cancellation-token", "lane": 6 }
       ]
     },
     {
@@ -105,7 +117,8 @@
         { "id": "tuples-deconstruction", "code": "var (x, y) = point;", "prerequisites": ["string-interpolation"], "lane": 3 },
         { "id": "enums-flags", "code": "[Flags] enum Permission { Read = 1, Write = 2 }", "prerequisites": ["tuples-deconstruction"], "lane": 3 },
         { "id": "pattern-matching", "code": "var n = value switch { int x => x, _ => 0 };", "prerequisites": ["tuples-deconstruction"], "lane": 4 },
-        { "id": "format-exception", "kind": "support", "attachedTo": "date-format", "lane": 5 }
+        { "id": "format-exception", "kind": "support", "attachedTo": "date-format", "lane": 5 },
+        { "id": "regex-escaping", "kind": "support", "attachedTo": "regex-basic", "lane": 6 }
       ]
     }
   ]
