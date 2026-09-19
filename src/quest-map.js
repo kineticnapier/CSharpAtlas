@@ -7,6 +7,21 @@ const NODE_VERTICAL_GAP = 40;
 const EDGE_CHANNEL_GAP = 24;
 const EDGE_OBSTACLE_GAP = 28;
 const EDGE_BOUND_PADDING = 80;
+const EDGE_LANE_SPACING = 8;
+const EDGE_LANE_MAX = 24;
+const EDGE_LANE_OVERLAP_PADDING = 12;
+
+function nodeSize(node) {
+  return DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'];
+}
+
+function nodeWidth(node) {
+  return node.width ?? nodeSize(node).width;
+}
+
+function nodeHeight(node) {
+  return node.height ?? nodeSize(node).height;
+}
 
 export function extractSupportSnippet(article, maxLines = 4) {
   const bad = typeof article?.bad === 'string' ? article.bad.trim() : '';
@@ -112,7 +127,7 @@ export function reflowQuestLayout(nodes, measurements = new Map()) {
   if (!nodes.length) return [];
 
   const sized = nodes.map((node, index) => {
-    const fallback = DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'];
+    const fallback = nodeSize(node);
     const measured = measurements.get(node.id) ?? {};
     return {
       ...node,
@@ -176,31 +191,73 @@ export function reflowQuestLayout(nodes, measurements = new Map()) {
   }));
 }
 
+export function assignEdgeRouteOffsets(edges, nodes) {
+  const byId = new Map(nodes.map(node => [node.id, node]));
+  const groups = new Map();
+  const offsets = Array(edges.length).fill(0);
+
+  edges.forEach((edge, index) => {
+    const source = byId.get(edge.source);
+    const target = byId.get(edge.target);
+    if (!source || !target) return;
+    const sourceDepth = source.depth ?? 0;
+    const targetDepth = target.depth ?? sourceDepth + 1;
+    const startY = source.y + nodeHeight(source) / 2;
+    const endY = target.y + nodeHeight(target) / 2;
+    const channelKey = `${sourceDepth}:${targetDepth}`;
+    const entry = {
+      index,
+      kind: edge.kind,
+      minY: Math.min(startY, endY),
+      maxY: Math.max(startY, endY)
+    };
+    if (!groups.has(channelKey)) groups.set(channelKey, []);
+    groups.get(channelKey).push(entry);
+  });
+
+  const laneSlots = [0, 1, -1, 2, -2, 3, -3];
+  for (const group of groups.values()) {
+    group.sort((a, b) => {
+      const kindOrder = (a.kind === 'support') - (b.kind === 'support');
+      return kindOrder || a.minY - b.minY || a.index - b.index;
+    });
+
+    const assigned = [];
+    for (const edge of group) {
+      const overlaps = assigned.filter(other => (
+        edge.minY < other.maxY + EDGE_LANE_OVERLAP_PADDING &&
+        other.minY < edge.maxY + EDGE_LANE_OVERLAP_PADDING
+      ));
+      const usedSlots = new Set(overlaps.map(other => other.slot));
+      const slot = laneSlots.find(candidate => !usedSlots.has(candidate)) ?? laneSlots.at(-1);
+      offsets[edge.index] = Math.max(-EDGE_LANE_MAX, Math.min(EDGE_LANE_MAX, slot * EDGE_LANE_SPACING));
+      assigned.push({ ...edge, slot });
+    }
+  }
+
+  return offsets;
+}
+
 export function routeQuestEdgePoints(source, target, nodes, routeOffset = 0) {
-  const sourceWidth = source.width ?? DEFAULT_NODE_SIZE[source.kind === 'support' ? 'support' : 'main'].width;
-  const sourceHeight = source.height ?? DEFAULT_NODE_SIZE[source.kind === 'support' ? 'support' : 'main'].height;
-  const targetHeight = target.height ?? DEFAULT_NODE_SIZE[target.kind === 'support' ? 'support' : 'main'].height;
-  const start = { x: source.x + sourceWidth, y: source.y + sourceHeight / 2 };
-  const end = { x: target.x, y: target.y + targetHeight / 2 };
+  const start = { x: source.x + nodeWidth(source), y: source.y + nodeHeight(source) / 2 };
+  const end = { x: target.x, y: target.y + nodeHeight(target) / 2 };
 
   const sourceDepth = source.depth ?? 0;
   const targetDepth = target.depth ?? sourceDepth + 1;
   const sourceDepthRight = Math.max(...nodes
     .filter(node => (node.depth ?? 0) === sourceDepth)
-    .map(node => node.x + (node.width ?? DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'].width)));
+    .map(node => node.x + nodeWidth(node)));
   const targetDepthLeft = Math.min(...nodes
     .filter(node => (node.depth ?? 0) === targetDepth)
     .map(node => node.x));
 
-  const sourceChannelX = sourceDepthRight + EDGE_CHANNEL_GAP + routeOffset;
-  const targetChannelX = targetDepthLeft - EDGE_CHANNEL_GAP - routeOffset;
   const intermediate = nodes.filter(node => {
     const depth = node.depth ?? 0;
     return depth > sourceDepth && depth < targetDepth;
   });
 
   if (!intermediate.length || targetDepth <= sourceDepth + 1) {
-    const midX = (sourceChannelX + targetChannelX) / 2;
+    const midX = (sourceDepthRight + targetDepthLeft) / 2 + routeOffset;
     return [
       start,
       { x: midX, y: start.y },
@@ -209,14 +266,14 @@ export function routeQuestEdgePoints(source, target, nodes, routeOffset = 0) {
     ];
   }
 
-  const topY = Math.min(...intermediate.map(node => node.y)) - EDGE_OBSTACLE_GAP - routeOffset;
-  const bottomY = Math.max(...intermediate.map(node => {
-    const height = node.height ?? DEFAULT_NODE_SIZE[node.kind === 'support' ? 'support' : 'main'].height;
-    return node.y + height;
-  })) + EDGE_OBSTACLE_GAP + routeOffset;
-  const topCost = Math.abs(start.y - topY) + Math.abs(end.y - topY);
-  const bottomCost = Math.abs(start.y - bottomY) + Math.abs(end.y - bottomY);
-  const routeY = topCost <= bottomCost ? topY : bottomY;
+  const sourceChannelX = sourceDepthRight + EDGE_CHANNEL_GAP;
+  const targetChannelX = targetDepthLeft - EDGE_CHANNEL_GAP;
+  const laneClearance = EDGE_OBSTACLE_GAP + EDGE_LANE_MAX;
+  const topBase = Math.min(...intermediate.map(node => node.y)) - laneClearance;
+  const bottomBase = Math.max(...intermediate.map(node => node.y + nodeHeight(node))) + laneClearance;
+  const topCost = Math.abs(start.y - topBase) + Math.abs(end.y - topBase);
+  const bottomCost = Math.abs(start.y - bottomBase) + Math.abs(end.y - bottomBase);
+  const routeY = (topCost <= bottomCost ? topBase : bottomBase) + routeOffset;
 
   return [
     start,
@@ -231,7 +288,7 @@ export function routeQuestEdgePoints(source, target, nodes, routeOffset = 0) {
 export function questWorldBounds(nodes) {
   if (!nodes.length) return { width: 900, height: 560 };
   return {
-    width: Math.max(900, Math.max(...nodes.map(node => node.x + (node.width ?? 220))) + 140),
-    height: Math.max(560, Math.max(...nodes.map(node => node.y + (node.height ?? 86))) + EDGE_BOUND_PADDING + 40)
+    width: Math.max(900, Math.max(...nodes.map(node => node.x + nodeWidth(node))) + 140),
+    height: Math.max(560, Math.max(...nodes.map(node => node.y + nodeHeight(node))) + EDGE_BOUND_PADDING + 40)
   };
 }
