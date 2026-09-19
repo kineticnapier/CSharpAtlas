@@ -45,3 +45,15 @@ test('quest map avoids persistent transform rasterization and browser text selec
   assert.match(css, /\.quest-viewport\s*\{[\s\S]*?touch-action:\s*none/);
   assert.match(view, /pointerdown[\s\S]*?event\.preventDefault\(\)/);
 });
+
+test('learning nodes show representative code and use their measured DOM size for layout', async () => {
+  const css = await readFile(new URL('src/quest-view.css', root), 'utf8');
+  const view = await readFile(new URL('src/quest-view.js', root), 'utf8');
+  assert.match(css, /\.quest-node-code/);
+  assert.match(css, /width:\s*max-content/);
+  assert.match(css, /max-width:\s*360px/);
+  assert.match(view, /quest-node-code/);
+  assert.match(view, /offsetWidth/);
+  assert.match(view, /offsetHeight/);
+  assert.match(view, /reflowQuestLayout/);
+});
