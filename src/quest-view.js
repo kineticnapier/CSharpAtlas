@@ -1,4 +1,5 @@
 import {
+  assignEdgeRouteOffsets,
   questWorldBounds,
   reflowQuestLayout,
   routeQuestEdgePoints
@@ -105,13 +106,13 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
 
   function renderEdges() {
     const byId = new Map(graph.nodes.map(node => [node.id, node]));
+    const routeOffsets = assignEdgeRouteOffsets(graph.edges, graph.nodes);
     edgeLayer.innerHTML = graph.edges.map((edge, index) => {
       const source = byId.get(edge.source);
       const target = byId.get(edge.target);
       if (!source || !target) return '';
       const className = edge.kind === 'support' ? 'quest-edge support' : 'quest-edge';
-      const routeOffset = (index % 4) * 6;
-      const path = pointsToPath(routeQuestEdgePoints(source, target, graph.nodes, routeOffset));
+      const path = pointsToPath(routeQuestEdgePoints(source, target, graph.nodes, routeOffsets[index] ?? 0));
       return `<path class="${className}" d="${path}"></path>`;
     }).join('');
   }
