@@ -1,4 +1,8 @@
-import { questWorldBounds, reflowQuestLayout } from './quest-map.js';
+import {
+  questWorldBounds,
+  reflowQuestLayout,
+  routeQuestEdgePoints
+} from './quest-map.js';
 
 const TYPE_COLORS = {
   code: '#58a6ff',
@@ -23,21 +27,13 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
   }
 
-  function nodeWidth(node) {
-    return node.width ?? (node.kind === 'support' ? 180 : 220);
-  }
-
   function nodeHeight(node) {
     return node.height ?? (node.kind === 'support' ? 68 : 86);
   }
 
-  function edgePath(a, b) {
-    const startX = a.x + nodeWidth(a);
-    const startY = a.y + nodeHeight(a) / 2;
-    const endX = b.x;
-    const endY = b.y + nodeHeight(b) / 2;
-    const bend = Math.max(70, (endX - startX) * 0.45);
-    return `M ${startX} ${startY} C ${startX + bend} ${startY}, ${endX - bend} ${endY}, ${endX} ${endY}`;
+  function pointsToPath(points) {
+    if (!points.length) return '';
+    return points.slice(1).reduce((path, point) => `${path} L ${point.x} ${point.y}`, `M ${points[0].x} ${points[0].y}`);
   }
 
   function syncWorldBounds() {
@@ -51,12 +47,14 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
 
   function renderEdges() {
     const byId = new Map(graph.nodes.map(node => [node.id, node]));
-    edgeLayer.innerHTML = graph.edges.map(edge => {
+    edgeLayer.innerHTML = graph.edges.map((edge, index) => {
       const source = byId.get(edge.source);
       const target = byId.get(edge.target);
       if (!source || !target) return '';
       const className = edge.kind === 'support' ? 'quest-edge support' : 'quest-edge';
-      return `<path class="${className}" d="${edgePath(source, target)}"></path>`;
+      const routeOffset = (index % 4) * 6;
+      const path = pointsToPath(routeQuestEdgePoints(source, target, graph.nodes, routeOffset));
+      return `<path class="${className}" d="${path}"></path>`;
     }).join('');
   }
 
@@ -137,16 +135,18 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     nodeLayer.innerHTML = graph.nodes.map(node => {
       const color = TYPE_COLORS[node.type] ?? '#8b949e';
       const support = node.kind === 'support';
-      const code = !support && node.code
+      const code = node.code
         ? `<code class="quest-node-code">${escapeHtml(node.code)}</code>`
         : '';
       return `
         <button type="button" class="quest-node ${support ? 'support' : 'main'}" data-id="${escapeHtml(node.id)}"
           style="left:${node.x}px;top:${node.y}px;--quest-color:${color}">
-          <span class="quest-node-type">${escapeHtml(typeLabel(node.type))}</span>
+          <span class="quest-node-meta">
+            <span class="quest-node-type">${escapeHtml(typeLabel(node.type))}</span>
+            ${support ? `<span class="quest-node-support">${copy.support}</span>` : ''}
+          </span>
           <strong>${escapeHtml(node.title)}</strong>
           ${code}
-          ${support ? `<span class="quest-node-support">${copy.support}</span>` : ''}
         </button>
       `;
     }).join('');
