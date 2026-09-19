@@ -3,19 +3,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { CONTENT_CATEGORIES, normalizeContentGroup } from '../src/content-loader.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentDir = path.join(root, 'public', 'content');
-const categories = [
-  'items.json',
-  'exceptions.json',
-  'compiler-errors.json',
-  'compiler-warnings.json',
-  'concepts.json',
-  'code-recipes.json',
-  'logic-errors.json',
-  'advanced-expansion.json'
-];
 const validTypes = new Set([
   'code',
   'exception',
@@ -31,11 +22,18 @@ async function json(file) {
   return JSON.parse(await readFile(file, 'utf8'));
 }
 
+async function loadGroups(directory) {
+  return Promise.all(CONTENT_CATEGORIES.map(async file => {
+    const group = await json(path.join(directory, file));
+    return normalizeContentGroup(file, group);
+  }));
+}
+
 async function loadCorpus() {
-  const baseGroups = await Promise.all(categories.map(file => json(path.join(contentDir, 'articles', file))));
+  const baseGroups = await loadGroups(path.join(contentDir, 'articles'));
   const localeGroups = {};
   for (const locale of ['ja', 'en']) {
-    const groups = await Promise.all(categories.map(file => json(path.join(contentDir, 'locales', locale, file))));
+    const groups = await loadGroups(path.join(contentDir, 'locales', locale));
     localeGroups[locale] = Object.assign({}, ...groups);
   }
   return { base: baseGroups.flat(), locales: localeGroups };
