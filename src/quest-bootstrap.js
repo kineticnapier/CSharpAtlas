@@ -34,6 +34,20 @@ async function loadJson(path) {
   return response.json();
 }
 
+export function applyHandwrittenMapCode(config, snippets) {
+  return {
+    ...config,
+    chapters: (config.chapters ?? []).map(chapter => ({
+      ...chapter,
+      nodes: (chapter.nodes ?? []).map(node => (
+        (node.kind ?? 'main') === 'main'
+          ? { ...node, code: snippets[node.id] ?? '' }
+          : node
+      ))
+    }))
+  };
+}
+
 async function initializeQuestView() {
   const listButton = document.getElementById('listViewButton');
   const questButton = document.getElementById('questViewButton');
@@ -55,10 +69,12 @@ async function initializeQuestView() {
 
   const locale = resolveLocale({ search: window.location.search, storedLocale: readStoredLocale() });
   const copy = COPY[locale] ?? COPY.ja;
-  const [{ articles }, config] = await Promise.all([
+  const [{ articles }, rawConfig, snippets] = await Promise.all([
     loadLocalizedContent({ fetchJson: loadJson, locale }),
-    loadJson('/content/learning-map.json')
+    loadJson('/content/learning-map.json'),
+    loadJson('/content/learning-map-code.json')
   ]);
+  const config = applyHandwrittenMapCode(rawConfig, snippets);
   const chapters = config.chapters ?? [];
   if (!chapters.length) return;
 
