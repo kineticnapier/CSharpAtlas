@@ -133,6 +133,9 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
       detail.innerHTML = `<div class="quest-detail-empty">${copy.selectNode}</div>`;
       return;
     }
+    const code = node.code
+      ? `<code class="quest-detail-code">${escapeHtml(node.code)}</code>`
+      : '';
     detail.innerHTML = `
       <div class="quest-detail-meta">
         <span class="quest-detail-kind ${node.kind}">${node.kind === 'support' ? copy.support : copy.main}</span>
@@ -140,6 +143,7 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
       </div>
       <h3>${escapeHtml(node.title)}</h3>
       <p>${escapeHtml(node.short)}</p>
+      ${code}
       <button type="button" class="quest-open-article">${copy.openArticle}</button>
     `;
     detail.querySelector('.quest-open-article')?.addEventListener('click', () => onOpen(node.id));
@@ -179,7 +183,12 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
         height: button.offsetHeight
       });
     });
-    graph = { ...graph, nodes: reflowQuestLayout(graph.nodes, measurements) };
+    graph = {
+      ...graph,
+      nodes: graph.layout === 'freeform'
+        ? graph.nodes.map(node => ({ ...node, ...(measurements.get(node.id) ?? {}) }))
+        : reflowQuestLayout(graph.nodes, measurements)
+    };
     positionNodes();
     syncWorldBounds();
     renderEdges();
@@ -191,14 +200,17 @@ export function createQuestView({ viewport, world, edgeLayer, nodeLayer, detail,
     syncWorldBounds();
     renderEdges();
 
+    const compactDisplay = graph.display === 'compact';
     nodeLayer.innerHTML = graph.nodes.map(node => {
       const color = TYPE_COLORS[node.type] ?? '#8b949e';
       const support = node.kind === 'support';
-      const code = node.code
+      const compact = compactDisplay ? ' compact' : '';
+      const preset = node.preset ? ` preset-${escapeHtml(node.preset)}` : '';
+      const code = !compactDisplay && node.code
         ? `<code class="quest-node-code">${escapeHtml(node.code)}</code>`
         : '';
       return `
-        <button type="button" class="quest-node ${support ? 'support' : 'main'}" data-id="${escapeHtml(node.id)}"
+        <button type="button" class="quest-node ${support ? 'support' : 'main'}${compact}${preset}" data-id="${escapeHtml(node.id)}"
           style="left:${node.x}px;top:${node.y}px;--quest-color:${color}">
           <span class="quest-node-meta">
             <span class="quest-node-type">${escapeHtml(typeLabel(node.type))}</span>
