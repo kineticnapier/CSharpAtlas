@@ -86,6 +86,32 @@ test('buildQuestChapter separates learning prerequisites from support branches a
   ]);
 });
 
+test('auto-generated main snippets stay compact while explicit map code wins', () => {
+  const articles = [
+    {
+      id: 'auto', type: 'code', title: 'Auto', short: 'Auto',
+      code: 'using System.Text;\nusing System.Text.Json;\n\n// setup\nvar options = new JsonSerializerOptions();\noptions.WriteIndented = true;\nstring json = JsonSerializer.Serialize(value, options);\nConsole.WriteLine(json);'
+    },
+    {
+      id: 'explicit', type: 'code', title: 'Explicit', short: 'Explicit',
+      code: 'line1\nline2\nline3\nline4\nline5'
+    }
+  ];
+  const graph = buildQuestChapter(articles, {
+    id: 'demo',
+    nodes: [
+      { id: 'auto' },
+      { id: 'explicit', code: 'UseTheShortForm();' }
+    ]
+  });
+
+  assert.equal(
+    graph.nodes.find(node => node.id === 'auto').code,
+    'var options = new JsonSerializerOptions();\noptions.WriteIndented = true;\nstring json = JsonSerializer.Serialize(value, options);'
+  );
+  assert.equal(graph.nodes.find(node => node.id === 'explicit').code, 'UseTheShortForm();');
+});
+
 test('support snippets keep just enough code around the failing line', () => {
   assert.equal(extractSupportSnippet({
     bad: 'var stream = new MemoryStream();\nstream.Dispose();\nstream.WriteByte(1);',
@@ -184,7 +210,7 @@ test('orthogonal edge routing goes around boxes in skipped depths', () => {
     assert.ok(a.x === b.x || a.y === b.y, 'edge segment must be orthogonal');
     const crossesBlocker = a.y === b.y
       ? a.y > blocker.y && a.y < blocker.y + blocker.height && Math.max(a.x, b.x) > blocker.x && Math.min(a.x, b.x) < blocker.x + blocker.width
-      : a.x > blocker.x && a.x < blocker.x + blocker.width && Math.max(a.y, b.y) > blocker.y && Math.min(a.y, b.y) < blocker.y + blocker.height;
+      : a.x > blocker.x && a.x < blocker.x + blocker.width && Math.max(a.y, b.y) > blocker.y && Math.min(a.y, b.y) < blocker.x + blocker.width;
     assert.equal(crossesBlocker, false, 'edge must not cross another node box');
   }
 });
