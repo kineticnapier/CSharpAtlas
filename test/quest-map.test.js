@@ -9,14 +9,14 @@ import {
   reflowQuestLayout,
   routeQuestEdgePoints
 } from '../src/quest-map.js';
+import { CONTENT_CATEGORIES } from '../src/content-loader.js';
 
 async function readJson(path) {
   return JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
 }
 
 async function allArticleIds() {
-  const names = ['items', 'exceptions', 'compiler-errors', 'compiler-warnings', 'concepts', 'code-recipes', 'logic-errors'];
-  const groups = await Promise.all(names.map(name => readJson(`../public/content/articles/${name}.json`)));
+  const groups = await Promise.all(CONTENT_CATEGORIES.map(file => readJson(`../public/content/articles/${file}`)));
   return new Set(groups.flat().map(article => article.id));
 }
 
