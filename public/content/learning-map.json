@@ -27,9 +27,13 @@
       "nodes": [
         { "id": "value-reference-types", "code": "int n = 1; Person p = new();", "lane": 1 },
         { "id": "properties", "code": "public string Name { get; set; }", "prerequisites": ["value-reference-types"], "lane": 0 },
-        { "id": "records", "code": "record Person(string Name, int Age);", "prerequisites": ["properties"], "lane": 0 },
+        { "id": "required-members", "code": "public required string Name { get; init; }", "prerequisites": ["properties"], "lane": 0 },
+        { "id": "records", "code": "record Person(string Name, int Age);", "prerequisites": ["properties"], "lane": 1 },
+        { "id": "record-with-expression", "code": "var older = person with { Age = person.Age + 1 };", "prerequisites": ["records"], "lane": 1 },
         { "id": "interfaces", "code": "class Cat : IAnimal { ... }", "prerequisites": ["value-reference-types"], "lane": 2 },
         { "id": "generics", "code": "List<int> numbers = new();", "prerequisites": ["interfaces"], "lane": 2 },
+        { "id": "generic-constraints-design", "code": "T Max<T>(T a, T b) where T : IComparable<T> => a.CompareTo(b) >= 0 ? a : b;", "prerequisites": ["generics"], "lane": 2 },
+        { "id": "equality-comparer-design", "code": "var users = new HashSet<string>(StringComparer.OrdinalIgnoreCase);", "prerequisites": ["generics"], "lane": 3 },
         { "id": "delegates", "code": "Func<int, int> f = x => x * 2;", "prerequisites": ["value-reference-types"], "lane": 4 },
         { "id": "events", "code": "button.Click += OnClick;", "prerequisites": ["delegates"], "lane": 4 },
         { "id": "pattern-matching", "code": "if (obj is string s) { ... }", "prerequisites": ["value-reference-types"], "lane": 3 },
@@ -50,12 +54,16 @@
         { "id": "list-filter", "code": "var even = list.Where(x => x % 2 == 0);", "prerequisites": ["lambda"], "lane": 1 },
         { "id": "linq-select", "code": "var names = users.Select(x => x.Name);", "prerequisites": ["lambda"], "lane": 3 },
         { "id": "linq-deferred", "code": "var query = list.Where(x => x > 0);", "prerequisites": ["list-filter", "linq-select"], "lane": 2 },
+        { "id": "enumerable-chunk-batching", "code": "foreach (var batch in items.Chunk(100)) Process(batch);", "prerequisites": ["linq-deferred"], "lane": 0 },
         { "id": "linq-groupby", "code": "var groups = items.GroupBy(x => x.Category);", "prerequisites": ["linq-deferred"], "lane": 1 },
+        { "id": "linq-countby", "code": "var counts = words.CountBy(word => word);", "prerequisites": ["linq-groupby"], "lane": 1 },
         { "id": "linq-distinct", "code": "var unique = list.Distinct();", "prerequisites": ["hashset-basic", "linq-deferred"], "lane": 3 },
+        { "id": "enumerable-distinctby", "code": "var uniqueUsers = users.DistinctBy(user => user.Id);", "prerequisites": ["linq-distinct"], "lane": 3 },
         { "id": "invalid-operation", "kind": "support", "attachedTo": "linq-deferred", "lane": 4 },
         { "id": "deferred-enumeration", "kind": "support", "attachedTo": "linq-deferred", "lane": 5 },
-        { "id": "collection-modified-enumeration", "kind": "support", "attachedTo": "ienumerable", "lane": 6 },
-        { "id": "mutable-hash-keys", "kind": "support", "attachedTo": "hashset-basic", "lane": 7 }
+        { "id": "multiple-enumeration-side-effects", "kind": "support", "attachedTo": "linq-deferred", "lane": 6 },
+        { "id": "collection-modified-enumeration", "kind": "support", "attachedTo": "ienumerable", "lane": 7 },
+        { "id": "mutable-hash-keys", "kind": "support", "attachedTo": "hashset-basic", "lane": 8 }
       ]
     },
     {
@@ -64,14 +72,17 @@
       "description": { "ja": "例外処理と null 周りの事故を、頻出トラブルと一緒に学ぶ。", "en": "Learn exception handling and null safety alongside common failures." },
       "nodes": [
         { "id": "try-catch", "code": "try { ... }\ncatch (Exception ex) { ... }", "lane": 1 },
+        { "id": "exception-filters", "code": "catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound) { ... }", "prerequisites": ["try-catch"], "lane": 2 },
+        { "id": "exception-dispatch-info-rethrow", "code": "ExceptionDispatchInfo.Capture(ex).Throw();", "prerequisites": ["try-catch"], "lane": 3 },
         { "id": "nullable", "code": "string? name = null;", "prerequisites": ["try-catch"], "lane": 0 },
         { "id": "nullable-value-types", "code": "int? count = null;", "prerequisites": ["nullable"], "lane": 0 },
         { "id": "pattern-matching", "code": "if (value is int n) { ... }", "prerequisites": ["nullable"], "lane": 2 },
         { "id": "argument-null", "kind": "support", "attachedTo": "nullable", "lane": 3 },
         { "id": "nullref", "kind": "support", "attachedTo": "nullable", "lane": 4 },
-        { "id": "format-exception", "kind": "support", "attachedTo": "try-catch", "lane": 5 },
-        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 6 },
-        { "id": "exception-rethrow", "kind": "support", "attachedTo": "try-catch", "lane": 7 }
+        { "id": "cs8602-possible-null", "kind": "support", "attachedTo": "nullable", "lane": 5 },
+        { "id": "format-exception", "kind": "support", "attachedTo": "try-catch", "lane": 6 },
+        { "id": "invalid-cast", "kind": "support", "attachedTo": "pattern-matching", "lane": 7 },
+        { "id": "exception-rethrow", "kind": "support", "attachedTo": "try-catch", "lane": 8 }
       ]
     },
     {
@@ -81,14 +92,20 @@
       "nodes": [
         { "id": "idisposable", "code": "using var stream = File.OpenRead(path);", "lane": 1 },
         { "id": "file-write", "code": "File.WriteAllText(path, text);", "prerequisites": ["idisposable"], "lane": 0 },
+        { "id": "file-stream-async", "code": "int read = await stream.ReadAsync(buffer, token);", "prerequisites": ["idisposable"], "lane": 1 },
+        { "id": "readexactly-stream", "code": "await stream.ReadExactlyAsync(header, token);", "prerequisites": ["file-stream-async"], "lane": 1 },
         { "id": "directory-enumerate", "code": "Directory.EnumerateFiles(path)", "prerequisites": ["idisposable"], "lane": 2 },
         { "id": "json-write", "code": "JsonSerializer.Serialize(value);", "prerequisites": ["file-write"], "lane": 0 },
+        { "id": "json-source-generation", "code": "JsonSerializer.Serialize(value, AppJsonContext.Default.MyType);", "prerequisites": ["json-write"], "lane": 0 },
+        { "id": "jsondocument-dispose", "code": "using var doc = JsonDocument.Parse(json);", "prerequisites": ["json-write"], "lane": 2 },
         { "id": "http-get", "code": "await client.GetStringAsync(url);", "prerequisites": ["idisposable"], "lane": 3 },
+        { "id": "httpclient-reuse", "code": "static readonly HttpClient Client = new();", "prerequisites": ["http-get"], "lane": 3 },
         { "id": "io-exception", "kind": "support", "attachedTo": "file-write", "lane": 4 },
         { "id": "directory-not-found", "kind": "support", "attachedTo": "directory-enumerate", "lane": 5 },
         { "id": "unauthorized-access", "kind": "support", "attachedTo": "file-write", "lane": 6 },
         { "id": "object-disposed", "kind": "support", "attachedTo": "idisposable", "lane": 7 },
-        { "id": "json-reference-cycles", "kind": "support", "attachedTo": "json-write", "lane": 8 }
+        { "id": "json-reference-cycles", "kind": "support", "attachedTo": "json-write", "lane": 8 },
+        { "id": "json-case-sensitive-properties", "kind": "support", "attachedTo": "json-write", "lane": 9 }
       ]
     },
     {
@@ -98,11 +115,18 @@
       "nodes": [
         { "id": "task", "code": "Task<int> work = GetValueAsync();", "lane": 1 },
         { "id": "async-await", "code": "var data = await LoadAsync();", "prerequisites": ["task"], "lane": 1 },
-        { "id": "task-delay", "code": "await Task.Delay(1000);", "prerequisites": ["async-await"], "lane": 0 },
+        { "id": "task-whenall-results", "code": "var results = await Task.WhenAll(tasks);", "prerequisites": ["async-await"], "lane": 0 },
+        { "id": "semaphore-slim-limit", "code": "await gate.WaitAsync(token);\ntry { await WorkAsync(); } finally { gate.Release(); }", "prerequisites": ["task-whenall-results"], "lane": 0 },
+        { "id": "async-enumerable-streaming", "code": "await foreach (var item in StreamAsync(token)) Process(item);", "prerequisites": ["async-await"], "lane": 3 },
+        { "id": "synchronization-context", "code": "await LoadAsync(); // continuation may resume on the captured context", "prerequisites": ["async-await"], "lane": 4 },
+        { "id": "task-delay", "code": "await Task.Delay(1000);", "prerequisites": ["async-await"], "lane": 1 },
         { "id": "cancellation-token", "code": "await WorkAsync(token);", "prerequisites": ["async-await"], "lane": 2 },
-        { "id": "operation-canceled", "kind": "support", "attachedTo": "cancellation-token", "lane": 4 },
-        { "id": "async-void-errors", "kind": "support", "attachedTo": "async-await", "lane": 5 },
-        { "id": "cancel-without-awaiting", "kind": "support", "attachedTo": "cancellation-token", "lane": 6 }
+        { "id": "cancellation-timeout", "code": "using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);\ncts.CancelAfter(TimeSpan.FromSeconds(5));", "prerequisites": ["cancellation-token"], "lane": 2 },
+        { "id": "operation-canceled", "kind": "support", "attachedTo": "cancellation-token", "lane": 5 },
+        { "id": "async-void-errors", "kind": "support", "attachedTo": "async-await", "lane": 6 },
+        { "id": "fire-and-forget-task", "kind": "support", "attachedTo": "async-await", "lane": 7 },
+        { "id": "task-result-sync-blocking", "kind": "support", "attachedTo": "async-await", "lane": 8 },
+        { "id": "cancel-without-awaiting", "kind": "support", "attachedTo": "cancellation-token", "lane": 9 }
       ]
     },
     {
@@ -112,13 +136,18 @@
       "nodes": [
         { "id": "string-interpolation", "code": "$\"Hello, {name}!\"", "lane": 1 },
         { "id": "string-split-join", "code": "string.Join(\", \", text.Split(','));", "prerequisites": ["string-interpolation"], "lane": 0 },
+        { "id": "span-slicing", "code": "Span<int> middle = numbers.AsSpan(1, 3);", "prerequisites": ["string-split-join"], "lane": 0 },
+        { "id": "memory-buffer", "code": "Memory<byte> buffer = bytes;\nawait stream.ReadAsync(buffer);", "prerequisites": ["span-slicing"], "lane": 0 },
         { "id": "date-format", "code": "now.ToString(\"yyyy-MM-dd\");", "prerequisites": ["string-interpolation"], "lane": 2 },
-        { "id": "regex-basic", "code": "Regex.IsMatch(text, @\"^\\d+$\")", "prerequisites": ["string-split-join"], "lane": 0 },
-        { "id": "tuples-deconstruction", "code": "var (x, y) = point;", "prerequisites": ["string-interpolation"], "lane": 3 },
-        { "id": "enums-flags", "code": "[Flags] enum Permission { Read = 1, Write = 2 }", "prerequisites": ["tuples-deconstruction"], "lane": 3 },
-        { "id": "pattern-matching", "code": "var n = value switch { int x => x, _ => 0 };", "prerequisites": ["tuples-deconstruction"], "lane": 4 },
-        { "id": "format-exception", "kind": "support", "attachedTo": "date-format", "lane": 5 },
-        { "id": "regex-escaping", "kind": "support", "attachedTo": "regex-basic", "lane": 6 }
+        { "id": "timeprovider-testable-time", "code": "DateTimeOffset now = timeProvider.GetUtcNow();", "prerequisites": ["date-format"], "lane": 2 },
+        { "id": "regex-basic", "code": "Regex.IsMatch(text, @\"^\\d+$\")", "prerequisites": ["string-split-join"], "lane": 1 },
+        { "id": "regex-source-generator", "code": "[GeneratedRegex(@\"^\\d+$\")]\nprivate static partial Regex Digits();", "prerequisites": ["regex-basic"], "lane": 1 },
+        { "id": "rune-unicode-scalar", "code": "foreach (Rune rune in text.EnumerateRunes()) Process(rune);", "prerequisites": ["string-interpolation"], "lane": 3 },
+        { "id": "tuples-deconstruction", "code": "var (x, y) = point;", "prerequisites": ["string-interpolation"], "lane": 4 },
+        { "id": "enums-flags", "code": "[Flags] enum Permission { Read = 1, Write = 2 }", "prerequisites": ["tuples-deconstruction"], "lane": 4 },
+        { "id": "pattern-matching", "code": "var n = value switch { int x => x, _ => 0 };", "prerequisites": ["tuples-deconstruction"], "lane": 5 },
+        { "id": "format-exception", "kind": "support", "attachedTo": "date-format", "lane": 6 },
+        { "id": "regex-escaping", "kind": "support", "attachedTo": "regex-basic", "lane": 7 }
       ]
     }
   ]
