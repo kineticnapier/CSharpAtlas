@@ -20,7 +20,8 @@ export const CONTENT_CATEGORIES = [
   'hourly-batch-009.json',
   'hourly-batch-010.json',
   'hourly-batch-011.json',
-  'hourly-batch-012.json'
+  'hourly-batch-012.json',
+  'hourly-batch-013.json'
 ];
 
 const CONTENT_ID_ALIASES = {
@@ -31,61 +32,29 @@ const CONTENT_ID_ALIASES = {
 
 function normalizeExpansionLocaleEntry(id, entry) {
   if (id !== 'bounded-channel-producer-consumer' || !entry || typeof entry !== 'object') return entry;
-
-  if (entry.title === 'Channel<T> で producer / consumer をつなぐ') {
-    return { ...entry, title: '容量制限付き Channel<T> で producer / consumer をつなぐ' };
-  }
-  if (entry.title === 'Connect producers and consumers with Channel<T>') {
-    return { ...entry, title: 'Connect producers and consumers with a bounded Channel<T>' };
-  }
+  if (entry.title === 'Channel<T> で producer / consumer をつなぐ') return { ...entry, title: '容量制限付き Channel<T> で producer / consumer をつなぐ' };
+  if (entry.title === 'Connect producers and consumers with Channel<T>') return { ...entry, title: 'Connect producers and consumers with a bounded Channel<T>' };
   return entry;
 }
 
 export function normalizeContentGroup(file, group) {
   const aliases = CONTENT_ID_ALIASES[file];
   if (!aliases) return group;
-
-  if (Array.isArray(group)) {
-    return group.map(article => ({
-      ...article,
-      id: aliases[article.id] ?? article.id,
-      related: (article.related ?? []).map(id => aliases[id] ?? id)
-    }));
-  }
-
-  return Object.fromEntries(
-    Object.entries(group ?? {}).map(([id, entry]) => {
-      const normalizedId = aliases[id] ?? id;
-      return [normalizedId, normalizeExpansionLocaleEntry(normalizedId, entry)];
-    })
-  );
+  if (Array.isArray(group)) return group.map(article => ({ ...article, id: aliases[article.id] ?? article.id, related: (article.related ?? []).map(id => aliases[id] ?? id) }));
+  return Object.fromEntries(Object.entries(group ?? {}).map(([id, entry]) => { const normalizedId = aliases[id] ?? id; return [normalizedId, normalizeExpansionLocaleEntry(normalizedId, entry)]; }));
 }
 
 async function loadGroups(fetchJson, prefix) {
-  return Promise.all(CONTENT_CATEGORIES.map(async file => {
-    const group = await fetchJson(`${prefix}/${file}`);
-    return normalizeContentGroup(file, group);
-  }));
+  return Promise.all(CONTENT_CATEGORIES.map(async file => normalizeContentGroup(file, await fetchJson(`${prefix}/${file}`))));
 }
 
 export async function loadLocalizedContent({ fetchJson, locale, fallbackLocale = 'ja' }) {
   if (typeof fetchJson !== 'function') throw new Error('fetchJson is required');
-
   const baseGroups = await loadGroups(fetchJson, './content/articles');
   const fallbackGroups = await loadGroups(fetchJson, `./content/locales/${fallbackLocale}`);
-  const requestedGroups = locale === fallbackLocale
-    ? fallbackGroups
-    : await loadGroups(fetchJson, `./content/locales/${locale}`);
-
+  const requestedGroups = locale === fallbackLocale ? fallbackGroups : await loadGroups(fetchJson, `./content/locales/${locale}`);
   const baseArticles = baseGroups.flat();
   const mergeLocaleGroups = groups => Object.assign({}, ...groups);
-  const localeMaps = {
-    [fallbackLocale]: mergeLocaleGroups(fallbackGroups),
-    [locale]: mergeLocaleGroups(requestedGroups)
-  };
-
-  return {
-    articles: localizeArticles(baseArticles, localeMaps, locale, fallbackLocale),
-    requestedLocale: locale
-  };
+  const localeMaps = { [fallbackLocale]: mergeLocaleGroups(fallbackGroups), [locale]: mergeLocaleGroups(requestedGroups) };
+  return { articles: localizeArticles(baseArticles, localeMaps, locale, fallbackLocale), requestedLocale: locale };
 }
