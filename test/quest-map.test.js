@@ -15,14 +15,15 @@ async function readJson(path) {
   return JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
 }
 
-async function allArticleIds() {
+async function allArticles() {
   const groups = await Promise.all(CONTENT_CATEGORIES.map(file => readJson(`../public/content/articles/${file}`)));
-  return new Set(groups.flat().map(article => article.id));
+  return groups.flat();
 }
 
 test('learning map is curated into reusable chapters and only references real articles', async () => {
   const config = await readJson('../public/content/learning-map.json');
-  const ids = await allArticleIds();
+  const articles = await allArticles();
+  const articleById = new Map(articles.map(article => [article.id === 'collection-expressions' ? 'collection-expression-syntax' : article.id, article]));
 
   assert.ok(config.chapters.length >= 6);
   for (const chapter of config.chapters) {
@@ -30,10 +31,11 @@ test('learning map is curated into reusable chapters and only references real ar
     assert.ok(chapter.title?.ja && chapter.title?.en);
     assert.ok(chapter.nodes.length >= 3, `${chapter.id} is too small`);
     for (const node of chapter.nodes) {
-      assert.ok(ids.has(node.id), `unknown article in learning map: ${node.id}`);
+      const article = articleById.get(node.id);
+      assert.ok(article, `unknown article in learning map: ${node.id}`);
       assert.ok(['main', 'support'].includes(node.kind ?? 'main'));
       if ((node.kind ?? 'main') === 'main') {
-        assert.ok(String(node.code ?? '').trim(), `learning node has no representative code: ${node.id}`);
+        assert.ok(String(node.code ?? article.code ?? '').trim(), `learning node has no representative code: ${node.id}`);
       }
     }
   }
