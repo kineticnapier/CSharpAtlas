@@ -20,10 +20,12 @@ async function allArticles() {
   return groups.flat();
 }
 
-test('learning map is curated into reusable chapters and only references real articles', async () => {
+test('learning map is curated into reusable chapters and every main node has handwritten code', async () => {
   const config = await readJson('../public/content/learning-map.json');
+  const snippets = await readJson('../public/content/learning-map-code.json');
   const articles = await allArticles();
   const articleById = new Map(articles.map(article => [article.id === 'collection-expressions' ? 'collection-expression-syntax' : article.id, article]));
+  const mainIds = new Set();
 
   assert.ok(config.chapters.length >= 6);
   for (const chapter of config.chapters) {
@@ -35,11 +37,15 @@ test('learning map is curated into reusable chapters and only references real ar
       assert.ok(article, `unknown article in learning map: ${node.id}`);
       assert.ok(['main', 'support'].includes(node.kind ?? 'main'));
       if ((node.kind ?? 'main') === 'main') {
-        assert.ok(String(node.code ?? '').trim(), `main node must have handwritten code: ${node.id}`);
-        assert.ok(node.code.split('\n').length <= 4, `main node code must be at most 4 lines: ${node.id}`);
+        mainIds.add(node.id);
+        const code = String(snippets[node.id] ?? '');
+        assert.ok(code.trim(), `main node must have handwritten code: ${node.id}`);
+        assert.ok(code.split('\n').length <= 4, `main node code must be at most 4 lines: ${node.id}`);
       }
     }
   }
+
+  assert.deepEqual(new Set(Object.keys(snippets)), mainIds, 'handwritten snippet keys must exactly match main learning nodes');
 });
 
 test('learning map connects curated logic errors as support nodes to relevant learning nodes', async () => {
