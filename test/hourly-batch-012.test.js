@@ -12,7 +12,7 @@ const expectedIds = [
   'incrementalhash-stream',
   'aesgcm-authenticated-encryption',
   'random-shared',
-  'collections-marshal-ref'
+  'conditionalweaktable-metadata'
 ];
 
 async function readJson(path) {
