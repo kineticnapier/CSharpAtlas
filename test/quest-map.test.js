@@ -210,7 +210,7 @@ test('orthogonal edge routing goes around boxes in skipped depths', () => {
     assert.ok(a.x === b.x || a.y === b.y, 'edge segment must be orthogonal');
     const crossesBlocker = a.y === b.y
       ? a.y > blocker.y && a.y < blocker.y + blocker.height && Math.max(a.x, b.x) > blocker.x && Math.min(a.x, b.x) < blocker.x + blocker.width
-      : a.x > blocker.x && a.x < blocker.x + blocker.width && Math.max(a.y, b.y) > blocker.y && Math.min(a.y, b.y) < blocker.x + blocker.width;
+      : a.x > blocker.x && a.x < blocker.x + blocker.width && Math.max(a.y, b.y) > blocker.y && Math.min(a.y, b.y) < blocker.y + blocker.height;
     assert.equal(crossesBlocker, false, 'edge must not cross another node box');
   }
 });
