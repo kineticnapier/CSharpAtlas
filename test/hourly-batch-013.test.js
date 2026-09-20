@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 const expectedIds = [
   'compositeformat-reuse', 'periodictimer-await-ticks', 'iasyncenumerable-streaming',
   'gc-no-gc-region', 'objectdisposedexception-throwif', 'jsonnode-dom-edit',
-  'utf8jsonwriter-streaming', 'semaphoreslim-async-throttle', 'pipereader-sequences',
+  'randomaccess-read-offset', 'semaphoreslim-async-throttle', 'pipereader-sequences',
   'guid-trywritebytes'
 ];
 const readJson = async path => JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
