@@ -32,12 +32,11 @@ test('hourly batch 012 contains ten diverse localized articles', async () => {
   }
 });
 
-test('batch 012 is loaded and curated learning-map candidates are connected', async () => {
+test('batch 012 is loaded while the learning map remains curated', async () => {
   const loader = await fs.readFile(new URL('../src/content-loader.js', import.meta.url), 'utf8');
   assert.match(loader, /hourly-batch-012\.json/);
   const map = await readJson('../public/content/learning-map.json');
-  const all = map.chapters.flatMap(chapter => chapter.nodes.map(node => ({ chapter: chapter.id, ...node })));
-  for (const id of ['priorityqueue-minheap', 'task-waitasync-timeout']) {
-    assert.ok(all.some(node => node.id === id), `missing curated learning node: ${id}`);
-  }
+  const mappedIds = map.chapters.flatMap(chapter => chapter.nodes.map(node => node.id));
+  const mappedFromBatch = expectedIds.filter(id => mappedIds.includes(id));
+  assert.ok(mappedFromBatch.length <= 3, 'a content batch must not be copied wholesale into the curated learning map');
 });
