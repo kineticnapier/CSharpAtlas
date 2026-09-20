@@ -45,22 +45,6 @@ export function extractSupportSnippet(article, maxLines = 4) {
   return lines.slice(Math.max(start, end - maxLines), end).join('\n');
 }
 
-export function extractMainSnippet(article, maxLines = 3) {
-  const source = [article?.code, article?.good, article?.bad]
-    .find(value => typeof value === 'string' && value.trim())
-    ?.trim() ?? '';
-  if (!source) return '';
-
-  const usefulLines = source
-    .split('\n')
-    .map(line => line.trimEnd())
-    .filter(line => line.trim())
-    .filter(line => !/^using\s+[^;]+;\s*$/.test(line.trim()))
-    .filter(line => !/^\/\//.test(line.trim()));
-
-  return usefulLines.slice(0, maxLines).join('\n');
-}
-
 export function buildQuestChapter(articles, chapter) {
   const articlesById = new Map(articles.map(article => [article.id, article]));
   const configById = new Map(chapter.nodes.map(node => [node.id, node]));
@@ -72,9 +56,7 @@ export function buildQuestChapter(articles, chapter) {
       return {
         ...article,
         kind,
-        code: config.code ?? (kind === 'support'
-          ? extractSupportSnippet(article)
-          : extractMainSnippet(article)),
+        code: config.code ?? (kind === 'support' ? extractSupportSnippet(article) : ''),
         prerequisites: [...(config.prerequisites ?? [])],
         attachedTo: config.attachedTo ?? null,
         lane: config.lane,
