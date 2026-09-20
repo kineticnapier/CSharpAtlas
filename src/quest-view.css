@@ -260,6 +260,63 @@ body.quest-mode .quest-detail {
   font-weight: 700;
 }
 
+.quest-node.compact {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  min-height: 74px;
+  padding: 9px 11px;
+  border: 3px solid var(--quest-color, #8b949e);
+  border-radius: 20px;
+  background: radial-gradient(circle at 50% 20%, #252d38, #161b22 70%);
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.quest-node.compact .quest-node-meta {
+  justify-content: center;
+}
+
+.quest-node.compact .quest-node-support {
+  display: none;
+}
+
+.quest-node.compact strong {
+  margin-top: 5px;
+  font-size: 0.88rem;
+  line-height: 1.18;
+}
+
+.quest-node.compact.support {
+  width: 126px;
+  min-width: 126px;
+  max-width: 126px;
+  min-height: 62px;
+  padding: 8px 9px;
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 18px;
+  opacity: 0.92;
+}
+
+.quest-node.compact.support strong {
+  font-size: 0.78rem;
+}
+
+.quest-node.compact.preset-goal {
+  width: 176px;
+  min-width: 176px;
+  max-width: 176px;
+  min-height: 88px;
+  border-width: 4px;
+  border-radius: 26px;
+  box-shadow: 0 0 0 5px rgba(240, 246, 252, 0.08), 0 8px 24px rgba(0, 0, 0, 0.34);
+}
+
+.quest-node.compact.preset-goal strong {
+  font-size: 1rem;
+}
+
 .quest-help {
   position: absolute;
   left: 12px;
@@ -294,6 +351,19 @@ body.quest-mode .quest-detail {
   color: #8b949e;
   font-size: 0.86rem;
   line-height: 1.55;
+}
+
+.quest-detail-code {
+  display: block;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #0d1117;
+  color: #d2a8ff;
+  font: 0.8rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .quest-detail-meta {
