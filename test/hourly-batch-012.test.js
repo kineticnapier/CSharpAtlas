@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 const expectedIds = [
   'frozenset-readmostly',
   'priorityqueue-minheap',
-  'task-waitasync-timeout',
+  'task-completionsource-async-continuations',
   'parallel-foreachasync-bounded',
   'searchvalues-span',
   'xmlreader-streaming',
