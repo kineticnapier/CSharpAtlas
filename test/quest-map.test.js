@@ -35,7 +35,8 @@ test('learning map is curated into reusable chapters and only references real ar
       assert.ok(article, `unknown article in learning map: ${node.id}`);
       assert.ok(['main', 'support'].includes(node.kind ?? 'main'));
       if ((node.kind ?? 'main') === 'main') {
-        assert.ok(String(node.code ?? article.code ?? article.good ?? article.bad ?? '').trim(), `learning node has no representative code: ${node.id}`);
+        assert.ok(String(node.code ?? '').trim(), `main node must have handwritten code: ${node.id}`);
+        assert.ok(node.code.split('\n').length <= 4, `main node code must be at most 4 lines: ${node.id}`);
       }
     }
   }
@@ -86,30 +87,12 @@ test('buildQuestChapter separates learning prerequisites from support branches a
   ]);
 });
 
-test('auto-generated main snippets stay compact while explicit map code wins', () => {
-  const articles = [
-    {
-      id: 'auto', type: 'code', title: 'Auto', short: 'Auto',
-      code: 'using System.Text;\nusing System.Text.Json;\n\n// setup\nvar options = new JsonSerializerOptions();\noptions.WriteIndented = true;\nstring json = JsonSerializer.Serialize(value, options);\nConsole.WriteLine(json);'
-    },
-    {
-      id: 'explicit', type: 'code', title: 'Explicit', short: 'Explicit',
-      code: 'line1\nline2\nline3\nline4\nline5'
-    }
-  ];
-  const graph = buildQuestChapter(articles, {
-    id: 'demo',
-    nodes: [
-      { id: 'auto' },
-      { id: 'explicit', code: 'UseTheShortForm();' }
-    ]
-  });
-
-  assert.equal(
-    graph.nodes.find(node => node.id === 'auto').code,
-    'var options = new JsonSerializerOptions();\noptions.WriteIndented = true;\nstring json = JsonSerializer.Serialize(value, options);'
+test('main nodes use only explicit map code', () => {
+  const graph = buildQuestChapter(
+    [{ id: 'auto', type: 'code', title: 'Auto', short: 'Auto', code: 'ArticleBody();' }],
+    { id: 'demo', nodes: [{ id: 'auto' }] }
   );
-  assert.equal(graph.nodes.find(node => node.id === 'explicit').code, 'UseTheShortForm();');
+  assert.equal(graph.nodes.find(node => node.id === 'auto').code, '');
 });
 
 test('support snippets keep just enough code around the failing line', () => {
