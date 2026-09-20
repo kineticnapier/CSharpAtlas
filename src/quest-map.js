@@ -56,7 +56,9 @@ export function buildQuestChapter(articles, chapter) {
       return {
         ...article,
         kind,
-        code: config.code ?? (kind === 'support' ? extractSupportSnippet(article) : (article.code ?? '')),
+        code: config.code ?? (kind === 'support'
+          ? extractSupportSnippet(article)
+          : (article.code ?? article.good ?? article.bad ?? '')),
         prerequisites: [...(config.prerequisites ?? [])],
         attachedTo: config.attachedTo ?? null,
         lane: config.lane,
