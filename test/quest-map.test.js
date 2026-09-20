@@ -35,7 +35,7 @@ test('learning map is curated into reusable chapters and only references real ar
       assert.ok(article, `unknown article in learning map: ${node.id}`);
       assert.ok(['main', 'support'].includes(node.kind ?? 'main'));
       if ((node.kind ?? 'main') === 'main') {
-        assert.ok(String(node.code ?? article.code ?? '').trim(), `learning node has no representative code: ${node.id}`);
+        assert.ok(String(node.code ?? article.code ?? article.good ?? article.bad ?? '').trim(), `learning node has no representative code: ${node.id}`);
       }
     }
   }
@@ -43,8 +43,7 @@ test('learning map is curated into reusable chapters and only references real ar
 
 test('learning map connects curated logic errors as support nodes to relevant learning nodes', async () => {
   const config = await readJson('../public/content/learning-map.json');
-  const logicArticles = await readJson('../public/content/articles/logic-errors.json');
-  const logicIds = new Set(logicArticles.map(article => article.id));
+  const logicIds = new Set((await allArticles()).filter(article => article.type === 'logic').map(article => article.id));
   const logicSupports = [];
 
   for (const chapter of config.chapters) {
