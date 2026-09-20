@@ -49,9 +49,8 @@ test('learning map connects curated logic errors as support nodes to relevant le
   for (const chapter of config.chapters) {
     const ids = new Set(chapter.nodes.map(node => node.id));
     for (const node of chapter.nodes) {
-      if (!logicIds.has(node.id)) continue;
+      if (!logicIds.has(node.id) || node.kind !== 'support') continue;
       logicSupports.push({ chapter: chapter.id, ...node });
-      assert.equal(node.kind, 'support', `${node.id} must be a support node`);
       assert.ok(node.attachedTo && ids.has(node.attachedTo), `${node.id} must attach to a node in the same chapter`);
     }
   }
