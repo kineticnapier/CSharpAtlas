@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 
 const expectedIds = [
-  'timeprovider-testable-time', 'periodictimer-await-ticks', 'iasyncenumerable-streaming',
+  'compositeformat-reuse', 'periodictimer-await-ticks', 'iasyncenumerable-streaming',
   'arraypool-rent-return', 'conditionalweaktable-metadata', 'jsonnode-dom-edit',
   'utf8jsonwriter-streaming', 'semaphoreslim-async-throttle', 'pipereader-sequences',
   'bitoperations-popcount'
