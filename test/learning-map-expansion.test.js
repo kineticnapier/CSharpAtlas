@@ -131,8 +131,10 @@ test('newly curated failure articles are support branches on the relevant concep
   }
 });
 
-test('main learning nodes fall back to their article code when map config omits code', () => {
+test('main learning nodes require explicit map code', () => {
   const article = { id: 'sample', type: 'code', title: 'Sample', short: 'Sample', code: 'Console.WriteLine(42);' };
-  const graph = buildQuestChapter([article], { id: 'chapter', nodes: [{ id: 'sample' }] });
-  assert.equal(graph.nodes[0].code, article.code);
+  const withoutCode = buildQuestChapter([article], { id: 'chapter', nodes: [{ id: 'sample' }] });
+  const withCode = buildQuestChapter([article], { id: 'chapter', nodes: [{ id: 'sample', code: 'Console.WriteLine("map");' }] });
+  assert.equal(withoutCode.nodes[0].code, '');
+  assert.equal(withCode.nodes[0].code, 'Console.WriteLine("map");');
 });
