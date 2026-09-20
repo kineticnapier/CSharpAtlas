@@ -23,6 +23,25 @@ function nodeHeight(node) {
   return node.height ?? nodeSize(node).height;
 }
 
+export function applyQuestLayouts(config, layouts = {}) {
+  return {
+    ...config,
+    chapters: (config.chapters ?? []).map(chapter => {
+      const layout = layouts[chapter.id];
+      if (!layout) return chapter;
+      return {
+        ...chapter,
+        layout: layout.mode,
+        display: layout.display,
+        nodes: (chapter.nodes ?? []).map(node => ({
+          ...node,
+          ...(layout.nodes?.[node.id] ?? {})
+        }))
+      };
+    })
+  };
+}
+
 export function extractSupportSnippet(article, maxLines = 4) {
   const bad = typeof article?.bad === 'string' ? article.bad.trim() : '';
   const code = typeof article?.code === 'string' ? article.code.trim() : '';
@@ -60,7 +79,10 @@ export function buildQuestChapter(articles, chapter) {
         prerequisites: [...(config.prerequisites ?? [])],
         attachedTo: config.attachedTo ?? null,
         lane: config.lane,
-        offsetY: config.offsetY ?? 0
+        offsetY: config.offsetY ?? 0,
+        preset: config.preset,
+        x: config.x,
+        y: config.y
       };
     })
     .filter(Boolean);
@@ -78,11 +100,26 @@ export function buildQuestChapter(articles, chapter) {
     }
   }
 
+  const autoLayout = computeQuestLayout(nodes);
+  const laidOutNodes = chapter.layout === 'freeform'
+    ? autoLayout.map(node => {
+        const config = configById.get(node.id) ?? {};
+        return {
+          ...node,
+          x: Number.isFinite(config.x) ? config.x : node.x,
+          y: Number.isFinite(config.y) ? config.y : node.y,
+          preset: config.preset
+        };
+      })
+    : autoLayout;
+
   return {
     id: chapter.id,
     title: chapter.title,
     description: chapter.description,
-    nodes: computeQuestLayout(nodes),
+    layout: chapter.layout,
+    display: chapter.display,
+    nodes: laidOutNodes,
     edges
   };
 }
