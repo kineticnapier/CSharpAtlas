@@ -5,14 +5,14 @@ import fs from 'node:fs/promises';
 const expectedIds = [
   'frozenset-readmostly',
   'priorityqueue-minheap',
-  'task-completionsource-async-continuations',
+  'cancellationtokensource-tryreset',
   'parallel-foreachasync-bounded',
   'searchvalues-span',
   'xmlreader-streaming',
   'incrementalhash-stream',
   'aesgcm-authenticated-encryption',
   'random-shared',
-  'conditionalweaktable-metadata'
+  'weakreference-trygettarget'
 ];
 
 async function readJson(path) {
