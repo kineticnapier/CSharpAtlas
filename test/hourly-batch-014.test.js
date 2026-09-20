@@ -40,7 +40,13 @@ test('every learning-map main node has an explicit short code sample', async () 
   const map = await readJson('../public/content/learning-map.json');
   const code = await readJson('../public/content/learning-map-code.json');
   const mainIds = map.chapters.flatMap(c => c.nodes).filter(n => n.kind !== 'support').map(n => n.id);
-  assert.deepEqual(new Set(Object.keys(code)), new Set(mainIds));
+  const mainSet = new Set(mainIds);
+  const codeIds = Object.keys(code);
+  const codeSet = new Set(codeIds);
+  const missing = mainIds.filter(id => !codeSet.has(id));
+  const extra = codeIds.filter(id => !mainSet.has(id));
+  assert.deepEqual(missing, [], `missing learning-map code keys: ${missing.join(', ')}`);
+  assert.deepEqual(extra, [], `unused learning-map code keys: ${extra.join(', ')}`);
   for (const id of mainIds) {
     assert.equal(typeof code[id], 'string', `${id}: code must be a string`);
     assert.ok(code[id].trim(), `${id}: code must not be empty`);
