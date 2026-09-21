@@ -53,6 +53,19 @@ function pickArticles(articles, ids, limit, predicate = () => true) {
   return picked;
 }
 
+export function pickRandomArticle(articles = [], random = Math.random) {
+  const items = Array.isArray(articles)
+    ? articles.filter(article => article?.id)
+    : [];
+  if (!items.length) return null;
+
+  const value = Number(random());
+  const normalized = Number.isFinite(value)
+    ? Math.max(0, Math.min(value, 0.9999999999999999))
+    : 0;
+  return items[Math.floor(normalized * items.length)] ?? items[0];
+}
+
 export function buildWikiHomeSections(articles = []) {
   const items = Array.isArray(articles) ? articles.filter(Boolean) : [];
   return {
