@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="/src/code-enhancements.css">
   <link rel="stylesheet" href="/src/list-discovery.css">
   <link rel="stylesheet" href="/src/quest-view.css">
+  <link rel="stylesheet" href="/src/wiki-home.css">
 </head>
 <body>
 <header>
@@ -61,7 +62,89 @@
       </div>
     </div>
 
-    <div class="layout">
+    <section id="wikiHomePanel" class="wiki-home hidden" aria-labelledby="wikiHomeHeading">
+      <div class="wiki-home-intro">
+        <div>
+          <div id="wikiHomeEyebrow" class="wiki-kicker">C# Atlas ポータル</div>
+          <h2 id="wikiHomeHeading">C# を探す・学ぶ</h2>
+        </div>
+        <span id="wikiArticleCount" class="wiki-article-count"></span>
+      </div>
+
+      <div class="wiki-grid wiki-grid-primary">
+        <section class="wiki-box wiki-box-featured">
+          <div class="wiki-box-head">
+            <div>
+              <h3 id="wikiFeaturedTitle">注目の記事</h3>
+              <p id="wikiFeaturedDescription"></p>
+            </div>
+          </div>
+          <div id="wikiFeaturedArticles" class="wiki-article-grid"></div>
+        </section>
+
+        <section class="wiki-box">
+          <div class="wiki-box-head">
+            <div>
+              <h3 id="wikiNewestTitle">新着記事</h3>
+              <p id="wikiNewestDescription"></p>
+            </div>
+          </div>
+          <div id="wikiNewestArticles" class="wiki-link-list"></div>
+        </section>
+      </div>
+
+      <div class="wiki-grid">
+        <section class="wiki-box">
+          <div class="wiki-box-head">
+            <div>
+              <h3 id="wikiBeginnerTitle">はじめての C#</h3>
+              <p id="wikiBeginnerDescription"></p>
+            </div>
+          </div>
+          <div id="wikiBeginnerArticles" class="wiki-link-list"></div>
+        </section>
+
+        <section class="wiki-box">
+          <div class="wiki-box-head">
+            <div>
+              <h3 id="wikiCommonErrorsTitle">よくあるエラー</h3>
+              <p id="wikiCommonErrorsDescription"></p>
+            </div>
+          </div>
+          <div id="wikiCommonErrorArticles" class="wiki-link-list"></div>
+        </section>
+      </div>
+
+      <div class="wiki-grid wiki-grid-footer">
+        <section class="wiki-box">
+          <div class="wiki-box-head">
+            <div>
+              <h3 id="wikiCategoriesTitle">カテゴリから探す</h3>
+              <p id="wikiCategoriesDescription"></p>
+            </div>
+          </div>
+          <div id="wikiCategoryButtons" class="wiki-category-grid"></div>
+        </section>
+
+        <section class="wiki-box wiki-learning-box">
+          <div class="wiki-learning-copy">
+            <span class="wiki-map-mark" aria-hidden="true">→</span>
+            <div>
+              <h3 id="wikiLearningMapTitle">学習マップ</h3>
+              <p id="wikiLearningMapDescription"></p>
+            </div>
+          </div>
+          <button id="wikiLearningMapButton" type="button" class="wiki-primary-action">学習マップを開く</button>
+        </section>
+      </div>
+
+      <div class="wiki-home-actions">
+        <button id="wikiRandomArticleButton" type="button">おまかせ表示</button>
+        <button id="wikiBrowseAllButton" type="button">すべての記事を見る</button>
+      </div>
+    </section>
+
+    <div id="browseView" class="layout">
       <aside>
         <div id="asideTitle" class="aside-title">種類</div>
         <button class="type active" data-type="all">すべて</button>
@@ -146,5 +229,6 @@
 
 <script type="module" src="/src/main.js"></script>
 <script type="module" src="/src/quest-bootstrap.js"></script>
+<script type="module" src="/src/wiki-home-bootstrap.js"></script>
 </body>
 </html>
