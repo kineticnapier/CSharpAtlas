@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildWikiHomeSections, shouldShowWikiHome } from '../src/wiki-home.js';
+import { buildWikiHomeSections, pickRandomArticle, shouldShowWikiHome } from '../src/wiki-home.js';
 
 function article(id, type, topics = []) {
   return { id, type, topics, title: id, short: `${id} short` };
@@ -46,6 +46,13 @@ test('wiki home builds curated and data-driven sections', () => {
   assert.ok(home.commonErrors.every(item => ['exception', 'compiler-error', 'compiler-warning', 'logic'].includes(item.type)));
   assert.ok(home.categories.some(category => category.type === 'code' && category.count === 7));
   assert.ok(home.categories.some(category => category.type === 'concept' && category.count === 5));
+});
+
+test('wiki home picks one article for random display', () => {
+  assert.equal(pickRandomArticle([], () => 0), null);
+  assert.equal(pickRandomArticle(ARTICLES, () => 0)?.id, 'program-entry');
+  assert.equal(pickRandomArticle(ARTICLES, () => 0.5)?.id, 'httpclient-reuse');
+  assert.equal(pickRandomArticle(ARTICLES, () => 0.999999)?.id, 'latest-two');
 });
 
 test('wiki home only shows for an unfiltered landing state', () => {
