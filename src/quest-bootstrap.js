@@ -1,7 +1,7 @@
 import { articleHash } from './article-ui.js';
 import { loadLocalizedContent } from './content-loader.js';
 import { resolveLocale } from './i18n.js';
-import { applyQuestLayouts, buildQuestChapter } from './quest-map.js';
+import { buildQuestChapter } from './quest-map.js';
 import { createQuestView } from './quest-view.js';
 import { typeLabel } from './translation-ui.js';
 
@@ -69,13 +69,12 @@ async function initializeQuestView() {
 
   const locale = resolveLocale({ search: window.location.search, storedLocale: readStoredLocale() });
   const copy = COPY[locale] ?? COPY.ja;
-  const [{ articles }, rawConfig, snippets, layouts] = await Promise.all([
+  const [{ articles }, rawConfig, snippets] = await Promise.all([
     loadLocalizedContent({ fetchJson: loadJson, locale }),
     loadJson('/content/learning-map.json'),
-    loadJson('/content/learning-map-code.json'),
-    loadJson('/content/learning-map-layout.json')
+    loadJson('/content/learning-map-code.json')
   ]);
-  const config = applyHandwrittenMapCode(applyQuestLayouts(rawConfig, layouts), snippets);
+  const config = applyHandwrittenMapCode(rawConfig, snippets);
   const chapters = config.chapters ?? [];
   if (!chapters.length) return;
 
