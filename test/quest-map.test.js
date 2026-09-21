@@ -9,20 +9,23 @@ import {
   reflowQuestLayout,
   routeQuestEdgePoints
 } from '../src/quest-map.js';
+import { CONTENT_CATEGORIES } from '../src/content-loader.js';
 
 async function readJson(path) {
   return JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
 }
 
-async function allArticleIds() {
-  const names = ['items', 'exceptions', 'compiler-errors', 'compiler-warnings', 'concepts', 'code-recipes', 'logic-errors'];
-  const groups = await Promise.all(names.map(name => readJson(`../public/content/articles/${name}.json`)));
-  return new Set(groups.flat().map(article => article.id));
+async function allArticles() {
+  const groups = await Promise.all(CONTENT_CATEGORIES.map(file => readJson(`../public/content/articles/${file}`)));
+  return groups.flat();
 }
 
-test('learning map is curated into reusable chapters and only references real articles', async () => {
+test('learning map is curated into reusable chapters and every main node has handwritten code', async () => {
   const config = await readJson('../public/content/learning-map.json');
-  const ids = await allArticleIds();
+  const snippets = await readJson('../public/content/learning-map-code.json');
+  const articles = await allArticles();
+  const articleById = new Map(articles.map(article => [article.id === 'collection-expressions' ? 'collection-expression-syntax' : article.id, article]));
+  const mainIds = new Set();
 
   assert.ok(config.chapters.length >= 6);
   for (const chapter of config.chapters) {
@@ -30,27 +33,31 @@ test('learning map is curated into reusable chapters and only references real ar
     assert.ok(chapter.title?.ja && chapter.title?.en);
     assert.ok(chapter.nodes.length >= 3, `${chapter.id} is too small`);
     for (const node of chapter.nodes) {
-      assert.ok(ids.has(node.id), `unknown article in learning map: ${node.id}`);
+      const article = articleById.get(node.id);
+      assert.ok(article, `unknown article in learning map: ${node.id}`);
       assert.ok(['main', 'support'].includes(node.kind ?? 'main'));
       if ((node.kind ?? 'main') === 'main') {
-        assert.ok(String(node.code ?? '').trim(), `learning node has no representative code: ${node.id}`);
+        mainIds.add(node.id);
+        const code = String(snippets[node.id] ?? '');
+        assert.ok(code.trim(), `main node must have handwritten code: ${node.id}`);
+        assert.ok(code.split('\n').length <= 4, `main node code must be at most 4 lines: ${node.id}`);
       }
     }
   }
+
+  assert.deepEqual(new Set(Object.keys(snippets)), mainIds, 'handwritten snippet keys must exactly match main learning nodes');
 });
 
 test('learning map connects curated logic errors as support nodes to relevant learning nodes', async () => {
   const config = await readJson('../public/content/learning-map.json');
-  const logicArticles = await readJson('../public/content/articles/logic-errors.json');
-  const logicIds = new Set(logicArticles.map(article => article.id));
+  const logicIds = new Set((await allArticles()).filter(article => article.type === 'logic').map(article => article.id));
   const logicSupports = [];
 
   for (const chapter of config.chapters) {
     const ids = new Set(chapter.nodes.map(node => node.id));
     for (const node of chapter.nodes) {
-      if (!logicIds.has(node.id)) continue;
+      if (!logicIds.has(node.id) || node.kind !== 'support') continue;
       logicSupports.push({ chapter: chapter.id, ...node });
-      assert.equal(node.kind, 'support', `${node.id} must be a support node`);
       assert.ok(node.attachedTo && ids.has(node.attachedTo), `${node.id} must attach to a node in the same chapter`);
     }
   }
@@ -84,6 +91,14 @@ test('buildQuestChapter separates learning prerequisites from support branches a
     { source: 'a', target: 'b', kind: 'prerequisite' },
     { source: 'b', target: 'err', kind: 'support' }
   ]);
+});
+
+test('main nodes use only explicit map code', () => {
+  const graph = buildQuestChapter(
+    [{ id: 'auto', type: 'code', title: 'Auto', short: 'Auto', code: 'ArticleBody();' }],
+    { id: 'demo', nodes: [{ id: 'auto' }] }
+  );
+  assert.equal(graph.nodes.find(node => node.id === 'auto').code, '');
 });
 
 test('support snippets keep just enough code around the failing line', () => {

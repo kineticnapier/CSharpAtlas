@@ -3,18 +3,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { CONTENT_CATEGORIES, normalizeContentGroup } from '../src/content-loader.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentDir = path.join(root, 'public', 'content');
-const categories = [
-  'items.json',
-  'exceptions.json',
-  'compiler-errors.json',
-  'compiler-warnings.json',
-  'concepts.json',
-  'code-recipes.json',
-  'logic-errors.json'
-];
 const validTypes = new Set([
   'code',
   'exception',
@@ -30,11 +22,18 @@ async function json(file) {
   return JSON.parse(await readFile(file, 'utf8'));
 }
 
+async function loadGroups(directory) {
+  return Promise.all(CONTENT_CATEGORIES.map(async file => {
+    const group = await json(path.join(directory, file));
+    return normalizeContentGroup(file, group);
+  }));
+}
+
 async function loadCorpus() {
-  const baseGroups = await Promise.all(categories.map(file => json(path.join(contentDir, 'articles', file))));
+  const baseGroups = await loadGroups(path.join(contentDir, 'articles'));
   const localeGroups = {};
   for (const locale of ['ja', 'en']) {
-    const groups = await Promise.all(categories.map(file => json(path.join(contentDir, 'locales', locale, file))));
+    const groups = await loadGroups(path.join(contentDir, 'locales', locale));
     localeGroups[locale] = Object.assign({}, ...groups);
   }
   return { base: baseGroups.flat(), locales: localeGroups };
@@ -99,5 +98,12 @@ test('localized article corpus has valid IDs, types, fields, and links', async (
   }
 
   assert.deepEqual(missingTargets, [], `broken article links:\n${missingTargets.join('\n')}`);
-  assert.ok(base.length >= 100, 'i18n foundation must preserve at least the original 100 articles');
+  assert.ok(base.length >= 150, 'expanded corpus must preserve the existing articles and include the new batch');
+});
+
+test('for-loop boundary article is classified as a logic error', async () => {
+  const { base } = await loadCorpus();
+  const article = base.find(entry => entry.id === 'for-loop');
+  assert.ok(article, 'for-loop article must exist');
+  assert.equal(article.type, 'logic');
 });

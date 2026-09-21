@@ -13,7 +13,8 @@ const categories = [
   'compiler-warnings.json',
   'concepts.json',
   'code-recipes.json',
-  'logic-errors.json'
+  'logic-errors.json',
+  'advanced-expansion.json'
 ];
 const requiredText = ['title', 'short', 'summary', 'why', 'tips'];
 const noteFields = ['badNotes', 'goodNotes', 'codeNotes'];

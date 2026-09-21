@@ -1,0 +1,7 @@
+[
+{"id":"spinwait-spinuntil","type":"code","bad":null,"good":null,"code":"bool completed = SpinWait.SpinUntil(() => Volatile.Read(ref ready), TimeSpan.FromMilliseconds(2));","related":["volatile-read-write","interlocked-counter"],"topics":["concurrency","performance"]},
+{"id":"dictionary-alternate-lookup","type":"code","bad":null,"good":null,"code":"var lookup = dictionary.GetAlternateLookup<ReadOnlySpan<char>>();\nif (lookup.TryGetValue(keySpan, out int value)) Use(value);","related":["dictionary-ensure-capacity","collections-marshal-value-ref"],"topics":["collections","performance"]},
+{"id":"interlocked-and-or","type":"code","bad":null,"good":null,"code":"Interlocked.Or(ref flags, ReadyFlag);\nInterlocked.And(ref flags, ~BusyFlag);","related":["interlocked-counter","volatile-read-write"],"topics":["concurrency","performance"]},
+{"id":"regex-count","type":"code","bad":null,"good":null,"code":"int count = Regex.Count(input, pattern);","related":["regex-enumeratematches-span","regex-match-timeout"],"topics":["regex","performance"]},
+{"id":"jsonschema-exporter","type":"code","bad":null,"good":null,"code":"JsonNode schema = options.GetJsonSchemaAsNode(typeof(MyModel));","related":["json-source-generation","json-extension-data"],"topics":["serialization","reflection"]}
+]

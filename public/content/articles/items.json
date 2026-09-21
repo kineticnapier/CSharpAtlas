@@ -253,7 +253,7 @@
   },
   {
     "id": "for-loop",
-    "type": "concept",
+    "type": "logic",
     "bad": "for (int i = 0; i <= a.Length; i++)\n{\n    Console.WriteLine(a[i]);\n}",
     "good": "for (int i = 0; i < a.Length; i++)\n{\n    Console.WriteLine(a[i]);\n}",
     "code": null,

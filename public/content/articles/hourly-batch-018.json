@@ -1,0 +1,12 @@
+[
+{"id":"hmacsha256-hashdata","type":"code","bad":null,"good":null,"code":"byte[] tag = HMACSHA256.HashData(key, message);","related":["sha256-hashdata-span","cryptographicoperations-fixedtimeequals"],"topics":["security","performance"]},
+{"id":"biginteger-modpow","type":"code","bad":null,"good":null,"code":"BigInteger result = BigInteger.ModPow(value, exponent, modulus);","related":["bitoperations-popcount","checked-overflow-context"],"topics":["numerics","algorithms"]},
+{"id":"bitoperations-rotateleft","type":"code","bad":null,"good":null,"code":"uint rotated = BitOperations.RotateLeft(value, offset);","related":["bitoperations-popcount","binaryprimitives-endian"],"topics":["numerics","performance"]},
+{"id":"vector128-create","type":"code","bad":null,"good":null,"code":"Vector128<int> vector = Vector128.Create(1, 2, 3, 4);\nVector128<int> doubled = vector + vector;","related":["memorymarshal-cast","bitoperations-popcount"],"topics":["performance","numerics"]},
+{"id":"half-binary16","type":"concept","bad":null,"good":null,"code":"Half value = (Half)1.5f;\nushort bits = BitConverter.HalfToUInt16Bits(value);","related":["binaryprimitives-endian","memorymarshal-read-write"],"topics":["numerics","memory"]},
+{"id":"timespan-frommicroseconds","type":"code","bad":null,"good":null,"code":"TimeSpan timeout = TimeSpan.FromMicroseconds(250);","related":["stopwatch-getelapsedtime","timeprovider-testable-time"],"topics":["dates","practical"]},
+{"id":"timezoneinfo-iana-windows","type":"code","bad":null,"good":null,"code":"if (TimeZoneInfo.TryConvertIanaIdToWindowsId(\"Asia/Tokyo\", out string? windowsId))\n    Console.WriteLine(windowsId);","related":["datetimeoffset-conversion","datetime-kind-model"],"topics":["dates","portability"]},
+{"id":"cultureinfo-getcultureinfo","type":"code","bad":null,"good":null,"code":"CultureInfo culture = CultureInfo.GetCultureInfo(\"ja-JP\");","related":["culture-sensitive-string-comparison","composite-format-reuse"],"topics":["globalization","performance"]},
+{"id":"immutablearray-builder","type":"code","bad":null,"good":null,"code":"var builder = ImmutableArray.CreateBuilder<int>();\nbuilder.AddRange(values);\nImmutableArray<int> result = builder.MoveToImmutable();","related":["collection-expressions","span-slicing"],"topics":["collections","performance"]},
+{"id":"priorityqueue-enqueue-dequeue","type":"code","bad":null,"good":null,"code":"queue.EnqueueDequeue(candidate, priority);","related":["priorityqueue-minheap","comparer-create-custom-order"],"topics":["collections","algorithms"]}
+]
