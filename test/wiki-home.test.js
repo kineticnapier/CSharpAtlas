@@ -13,7 +13,7 @@ const ARTICLES = [
   article('methods-parameters-returns', 'concept', ['basics']),
   article('nullref', 'exception', ['nullability']),
   article('index-out-of-range', 'exception', ['collections']),
-  article('cs0103-name-not-found', 'compiler-error', ['basics']),
+  article('cs0103', 'compiler-error', ['basics']),
   article('floating-equality', 'logic', ['basics']),
   article('httpclient-reuse', 'code', ['networking']),
   article('json-source-generation', 'code', ['json']),
@@ -44,8 +44,8 @@ test('wiki home builds curated and data-driven sections', () => {
     'task-whenall-results'
   ]);
   assert.ok(home.commonErrors.every(item => ['exception', 'compiler-error', 'compiler-warning', 'logic'].includes(item.type)));
-  assert.ok(home.categories.some(category => category.type === 'code' && category.count === 8));
-  assert.ok(home.categories.some(category => category.type === 'concept' && category.count === 6));
+  assert.ok(home.categories.some(category => category.type === 'code' && category.count === 7));
+  assert.ok(home.categories.some(category => category.type === 'concept' && category.count === 5));
 });
 
 test('wiki home only shows for an unfiltered landing state', () => {
