@@ -3,7 +3,7 @@ import { loadLocalizedContent } from './content-loader.js';
 import { resolveLocale, uiText } from './i18n.js';
 import { parseDiscoveryState } from './list-discovery.js';
 import { typeLabel } from './translation-ui.js';
-import { buildWikiHomeSections, shouldShowWikiHome } from './wiki-home.js';
+import { buildWikiHomeSections, pickRandomArticle, shouldShowWikiHome } from './wiki-home.js';
 
 const LOCALE_STORAGE_KEY = 'csharp-atlas-locale';
 
@@ -106,6 +106,7 @@ async function initializeWikiHome() {
   document.getElementById('wikiLearningMapTitle').textContent = uiText(locale, 'wikiLearningMap');
   document.getElementById('wikiLearningMapDescription').textContent = uiText(locale, 'wikiLearningMapDescription');
   document.getElementById('wikiLearningMapButton').textContent = uiText(locale, 'wikiOpenLearningMap');
+  document.getElementById('wikiRandomArticleButton').textContent = uiText(locale, 'wikiRandomArticle');
   document.getElementById('wikiBrowseAllButton').textContent = uiText(locale, 'wikiBrowseAll');
 
   document.getElementById('wikiFeaturedArticles').innerHTML = sections.featured
@@ -144,6 +145,10 @@ async function initializeWikiHome() {
     });
   });
 
+  document.getElementById('wikiRandomArticleButton').addEventListener('click', () => {
+    const article = pickRandomArticle(articles);
+    if (article) window.location.hash = articleHash(article.id);
+  });
   document.getElementById('wikiBrowseAllButton').addEventListener('click', () => enterBrowseMode());
   document.getElementById('wikiLearningMapButton').addEventListener('click', () => {
     enterBrowseMode({ scroll: false });
