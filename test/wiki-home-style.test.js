@@ -16,4 +16,5 @@ test('wiki home article badges stay compact and single-line', async () => {
   assert.match(rule, /min-height\s*:\s*0/);
   assert.match(rule, /white-space\s*:\s*nowrap/);
   assert.match(rule, /line-height\s*:\s*1(?:\.\d+)?/);
+  assert.match(rule, /font-size\s*:\s*10px/);
 });
