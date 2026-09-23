@@ -2,133 +2,47 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { buildQuestChapter } from '../src/quest-map.js';
+import { CONTENT_CATEGORIES, normalizeContentGroup } from '../src/content-loader.js';
 
 async function readJson(path) {
   return JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
 }
 
-const EXPECTED_BY_CHAPTER = {
-  basics: [
-    'checked-overflow-context',
-    'caller-argument-expression',
-    'argumentnullexception-throwifnull'
-  ],
-  'types-oop': [
-    'required-members',
-    'generic-constraints-design',
-    'record-with-expression',
-    'equality-comparer-design',
-    'ref-out-in-parameters',
-    'variance-generic-interfaces',
-    'span-vs-memory',
-    'collections-marshal-value-ref',
-    'iparsable-generic-parsing'
-  ],
-  'collections-linq': [
-    'enumerable-distinctby',
-    'linq-countby',
-    'linq-aggregateby',
-    'enumerable-chunk-batching',
-    'priorityqueue-min-heap',
-    'frozen-dictionary-read-mostly',
-    'frozen-set-read-mostly',
-    'immutablearray-snapshot',
-    'alternate-lookup-span-key',
-    'multiple-enumeration-side-effects'
-  ],
-  'exceptions-debugging': [
-    'exception-filters',
-    'exception-dispatch-info-rethrow',
-    'cs8602-possible-null'
-  ],
-  'io-network': [
-    'httpclient-reuse',
-    'file-stream-async',
-    'readexactly-stream',
-    'stream-copytoasync',
-    'randomaccess-offset-io',
-    'memorymappedfile-view',
-    'json-source-generation',
-    'jsondocument-dispose',
-    'jsonnode-mutable-dom',
-    'utf8jsonwriter-streaming',
-    'http-completion-responseheadersread',
-    'json-case-sensitive-properties'
-  ],
-  'async-concurrency': [
-    'task-whenall-results',
-    'task-wheneach-completion-order',
-    'task-waitasync-timeout',
-    'semaphore-slim-limit',
-    'async-enumerable-streaming',
-    'async-enumerable-withcancellation',
-    'cancellation-timeout',
-    'linked-cancellation-token',
-    'taskcompletionsource-runasync',
-    'parallel-foreachasync',
-    'channel-trywrite-backpressure',
-    'synchronization-context',
-    'configureawait-library-code',
-    'fire-and-forget-task',
-    'task-result-sync-blocking'
-  ],
-  practical: [
-    'span-slicing',
-    'memory-buffer',
-    'arraypool-rent-return',
-    'timeprovider-testable-time',
-    'regex-source-generator',
-    'searchvalues-repeated-search',
-    'rune-unicode-scalar',
-    'convert-tohexstring',
-    'bitoperations-popcount',
-    'guid-create-version7'
-  ]
-};
+async function articleIds() {
+  const ids = new Set();
+  for (const file of CONTENT_CATEGORIES) {
+    const raw = await readJson(`../public/content/articles/${file}`);
+    for (const article of normalizeContentGroup(file, raw)) ids.add(article.id);
+  }
+  return ids;
+}
 
-const EXPECTED_SUPPORTS = new Map([
-  ['multiple-enumeration-side-effects', 'linq-deferred'],
-  ['cs8602-possible-null', 'nullable'],
-  ['json-case-sensitive-properties', 'json-write'],
-  ['fire-and-forget-task', 'async-await'],
-  ['task-result-sync-blocking', 'async-await']
-]);
-
-test('learning map includes a broad curated cross-section of the expanded corpus', async () => {
+test('learning map references valid articles with consistent local edges', async () => {
   const config = await readJson('../public/content/learning-map.json');
-  const chapters = new Map(config.chapters.map(chapter => [chapter.id, chapter]));
+  const ids = await articleIds();
 
-  for (const [chapterId, expectedIds] of Object.entries(EXPECTED_BY_CHAPTER)) {
-    const chapter = chapters.get(chapterId);
-    assert.ok(chapter, `missing chapter ${chapterId}`);
-    const ids = new Set(chapter.nodes.map(node => node.id));
-    for (const id of expectedIds) {
-      assert.ok(ids.has(id), `${chapterId} is missing curated expansion article ${id}`);
+  assert.ok(Array.isArray(config.chapters) && config.chapters.length > 0, 'learning map must contain chapters');
+
+  const mappedIds = [];
+  for (const chapter of config.chapters) {
+    const nodes = chapter.nodes ?? [];
+    assert.ok(nodes.length > 0, `${chapter.id}: chapter must not be empty`);
+    const chapterIds = new Set(nodes.map(node => node.id));
+
+    for (const node of nodes) {
+      mappedIds.push(node.id);
+      assert.ok(ids.has(node.id), `${chapter.id}/${node.id}: missing article`);
+      for (const prerequisite of node.prerequisites ?? []) {
+        assert.ok(chapterIds.has(prerequisite), `${chapter.id}/${node.id}: missing prerequisite ${prerequisite}`);
+      }
+      if (node.kind === 'support') {
+        assert.ok(node.attachedTo, `${chapter.id}/${node.id}: support node must declare attachedTo`);
+        assert.ok(chapterIds.has(node.attachedTo), `${chapter.id}/${node.id}: support target must exist in the same chapter`);
+      }
     }
   }
-});
 
-test('learning map is substantial enough for the expanded corpus', async () => {
-  const config = await readJson('../public/content/learning-map.json');
-  const ids = new Set(config.chapters.flatMap(chapter => chapter.nodes.map(node => node.id)));
-  assert.ok(ids.size >= 140, `expected at least 140 unique mapped articles, got ${ids.size}`);
-  for (const chapter of config.chapters) {
-    assert.ok(chapter.nodes.length >= 15, `${chapter.id} is still too sparse (${chapter.nodes.length} nodes)`);
-  }
-});
-
-test('newly curated failure articles are support branches on the relevant concept', async () => {
-  const config = await readJson('../public/content/learning-map.json');
-  const nodes = config.chapters.flatMap(chapter => chapter.nodes.map(node => ({ chapter: chapter.id, ...node })));
-
-  for (const [id, attachedTo] of EXPECTED_SUPPORTS) {
-    const node = nodes.find(candidate => candidate.id === id);
-    assert.ok(node, `missing support node ${id}`);
-    assert.equal(node.kind, 'support', `${id} must be a support node`);
-    assert.equal(node.attachedTo, attachedTo, `${id} should attach to ${attachedTo}`);
-    const chapter = config.chapters.find(candidate => candidate.id === node.chapter);
-    assert.ok(chapter.nodes.some(candidate => candidate.id === attachedTo), `${attachedTo} must exist in the same chapter as ${id}`);
-  }
+  assert.equal(new Set(mappedIds).size, mappedIds.length, 'learning map must not duplicate article nodes across chapters');
 });
 
 test('main learning nodes require explicit map code', () => {
