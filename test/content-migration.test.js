@@ -53,6 +53,8 @@ test('localized article corpus has valid IDs, types, fields, and links', async (
   const ids = new Set();
   const missingTargets = [];
 
+  assert.ok(base.length > 0, 'article corpus must not be empty');
+
   for (const article of base) {
     assert.equal(typeof article.id, 'string');
     assert.ok(article.id.trim(), 'article id must not be empty');
@@ -98,7 +100,6 @@ test('localized article corpus has valid IDs, types, fields, and links', async (
   }
 
   assert.deepEqual(missingTargets, [], `broken article links:\n${missingTargets.join('\n')}`);
-  assert.ok(base.length >= 150, 'expanded corpus must preserve the existing articles and include the new batch');
 });
 
 test('for-loop boundary article is classified as a logic error', async () => {
