@@ -28,7 +28,8 @@ export const CONTENT_CATEGORIES = [
   'hourly-batch-017.json',
   'hourly-batch-018.json',
   'hourly-batch-019.json',
-  'hourly-batch-020.json'
+  'hourly-batch-020.json',
+  'hourly-batch-021.json'
 ];
 
 const CONTENT_ID_ALIASES = {
