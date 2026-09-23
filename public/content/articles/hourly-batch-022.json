@@ -8,5 +8,5 @@
 {"id":"exception-throwif-null-empty","type":"code","bad":null,"good":null,"code":"ArgumentException.ThrowIfNullOrEmpty(name);\nArgumentException.ThrowIfNullOrWhiteSpace(displayName);","related":["argumentnullexception-throwifnull","caller-argument-expression"],"topics":["exceptions","validation"]},
 {"id":"task-whenall-results-order","type":"concept","bad":null,"good":null,"code":"Task<int>[] tasks = inputs.Select(ProcessAsync).ToArray();\nint[] results = await Task.WhenAll(tasks);","related":["task-wheneach-completion-order","parallel-foreachasync"],"topics":["async","collections"]},
 {"id":"memoryextensions-trim-span","type":"code","bad":null,"good":null,"code":"ReadOnlySpan<char> value = input.AsSpan().Trim();","related":["span-slicing","memoryextensions-split-span"],"topics":["strings","performance"]},
-{"id":"uri-trycreate","type":"code","bad":null,"good":null,"code":"if (Uri.TryCreate(text, UriKind.Absolute, out Uri? uri))\n    Use(uri);","related":["ipaddress-tryparse","httpclient-default-request-version"],"topics":["networking","validation"]}
+{"id":"bitconverter-trywritebytes","type":"code","bad":null,"good":null,"code":"Span<byte> bytes = stackalloc byte[sizeof(int)];\nif (BitConverter.TryWriteBytes(bytes, value))\n    Consume(bytes);","related":["binaryprimitives-endian","span-slicing"],"topics":["memory","numerics"]}
 ]
