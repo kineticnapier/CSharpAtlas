@@ -1,5 +1,5 @@
 [
-{"id":"span-indexofanyexcept","type":"code","bad":null,"good":null,"code":"int firstNonWhitespace = text.AsSpan().IndexOfAnyExcept(' ', '\\t');","related":["searchvalues-repeated-search","span-trim"],"topics":["span","strings"]},
+{"id":"span-indexofanyexcept","type":"code","bad":null,"good":null,"code":"int firstNonWhitespace = text.AsSpan().IndexOfAnyExcept(' ', '\\t');","related":["searchvalues-repeated-search","memoryextensions-trim-span"],"topics":["span","strings"]},
 {"id":"collectionsmarshal-asspan-list","type":"code","bad":null,"good":null,"code":"Span<int> span = CollectionsMarshal.AsSpan(values);\nspan[0] = 42;","related":["collections-marshal-span","collections-marshal-setcount"],"topics":["collections","performance"]},
 {"id":"jsonnode-deepequals","type":"code","bad":null,"good":null,"code":"bool same = JsonNode.DeepEquals(left, right);","related":["jsonnode-mutable-dom","jsondocument-dispose"],"topics":["serialization","json"]},
 {"id":"environment-processpath","type":"code","bad":null,"good":null,"code":"string? executable = Environment.ProcessPath;","related":["operating-system-platform-check","process-waitforexitasync"],"topics":["runtime","platform"]},
