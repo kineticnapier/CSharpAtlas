@@ -1,12 +1,12 @@
 [
-{"id":"priorityqueue-ensurecapacity","type":"code","bad":null,"good":null,"code":"queue.EnsureCapacity(expectedCount);","related":["priorityqueue-custom-comparer","priorityqueue-enqueue-dequeue"],"topics":["collections","performance"]},
+{"id":"priorityqueue-ensurecapacity","type":"code","bad":null,"good":null,"code":"queue.EnsureCapacity(expectedCount);","related":["priorityqueue-enqueue-dequeue"],"topics":["collections","performance"]},
 {"id":"random-getitems","type":"code","bad":null,"good":null,"code":"char[] picked = Random.Shared.GetItems<char>(choices, 8);","related":["random-shared-concurrent","string-create-formatting"],"topics":["random","collections"]},
-{"id":"dateonly-tryformat","type":"code","bad":null,"good":null,"code":"date.TryFormat(destination, out int written, \"yyyy-MM-dd\");","related":["dateonly-timeonly","datetime-tryparseexact"],"topics":["dates","formatting"]},
-{"id":"randomaccess-getlength","type":"code","bad":null,"good":null,"code":"long length = RandomAccess.GetLength(handle);","related":["file-openhandle-randomaccess","file-stream-options"],"topics":["io","files"]},
+{"id":"dateonly-tryformat","type":"code","bad":null,"good":null,"code":"date.TryFormat(destination, out int written, \"yyyy-MM-dd\");","related":["dateonly-timeonly"],"topics":["dates","formatting"]},
+{"id":"randomaccess-getlength","type":"code","bad":null,"good":null,"code":"long length = RandomAccess.GetLength(handle);","related":["file-openhandle-randomaccess"],"topics":["io","files"]},
 {"id":"jsonserializer-reflection-enabled","type":"code","bad":null,"good":null,"code":"if (JsonSerializer.IsReflectionEnabledByDefault)\n    ConfigureReflectionFallback();","related":["json-source-generation","json-options-makereadonly"],"topics":["serialization","aot"]},
 {"id":"bitoperations-roundup-powerof2","type":"code","bad":null,"good":null,"code":"uint capacity = BitOperations.RoundUpToPowerOf2(required);","related":["bitoperations-popcount","checked-overflow-context"],"topics":["numerics","performance"]},
-{"id":"channelreader-readallasync","type":"code","bad":null,"good":null,"code":"await foreach (var item in reader.ReadAllAsync(cancellationToken))\n    await ProcessAsync(item);","related":["bounded-channel-producer-consumer","await-foreach"],"topics":["async","channels"]},
+{"id":"channelreader-readallasync","type":"code","bad":null,"good":null,"code":"await foreach (var item in reader.ReadAllAsync(cancellationToken))\n    await ProcessAsync(item);","related":["bounded-channel-producer-consumer"],"topics":["async","channels"]},
 {"id":"operating-system-version-check","type":"code","bad":null,"good":null,"code":"if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000))\n    EnableWindows11Feature();","related":["operating-system-platform-check","environment-processpath"],"topics":["runtime","platform"]},
-{"id":"string-create-spanstate","type":"code","bad":null,"good":null,"code":"string text = string.Create(length, state, static (chars, s) => s.CopyTo(chars));","related":["string-create-formatting","span-basics"],"topics":["strings","performance"]},
+{"id":"string-create-spanstate","type":"code","bad":null,"good":null,"code":"string text = string.Create(length, state, static (chars, s) => s.CopyTo(chars));","related":["string-create-formatting"],"topics":["strings","performance"]},
 {"id":"memoryextensions-count-span","type":"code","bad":null,"good":null,"code":"int separators = text.AsSpan().Count(',');","related":["span-indexofanyexcept","sequenceequal-span-comparison"],"topics":["spans","text-processing"]}
 ]
