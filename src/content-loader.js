@@ -27,7 +27,7 @@ const RELATED_TARGET_ALIASES = {
   'aspnetcore-rate-limit-concurrency': 'rate-limiter-partition-cardinality', 'memorypool-owner-lifetime': 'memory-owner-pooled-lifetime',
   'httpclient-resilience-standard-handler': 'httpclient-pooled-connection-lifetime', 'aspnetcore-problemdetails-error-contract': 'aspnet-request-timeout-cancellation',
   'threadpool-starvation-blocking': 'task-run-cpu-bound-concurrency', 'async-allocation-avoid-unnecessary-state-machine': 'valuetask-multiple-await-hazard',
-  'conditionalweaktable-associated-data': 'weakreference-cache-semantics', 'memorypool-shared-owner': 'memory-owner-pooled-lifetime',
+  'conditionalweaktable-associated-data': 'conditionalweaktable-key-lifetime', 'memorypool-shared-owner': 'memory-owner-pooled-lifetime',
   'partitioned-rate-limiter': 'partitioned-rate-limiter-fairness', 'aspnetcore-rate-limit-per-user': 'rate-limiter-partition-cardinality',
   'generic-math-static-abstract': 'generic-math-checked-operators', 'threadpool-starvation': 'task-run-cpu-bound-concurrency',
   'regex-nonbacktracking-engine': 'regex-timeout-untrusted-input', 'generated-regex-source-generation': 'regex-timeout-untrusted-input',
