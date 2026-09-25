@@ -67,7 +67,11 @@ const RELATED_TARGET_ALIASES = {
   'linked-cancellationtoken-source': 'linked-cancellation-token',
   'aspnet-response-compression': 'aspnetcore-response-bodywriter-streaming',
   'linq-unintended-multiple-enumeration': 'enumerable-trygetnonenumeratedcount',
-  'unnecessary-tolist-allocation': 'enumerable-trygetnonenumeratedcount'
+  'unnecessary-tolist-allocation': 'enumerable-trygetnonenumeratedcount',
+  'arraybufferwriter-growing-buffer': 'ibufferwriter-producer-pattern',
+  'file-async-randomaccess-concurrency': 'randomaccess-offset-io',
+  'system-io-hashing-noncryptographic': 'cryptographicoperations-fixed-time-equality',
+  'lock-contention-hot-path': 'async-lock-held-across-io'
 };
 
 function normalizeExpansionLocaleEntry(id, entry) {
