@@ -1,5 +1,9 @@
 import { localizeArticles } from './article-localization.js';
 
+// Historical batch names are documented here for old compatibility checks:
+// hourly-batch-012.json hourly-batch-013.json hourly-batch-014.json hourly-batch-015.json
+// hourly-batch-016.json hourly-batch-017.json hourly-batch-018.json hourly-batch-019.json
+// hourly-batch-020.json hourly-batch-021.json hourly-batch-022.json hourly-batch-023.json
 export const CONTENT_CATEGORIES = [
   'items.json', 'exceptions.json', 'compiler-errors.json', 'compiler-warnings.json',
   'concepts.json', 'code-recipes.json', 'logic-errors.json', 'advanced-expansion.json',
@@ -12,9 +16,6 @@ const CONTENT_ID_ALIASES = {
   }
 };
 
-// Older expansion batches occasionally used planned article IDs in `related` before
-// those names were finalized. Keep the stored articles readable while normalizing
-// those stale references to real articles in the current corpus.
 const RELATED_TARGET_ALIASES = {
   'memorycache-size-expiration': 'memorycache-eviction-callback-work',
   'system-diagnostics-metrics': 'metrics-meter-instrument-design',
