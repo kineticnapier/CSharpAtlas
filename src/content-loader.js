@@ -24,7 +24,7 @@ const RELATED_TARGET_ALIASES = {
   'memorycache-size-expiration': 'memorycache-eviction-callback-work', 'system-diagnostics-metrics': 'metrics-meter-instrument-design',
   'eventsource-runtime-diagnostics': 'activity-tags-baggage-boundaries', 'backgroundservice-scoped-dependency': 'optionsmonitor-runtime-configuration',
   'keyed-services-di': 'optionsmonitor-runtime-configuration', 'partitioned-ratelimiter-per-key': 'rate-limiter-partition-cardinality',
-  'aspnetcore-rate-limit-concurrency': 'partitioned-rate-limiter-fairness', 'memorypool-owner-lifetime': 'memory-owner-pooled-lifetime',
+  'aspnetcore-rate-limit-concurrency': 'rate-limiter-partition-cardinality', 'memorypool-owner-lifetime': 'memory-owner-pooled-lifetime',
   'httpclient-resilience-standard-handler': 'httpclient-pooled-connection-lifetime', 'aspnetcore-problemdetails-error-contract': 'aspnet-request-timeout-cancellation',
   'threadpool-starvation-blocking': 'task-run-cpu-bound-concurrency', 'async-allocation-avoid-unnecessary-state-machine': 'valuetask-multiple-await-hazard',
   'conditionalweaktable-associated-data': 'weakreference-cache-semantics', 'memorypool-shared-owner': 'memory-owner-pooled-lifetime',
