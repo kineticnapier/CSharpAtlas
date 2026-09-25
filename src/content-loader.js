@@ -29,7 +29,7 @@ const RELATED_TARGET_ALIASES = {
   'threadpool-starvation-blocking': 'task-run-cpu-bound-concurrency', 'async-allocation-avoid-unnecessary-state-machine': 'valuetask-multiple-await-hazard',
   'conditionalweaktable-associated-data': 'conditionalweaktable-key-lifetime', 'memorypool-shared-owner': 'arraypool-rent-return-lifetime',
   'partitioned-rate-limiter': 'partitioned-rate-limiter-fairness', 'aspnetcore-rate-limit-per-user': 'rate-limiter-partition-cardinality',
-  'generic-math-static-abstract': 'generic-math-checked-operators', 'threadpool-starvation': 'task-run-cpu-bound-concurrency',
+  'generic-math-static-abstract': 'generic-math-constraints', 'threadpool-starvation': 'task-run-cpu-bound-concurrency',
   'regex-nonbacktracking-engine': 'regex-timeout-untrusted-input', 'generated-regex-source-generation': 'regex-timeout-untrusted-input',
   'valuetask-sync-completion': 'valuetask-multiple-await-hazard', 'async-allocation-state-machine': 'valuetask-multiple-await-hazard',
   'init-only-properties': 'csharp-required-members-construction', 'nullable-reference-types': 'csharp-required-members-construction',
