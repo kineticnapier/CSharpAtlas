@@ -15,6 +15,7 @@ const CONTENT_ID_ALIASES = {
     'collection-expressions': 'collection-expression-syntax'
   },
   'hourly-batch-042.json': {
+    'memorymappedfile-large-random-access': 'memorymappedfile-view-lifetime',
     'aspnetcore-endpoint-filter-crosscutting': 'aspnetcore-endpoint-filter-ordering'
   }
 };
