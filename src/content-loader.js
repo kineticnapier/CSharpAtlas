@@ -7,7 +7,7 @@ import { localizeArticles } from './article-localization.js';
 export const CONTENT_CATEGORIES = [
   'items.json', 'exceptions.json', 'compiler-errors.json', 'compiler-warnings.json',
   'concepts.json', 'code-recipes.json', 'logic-errors.json', 'advanced-expansion.json',
-  ...Array.from({ length: 45 }, (_, index) => `hourly-batch-${String(index + 1).padStart(3, '0')}.json`)
+  ...Array.from({ length: 46 }, (_, index) => `hourly-batch-${String(index + 1).padStart(3, '0')}.json`)
 ];
 
 const CONTENT_ID_ALIASES = {
