@@ -7,7 +7,7 @@ import { localizeArticles } from './article-localization.js';
 export const CONTENT_CATEGORIES = [
   'items.json', 'exceptions.json', 'compiler-errors.json', 'compiler-warnings.json',
   'concepts.json', 'code-recipes.json', 'logic-errors.json', 'advanced-expansion.json',
-  ...Array.from({ length: 46 }, (_, index) => `hourly-batch-${String(index + 1).padStart(3, '0')}.json`)
+  ...Array.from({ length: 47 }, (_, index) => `hourly-batch-${String(index + 1).padStart(3, '0')}.json`)
 ];
 
 const CONTENT_ID_ALIASES = {
@@ -79,39 +79,41 @@ const RELATED_TARGET_ALIASES = {
   'lock-contention-hot-path': 'async-lock-held-across-io'
 };
 
-function normalizeExpansionLocaleEntry(id, entry) {
-  if (id !== 'bounded-channel-producer-consumer' || !entry || typeof entry !== 'object') return entry;
-  if (entry.title === 'Channel<T> で producer / consumer をつなぐ') return { ...entry, title: '容量制限付き Channel<T> で producer / consumer をつなぐ' };
-  if (entry.title === 'Connect producers and consumers with Channel<T>') return { ...entry, title: 'Connect producers and consumers with a bounded Channel<T>' };
-  return entry;
+function getCategoryForArticle(category, article) {
+  return CONTENT_ID_ALIASES[category]?.[article.id] ?? article.id;
 }
 
-export function normalizeContentGroup(file, group) {
-  const aliases = CONTENT_ID_ALIASES[file];
-  if (Array.isArray(group)) return group.map(article => {
-    const id = aliases?.[article.id] ?? article.id;
-    const related = (article.related ?? [])
-      .map(target => aliases?.[target] ?? RELATED_TARGET_ALIASES[target] ?? target)
-      .filter(target => target !== id);
-    return { ...article, id, related: [...new Set(related)] };
-  });
-  return Object.fromEntries(Object.entries(group ?? {}).map(([id, entry]) => {
-    const normalizedId = aliases?.[id] ?? id;
-    return [normalizedId, normalizeExpansionLocaleEntry(normalizedId, entry)];
+function getRelatedTargetId(id) {
+  return RELATED_TARGET_ALIASES[id] ?? id;
+}
+
+export async function loadContent({ locale = 'ja', fetchImpl = fetch } = {}) {
+  const categories = await Promise.all(CONTENT_CATEGORIES.map(async (category) => {
+    const [articlesResponse, localeResponse] = await Promise.all([
+      fetchImpl(`/content/articles/${category}`),
+      fetchImpl(`/content/locales/${locale}/${category}`)
+    ]);
+
+    if (!articlesResponse.ok) {
+      throw new Error(`Failed to load /content/articles/${category}`);
+    }
+    if (!localeResponse.ok) {
+      throw new Error(`Failed to load /content/locales/${locale}/${category}`);
+    }
+
+    const [articles, translations] = await Promise.all([
+      articlesResponse.json(),
+      localeResponse.json()
+    ]);
+
+    const normalizedArticles = articles.map((article) => ({
+      ...article,
+      id: getCategoryForArticle(category, article),
+      related: article.related?.map(getRelatedTargetId) ?? []
+    }));
+
+    return localizeArticles(normalizedArticles, translations);
   }));
-}
 
-async function loadGroups(fetchJson, prefix) {
-  return Promise.all(CONTENT_CATEGORIES.map(async file => normalizeContentGroup(file, await fetchJson(`${prefix}/${file}`))));
-}
-
-export async function loadLocalizedContent({ fetchJson, locale, fallbackLocale = 'ja' }) {
-  if (typeof fetchJson !== 'function') throw new Error('fetchJson is required');
-  const baseGroups = await loadGroups(fetchJson, './content/articles');
-  const fallbackGroups = await loadGroups(fetchJson, `./content/locales/${fallbackLocale}`);
-  const requestedGroups = locale === fallbackLocale ? fallbackGroups : await loadGroups(fetchJson, `./content/locales/${locale}`);
-  const baseArticles = baseGroups.flat();
-  const mergeLocaleGroups = groups => Object.assign({}, ...groups);
-  const localeMaps = { [fallbackLocale]: mergeLocaleGroups(fallbackGroups), [locale]: mergeLocaleGroups(requestedGroups) };
-  return { articles: localizeArticles(baseArticles, localeMaps, locale, fallbackLocale), requestedLocale: locale };
+  return categories.flat();
 }
