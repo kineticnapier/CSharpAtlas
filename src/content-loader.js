@@ -1,61 +1,73 @@
 import { localizeArticles } from './article-localization.js';
 
 export const CONTENT_CATEGORIES = [
-  'items.json',
-  'exceptions.json',
-  'compiler-errors.json',
-  'compiler-warnings.json',
-  'concepts.json',
-  'code-recipes.json',
-  'logic-errors.json',
-  'advanced-expansion.json',
-  'hourly-batch-001.json',
-  'hourly-batch-002.json',
-  'hourly-batch-003.json',
-  'hourly-batch-004.json',
-  'hourly-batch-005.json',
-  'hourly-batch-006.json',
-  'hourly-batch-007.json',
-  'hourly-batch-008.json',
-  'hourly-batch-009.json',
-  'hourly-batch-010.json',
-  'hourly-batch-011.json',
-  'hourly-batch-012.json',
-  'hourly-batch-013.json',
-  'hourly-batch-014.json',
-  'hourly-batch-015.json',
-  'hourly-batch-016.json',
-  'hourly-batch-017.json',
-  'hourly-batch-018.json',
-  'hourly-batch-019.json',
-  'hourly-batch-020.json',
-  'hourly-batch-021.json',
-  'hourly-batch-022.json',
-  'hourly-batch-023.json',
-  'hourly-batch-024.json',
-  'hourly-batch-025.json',
-  'hourly-batch-026.json',
-  'hourly-batch-027.json',
-  'hourly-batch-028.json',
-  'hourly-batch-029.json',
-  'hourly-batch-030.json',
-  'hourly-batch-031.json',
-  'hourly-batch-032.json',
-  'hourly-batch-033.json',
-  'hourly-batch-034.json',
-  'hourly-batch-035.json',
-  'hourly-batch-036.json',
-  'hourly-batch-037.json',
-  'hourly-batch-038.json',
-  'hourly-batch-039.json',
-  'hourly-batch-040.json',
-  'hourly-batch-041.json'
+  'items.json', 'exceptions.json', 'compiler-errors.json', 'compiler-warnings.json',
+  'concepts.json', 'code-recipes.json', 'logic-errors.json', 'advanced-expansion.json',
+  ...Array.from({ length: 41 }, (_, index) => `hourly-batch-${String(index + 1).padStart(3, '0')}.json`)
 ];
 
 const CONTENT_ID_ALIASES = {
   'advanced-expansion.json': {
     'collection-expressions': 'collection-expression-syntax'
   }
+};
+
+// Older expansion batches occasionally used planned article IDs in `related` before
+// those names were finalized. Keep the stored articles readable while normalizing
+// those stale references to real articles in the current corpus.
+const RELATED_TARGET_ALIASES = {
+  'memorycache-size-expiration': 'memorycache-eviction-callback-work',
+  'system-diagnostics-metrics': 'metrics-meter-instrument-design',
+  'eventsource-runtime-diagnostics': 'activity-tags-baggage-boundaries',
+  'backgroundservice-scoped-dependency': 'optionsmonitor-runtime-configuration',
+  'keyed-services-di': 'optionsmonitor-runtime-configuration',
+  'partitioned-ratelimiter-per-key': 'rate-limiter-partition-cardinality',
+  'aspnetcore-rate-limit-concurrency': 'partitioned-rate-limiter-fairness',
+  'memorypool-owner-lifetime': 'memory-owner-pooled-lifetime',
+  'httpclient-resilience-standard-handler': 'httpclient-pooled-connection-lifetime',
+  'aspnetcore-problemdetails-error-contract': 'aspnet-request-timeout-cancellation',
+  'threadpool-starvation-blocking': 'task-run-cpu-bound-concurrency',
+  'async-allocation-avoid-unnecessary-state-machine': 'valuetask-multiple-await-hazard',
+  'conditionalweaktable-associated-data': 'weakreference-cache-semantics',
+  'memorypool-shared-owner': 'memory-owner-pooled-lifetime',
+  'partitioned-rate-limiter': 'partitioned-rate-limiter-fairness',
+  'aspnetcore-rate-limit-per-user': 'rate-limiter-partition-cardinality',
+  'generic-math-static-abstract': 'generic-math-checked-operators',
+  'threadpool-starvation': 'task-run-cpu-bound-concurrency',
+  'regex-nonbacktracking-engine': 'regex-timeout-untrusted-input',
+  'generated-regex-source-generation': 'regex-timeout-untrusted-input',
+  'valuetask-sync-completion': 'valuetask-multiple-await-hazard',
+  'async-allocation-state-machine': 'valuetask-multiple-await-hazard',
+  'init-only-properties': 'csharp-required-members-construction',
+  'nullable-reference-types': 'csharp-required-members-construction',
+  'reflection-cache-metadata': 'jsonserializeroptions-reuse-metadata-cache',
+  'activator-createinstance-hot-path': 'reflection-attribute-instantiation-cost',
+  'unity-object-pool-reuse': 'unity-domain-reload-static-state',
+  'unity-component-lookup-cache': 'unity-domain-reload-static-state',
+  'span-stackalloc-buffer': 'utf8formatter-direct-formatting',
+  'stringbuilder-reuse-hot-path': 'string-create-allocation-aware-formatting',
+  'pinned-object-heap': 'gc-latency-modes-tradeoffs',
+  'gc-addmemorypressure-unmanaged': 'gc-memoryinfo-pressure-observation',
+  'httpclient-lifetime-management': 'httpclient-pooled-connection-lifetime',
+  'httpclient-http-version-negotiation': 'http-response-streaming-headers-read',
+  'cache-stampede-singleflight': 'memorycache-stampede-singleflight',
+  'conditionalweaktable-lifetime-cache': 'weakreference-cache-semantics',
+  'json-polymorphism-contracts': 'json-typeinforesolver-contract-customization',
+  'json-unknown-derived-type-handling': 'json-typeinforesolver-contract-customization',
+  'semaphoreslim-release-pairing': 'semaphoreslim-release-balance',
+  'socket-send-backpressure': 'socket-partial-send-receive',
+  'unity-nativearray-jobs': 'unity-native-container-disposal',
+  'dotnet-counters-runtime-monitoring': 'dotnet-counters-runtime-diagnostics',
+  'aspnet-forwarded-headers-trust': 'aspnetcore-forwarded-headers-trust',
+  'aspnet-request-body-buffering': 'aspnetcore-response-bodywriter-streaming',
+  'unobservedtaskexception-boundaries': 'fire-and-forget-task-lifetime',
+  'exception-filter-observation': 'exceptiondispatchinfo-cross-boundary-rethrow',
+  'assemblyloadcontext-resolving': 'metadata-load-context-inspection',
+  'reflection-create-delegate-hot-path': 'reflection-attribute-instantiation-cost',
+  'linked-cancellationtoken-source': 'linked-cancellation-token',
+  'aspnet-response-compression': 'aspnetcore-response-bodywriter-streaming',
+  'linq-unintended-multiple-enumeration': 'enumerable-trygetnonenumeratedcount',
+  'unnecessary-tolist-allocation': 'enumerable-trygetnonenumeratedcount'
 };
 
 function normalizeExpansionLocaleEntry(id, entry) {
@@ -67,9 +79,17 @@ function normalizeExpansionLocaleEntry(id, entry) {
 
 export function normalizeContentGroup(file, group) {
   const aliases = CONTENT_ID_ALIASES[file];
-  if (!aliases) return group;
-  if (Array.isArray(group)) return group.map(article => ({ ...article, id: aliases[article.id] ?? article.id, related: (article.related ?? []).map(id => aliases[id] ?? id) }));
-  return Object.fromEntries(Object.entries(group ?? {}).map(([id, entry]) => { const normalizedId = aliases[id] ?? id; return [normalizedId, normalizeExpansionLocaleEntry(normalizedId, entry)]; }));
+  if (Array.isArray(group)) return group.map(article => {
+    const id = aliases?.[article.id] ?? article.id;
+    const related = (article.related ?? [])
+      .map(target => aliases?.[target] ?? RELATED_TARGET_ALIASES[target] ?? target)
+      .filter(target => target !== id);
+    return { ...article, id, related: [...new Set(related)] };
+  });
+  return Object.fromEntries(Object.entries(group ?? {}).map(([id, entry]) => {
+    const normalizedId = aliases?.[id] ?? id;
+    return [normalizedId, normalizeExpansionLocaleEntry(normalizedId, entry)];
+  }));
 }
 
 async function loadGroups(fetchJson, prefix) {
