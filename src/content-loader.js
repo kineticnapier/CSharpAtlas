@@ -13,6 +13,9 @@ export const CONTENT_CATEGORIES = [
 const CONTENT_ID_ALIASES = {
   'advanced-expansion.json': {
     'collection-expressions': 'collection-expression-syntax'
+  },
+  'hourly-batch-042.json': {
+    'aspnetcore-endpoint-filter-crosscutting': 'aspnetcore-endpoint-filter-ordering'
   }
 };
 
