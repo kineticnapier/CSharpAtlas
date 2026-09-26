@@ -31,7 +31,7 @@ const RELATED_TARGET_ALIASES = {
   'partitioned-rate-limiter': 'partitioned-rate-limiter-fairness', 'aspnetcore-rate-limit-per-user': 'rate-limiter-partition-cardinality',
   'generic-math-static-abstract': 'generic-math-constraints', 'threadpool-starvation': 'task-run-cpu-bound-concurrency',
   'regex-nonbacktracking-engine': 'regex-timeout-untrusted-input', 'generated-regex-source-generation': 'regex-timeout-untrusted-input',
-  'valuetask-sync-completion': 'valuetask-multiple-await-hazard', 'async-allocation-state-machine': 'valuetask-multiple-await-hazard',
+  'valuetask-sync-completion': 'task-run-cpu-bound-concurrency', 'async-allocation-state-machine': 'fire-and-forget-task-lifetime',
   'init-only-properties': 'csharp-required-members-construction', 'nullable-reference-types': 'csharp-required-members-construction',
   'reflection-cache-metadata': 'jsonserializeroptions-reuse-metadata-cache', 'activator-createinstance-hot-path': 'reflection-attribute-instantiation-cost',
   'unity-object-pool-reuse': 'unity-domain-reload-static-state', 'unity-component-lookup-cache': 'unity-domain-reload-static-state',
