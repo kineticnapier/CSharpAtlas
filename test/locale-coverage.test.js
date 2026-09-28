@@ -63,3 +63,4 @@ test('Japanese and English locales completely cover every loaded article', async
 
   assert.ok(total >= 100, 'localized content must preserve at least the original 100 articles');
 });
+// Coverage intentionally follows CONTENT_CATEGORIES so future content batches cannot bypass localization checks.
