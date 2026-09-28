@@ -11,7 +11,8 @@ const CONTENT_ID_ALIASES = {
   'hourly-batch-042.json': {
     'memorymappedfile-large-random-access': 'memorymappedfile-view-lifetime',
     'aspnetcore-endpoint-filter-crosscutting': 'aspnetcore-endpoint-filter-ordering'
-  }
+  },
+  'hourly-batch-048.json': { 'timeprovider-testable-time': 'timeprovider-injected-clock-boundary' }
 };
 
 const RELATED_TARGET_ALIASES = {
