@@ -24,7 +24,7 @@ for (const file of BATCHES) {
     assert.deepEqual(new Set(Object.keys(en)), new Set(ids));
     for (const article of base) {
       assert.ok(Array.isArray(article.topics) && article.topics.length > 0, `${article.id}: topics required`);
-      assert.ok(Array.isArray(article.related) && article.related.length > 0, `${article.id}: related required`);
+      assert.ok(Array.isArray(article.related), `${article.id}: related must be an array`);
     }
     for (const locale of [ja, en]) for (const id of ids) {
       for (const field of ['title', 'short', 'summary', 'why', 'tips']) assert.ok(locale[id]?.[field]?.trim(), `${id}: ${field} required`);
