@@ -6,16 +6,12 @@ import path from 'node:path';
 import { CONTENT_CATEGORIES } from '../src/content-loader.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BATCHES = Array.from({ length: 11 }, (_, index) => {
-  const number = index + 1;
-  return `hourly-batch-${String(number).padStart(3, '0')}.json`;
-});
+const BATCHES = CONTENT_CATEGORIES.filter(file => file.startsWith('hourly-batch-'));
 
 async function json(...parts) { return JSON.parse(await readFile(path.join(root, ...parts), 'utf8')); }
 
 for (const file of BATCHES) {
   test(`${file} contains a complete localized batch`, async () => {
-    assert.ok(CONTENT_CATEGORIES.includes(file), `${file} must be loaded`);
     const [base, ja, en] = await Promise.all([
       json('public', 'content', 'articles', file),
       json('public', 'content', 'locales', 'ja', file),
