@@ -54,9 +54,17 @@ function normalizeExpansionLocaleEntry(id, entry) {
   return entry;
 }
 
+function normalizeRelated(articleId, related, aliases) {
+  const normalized = (related ?? []).map(id => RELATED_TARGET_ALIASES[id] ?? aliases?.[id] ?? id);
+  return [...new Set(normalized.filter(id => id !== articleId))];
+}
+
 export function normalizeContentGroup(file, group) {
   const aliases = CONTENT_ID_ALIASES[file];
-  if (Array.isArray(group)) return (group ?? []).map(article => ({ ...article, id: aliases?.[article.id] ?? article.id, related: (article.related ?? []).map(id => RELATED_TARGET_ALIASES[id] ?? aliases?.[id] ?? id) }));
+  if (Array.isArray(group)) return (group ?? []).map(article => {
+    const id = aliases?.[article.id] ?? article.id;
+    return { ...article, id, related: normalizeRelated(id, article.related, aliases) };
+  });
   return Object.fromEntries(Object.entries(group ?? {}).map(([id, entry]) => { const normalizedId = aliases?.[id] ?? id; return [normalizedId, normalizeExpansionLocaleEntry(normalizedId, entry)]; }));
 }
 
