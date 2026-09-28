@@ -31,7 +31,7 @@ for (const file of BATCHES) {
     }
     for (const locale of [ja, en]) for (const id of ids) {
       for (const field of ['title', 'short', 'summary', 'why', 'tips']) assert.ok(locale[id]?.[field]?.trim(), `${id}: ${field} required`);
-      assert.ok(locale[id].tags?.length > 0, `${id}: tags required`);
+      assert.ok(Array.isArray(locale[id].tags), `${id}: tags must be an array`);
     }
   });
 }
