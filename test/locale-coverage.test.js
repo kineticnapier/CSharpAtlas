@@ -3,19 +3,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { CONTENT_CATEGORIES } from '../src/content-loader.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentDir = path.join(root, 'public', 'content');
-const categories = [
-  'items.json',
-  'exceptions.json',
-  'compiler-errors.json',
-  'compiler-warnings.json',
-  'concepts.json',
-  'code-recipes.json',
-  'logic-errors.json',
-  'advanced-expansion.json'
-];
 const requiredText = ['title', 'short', 'summary', 'why', 'tips'];
 const noteFields = ['badNotes', 'goodNotes', 'codeNotes'];
 
@@ -33,10 +24,10 @@ function assertCompleteLocale(entry, locale, id) {
   assert.ok(entry.tags.every(tag => typeof tag === 'string' && tag.trim()), `${locale}/${id}: tags must contain strings`);
 }
 
-test('Japanese and English locales completely cover every base article', async () => {
+test('Japanese and English locales completely cover every loaded article', async () => {
   let total = 0;
 
-  for (const category of categories) {
+  for (const category of CONTENT_CATEGORIES) {
     const base = await json(path.join(contentDir, 'articles', category));
     const ja = await json(path.join(contentDir, 'locales', 'ja', category));
     const en = await json(path.join(contentDir, 'locales', 'en', category));
