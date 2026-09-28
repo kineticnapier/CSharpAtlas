@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { CONTENT_CATEGORIES } from '../src/content-loader.js';
+import { CONTENT_CATEGORIES, normalizeContentGroup } from '../src/content-loader.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentDir = path.join(root, 'public', 'content');
@@ -28,9 +28,12 @@ test('Japanese and English locales completely cover every loaded article', async
   let total = 0;
 
   for (const category of CONTENT_CATEGORIES) {
-    const base = await json(path.join(contentDir, 'articles', category));
-    const ja = await json(path.join(contentDir, 'locales', 'ja', category));
-    const en = await json(path.join(contentDir, 'locales', 'en', category));
+    const rawBase = await json(path.join(contentDir, 'articles', category));
+    const rawJa = await json(path.join(contentDir, 'locales', 'ja', category));
+    const rawEn = await json(path.join(contentDir, 'locales', 'en', category));
+    const base = normalizeContentGroup(category, rawBase);
+    const ja = normalizeContentGroup(category, rawJa);
+    const en = normalizeContentGroup(category, rawEn);
     const ids = base.map(article => article.id).sort();
 
     assert.deepEqual(Object.keys(ja).sort(), ids, `${category}: Japanese IDs must match base IDs`);
