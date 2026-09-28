@@ -23,9 +23,10 @@ const RELATED_TARGET_ALIASES = {
   'aspnetcore-rate-limit-concurrency': 'rate-limiter-partition-cardinality', 'memorypool-owner-lifetime': 'memory-owner-pooled-lifetime',
   'httpclient-resilience-standard-handler': 'httpclient-pooled-connection-lifetime', 'aspnetcore-problemdetails-error-contract': 'aspnet-request-timeout-cancellation',
   'threadpool-starvation-blocking': 'task-run-cpu-bound-concurrency', 'async-allocation-avoid-unnecessary-state-machine': 'valuetask-multiple-await-hazard',
-  'conditionalweaktable-associated-data': 'conditionalweaktable-key-lifetime', 'memorypool-shared-owner': 'arraypool-rent-return-lifetime',
+  'conditionalweaktable-associated-data': 'assemblyloadcontext-collectible-unload-lifetime', 'conditionalweaktable-key-lifetime': 'assemblyloadcontext-collectible-unload-lifetime',
+  'memorypool-shared-owner': 'ibufferwriter-producer-pattern', 'arraypool-rent-return-lifetime': 'ibufferwriter-producer-pattern',
   'partitioned-rate-limiter': 'partitioned-rate-limiter-fairness', 'aspnetcore-rate-limit-per-user': 'rate-limiter-partition-cardinality',
-  'generic-math-static-abstract': 'generic-math-constraints', 'threadpool-starvation': 'task-run-cpu-bound-concurrency',
+  'generic-math-static-abstract': 'generics', 'generic-math-constraints': 'generics', 'threadpool-starvation': 'task-run-cpu-bound-concurrency',
   'regex-nonbacktracking-engine': 'regex-timeout-untrusted-input', 'generated-regex-source-generation': 'regex-timeout-untrusted-input',
   'valuetask-sync-completion': 'task-run-cpu-bound-concurrency', 'async-allocation-state-machine': 'fire-and-forget-task-lifetime',
   'init-only-properties': 'csharp-required-members-construction', 'nullable-reference-types': 'csharp-required-members-construction',
@@ -44,7 +45,9 @@ const RELATED_TARGET_ALIASES = {
   'linked-cancellationtoken-source': 'linked-cancellation-token', 'aspnet-response-compression': 'aspnetcore-response-bodywriter-streaming',
   'linq-unintended-multiple-enumeration': 'enumerable-trygetnonenumeratedcount', 'unnecessary-tolist-allocation': 'enumerable-trygetnonenumeratedcount',
   'arraybufferwriter-growing-buffer': 'ibufferwriter-producer-pattern', 'file-async-randomaccess-concurrency': 'randomaccess-offset-io',
-  'system-io-hashing-noncryptographic': 'cryptographicoperations-fixed-time-equality', 'lock-contention-hot-path': 'async-lock-held-across-io'
+  'system-io-hashing-noncryptographic': 'cryptographicoperations-fixed-time-equality', 'lock-contention-hot-path': 'async-lock-held-across-io',
+  'frozen-collections-readmostly': 'immutablearray-default-vs-empty',
+  'unity-job-dependency-native-lifetime': 'unity-job-dependency-lifetime'
 };
 
 function normalizeExpansionLocaleEntry(id, entry) {
